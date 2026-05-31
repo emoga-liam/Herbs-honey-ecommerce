@@ -1,0 +1,1 @@
+- [FFG Foods Store](ffg-foods-store.md) — full-stack honey e-commerce; kobo pricing, session auth, Orval codegen; key quirks documented.
