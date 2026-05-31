@@ -1,0 +1,1150 @@
+import React, { useState, useEffect, useMemo } from 'react';
+
+// Custom Premium Fonts, Animations, and responsive utilities injected directly into the document
+const style = document.createElement('style');
+style.textContent = `
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+  }
+  @keyframes cart-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+    70% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-cart-pulse {
+    animation: cart-pulse 0.4s ease-out;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+  .font-cormorant {
+    font-family: 'Cormorant Garamond', serif;
+  }
+`;
+document.head.appendChild(style);
+
+// --- LOCALIZED NIGERIAN PRODUCT DATABASE ---
+const PRODUCTS = [
+  {
+    id: "p1",
+    title: "TerraMel Raw Mambilla Nectar",
+    category: "honey",
+    categoryLabel: "Flagship Pure Honey",
+    price: 15500.00,
+    rating: 4.9,
+    reviewsCount: 194,
+    badge: "Best Seller",
+    tagline: "Unheated, unfiltered Taraba highland treasure.",
+    desc: "Our signature raw highland nectar is bottled cold-extracted with zero pasteurization. Sourced ethically from wild-blooming ecological meadows nestled high on the Mambilla Plateau in Taraba State. Retains 100% of its natural organic enzymes, active propolis, and rich botanical tasting notes.",
+    origin: "Mambilla Plateau Highlands, Nigeria",
+    enzymes: "NAFDAC Reg No: A8-10294L",
+    colorNotes: "Deep Velvet Gold",
+    sizes: ["250g", "500g", "1kg"],
+    features: ["100% Nigerian Raw & Cold-Extracted", "NAFDAC Registered & Certified Pure", "Direct from Local Taraba Apiculturists"],
+    svg: (
+      <svg className="w-full h-full max-h-64 drop-shadow-2xl mx-auto" viewBox="0 0 400 500" fill="none">
+        <ellipse cx="200" cy="450" rx="110" ry="25" fill="#f1cd53" opacity="0.15"/>
+        <path d="M130 160 C130 140, 270 140, 270 160 L270 380 C270 400, 130 400, 130 380 Z" fill="url(#honeyGrad)" stroke="#f1cd53" strokeWidth="2"/>
+        <path d="M140 180 L140 370" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" opacity="0.25"/>
+        <rect x="145" y="210" width="110" height="120" rx="8" fill="#101d18"/>
+        <rect x="149" y="214" width="102" height="112" rx="6" fill="none" stroke="#e5b128" strokeWidth="1" opacity="0.5"/>
+        <text x="200" y="250" fill="#f1cd53" fontFamily="Plus Jakarta Sans" fontSize="13" fontWeight="900" textAnchor="middle" letterSpacing="3">TERRAMEL</text>
+        <text x="200" y="270" fill="#ffffff" fontFamily="Playfair Display" fontSize="10" fontStyle="italic" textAnchor="middle">Mambilla Nectar</text>
+        <line x1="165" y1="285" x2="235" y2="285" stroke="#e5b128" strokeWidth="1" opacity="0.3"/>
+        <text x="200" y="302" fill="#ffffff" fontFamily="Plus Jakarta Sans" fontSize="8" fontWeight="600" textAnchor="middle">100% RAW NIGERIAN</text>
+        <rect x="145" y="110" width="110" height="30" rx="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5"/>
+        <line x1="155" y1="110" x2="155" y2="140" stroke="#cbd5e1"/>
+        <line x1="170" y1="110" x2="170" y2="140" stroke="#cbd5e1"/>
+        <line x1="185" y1="110" x2="185" y2="140" stroke="#cbd5e1"/>
+        <line x1="200" y1="110" x2="200" y2="140" stroke="#cbd5e1"/>
+      </svg>
+    )
+  },
+  {
+    id: "p2",
+    title: "Raw Idanre Honeycomb Cut",
+    category: "honey",
+    categoryLabel: "Artisanal Combs",
+    price: 22000.00,
+    rating: 5.0,
+    reviewsCount: 89,
+    badge: "Limited Seasonal",
+    tagline: "Straight from Ondo forest combs, fully edible.",
+    desc: "Cut directly from natural, untreated hexagonal hive frames situated along the lush foothills of Idanre, Ondo State. Enjoy the decadent, wax chew overflowing with fresh forest-blossom honey. A spectacular natural wellness treat.",
+    origin: "Idanre Hills Forest, Ondo",
+    enzymes: "Active Raw Hive Comb",
+    colorNotes: "Warm Wild-Flora Amber",
+    sizes: ["300g", "600g"],
+    features: ["100% Edible Organic Beeswax", "Harvested with deep ecological stewardship", "Excellent source of organic trace minerals"],
+    svg: (
+      <svg className="w-full h-full max-h-56 drop-shadow-2xl mx-auto" viewBox="0 0 400 500" fill="none">
+        <ellipse cx="200" cy="450" rx="110" ry="25" fill="#f1cd53" opacity="0.15"/>
+        <polygon points="200,100 290,150 290,250 200,300 110,250 110,150" fill="url(#honeyGrad)" stroke="#f1cd53" strokeWidth="4"/>
+        <polygon points="200,120 270,160 270,240 200,280 130,240 130,160" fill="none" stroke="#e5b128" strokeWidth="2" opacity="0.6"/>
+        <polygon points="200,150 240,175 240,225 200,250 160,225 160,175" fill="#101d18" opacity="0.8"/>
+        <text x="200" y="200" fill="#f1cd53" fontFamily="Plus Jakarta Sans" fontSize="11" fontWeight="900" textAnchor="middle" letterSpacing="2">RAW COMB</text>
+      </svg>
+    )
+  },
+  {
+    id: "p3",
+    title: "Propolis Immunity Drops",
+    category: "apothecary",
+    categoryLabel: "Daily Wellbeing",
+    price: 18500.00,
+    rating: 4.8,
+    reviewsCount: 112,
+    badge: "Wellness Best",
+    tagline: "Traditional immune defense from the hive.",
+    desc: "Ultra-potent liquid propolis compound extracted responsibly from the resin of Nigerian rainforest trees. Used traditionally to support throat soothing, seasonal defenses, and natural body revitalization.",
+    origin: "Cross River Rainforest Reserve",
+    enzymes: "Concentrated Hive Resin",
+    colorNotes: "Deep Brown Extraction",
+    sizes: ["30ml", "50ml"],
+    features: ["Rich in Bioactive Flavonoids", "100% Natural Preservation", "Supports general respiratory wellness"],
+    svg: (
+      <svg className="w-full h-full max-h-56 drop-shadow-2xl mx-auto" viewBox="0 0 400 500" fill="none">
+        <ellipse cx="200" cy="450" rx="110" ry="25" fill="#101d18" opacity="0.1"/>
+        <rect x="140" y="150" width="120" height="230" rx="16" fill="#101d18" stroke="#305143" strokeWidth="2"/>
+        <rect x="180" y="100" width="40" height="50" fill="#111827"/>
+        <path d="M170 100 C170 80, 230 80, 230 100 Z" fill="#ef4444"/>
+        <rect x="155" y="200" width="90" height="130" rx="4" fill="#ffffff"/>
+        <text x="200" y="240" fill="#101d18" fontFamily="Plus Jakarta Sans" fontSize="13" fontWeight="900" textAnchor="middle">PROPOLIS</text>
+        <text x="200" y="260" fill="#4b7e67" fontFamily="Plus Jakarta Sans" fontSize="8" fontWeight="700" textAnchor="middle">IMMUNE DROPS</text>
+        <circle cx="200" cy="295" r="15" fill="#e5b128"/>
+      </svg>
+    )
+  },
+  {
+    id: "p4",
+    title: "Royal Jelly Glow Elixir",
+    category: "apothecary",
+    categoryLabel: "Skin Nutrition",
+    price: 28000.00,
+    rating: 4.9,
+    reviewsCount: 135,
+    badge: "Premium Beauty",
+    tagline: "High-nourishment Royal Jelly skin oil.",
+    desc: "A nutrient-rich topical beauty elixir combining fresh Royal Jelly from our queen bee chambers with skin-smoothing raw honey. Specially blended to deliver deep epidermal hydration, rich antioxidants, and a glowing complexion.",
+    origin: "Kajuru Hills Woodlands, Kaduna",
+    enzymes: "10-HDA Royal Concentrate",
+    colorNotes: "Opal Radiant Pearl",
+    sizes: ["50ml", "100ml"],
+    features: ["Queen Bee Royal Jelly formula", "Promotes radiant, smooth skin", "100% natural, free of chemicals"],
+    svg: (
+      <svg className="w-full h-full max-h-56 drop-shadow-2xl mx-auto" viewBox="0 0 400 500" fill="none">
+        <ellipse cx="200" cy="450" rx="110" ry="25" fill="#cbd5e1" opacity="0.2"/>
+        <rect x="130" y="140" width="140" height="250" rx="30" fill="url(#royalGrad)" stroke="#ffffff" strokeWidth="3"/>
+        <rect x="170" y="90" width="60" height="50" rx="4" fill="#e5b128"/>
+        <rect x="150" y="210" width="100" height="110" rx="10" fill="#ffffff" opacity="0.8"/>
+        <text x="200" y="250" fill="#101d18" fontFamily="Plus Jakarta Sans" fontSize="12" fontWeight="900" textAnchor="middle">ROYAL GLOW</text>
+        <text x="200" y="270" fill="#e5b128" fontFamily="Plus Jakarta Sans" fontSize="8" fontWeight="800" textAnchor="middle">JELLY ELIXIR</text>
+      </svg>
+    )
+  }
+];
+
+export default function App() {
+  // --- NAVIGATION STATE ---
+  const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'shop' | 'about' | 'contact' | 'checkout' | 'success'
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // --- STORE STATE ---
+  const [cart, setCart] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [badgeAnimation, setBadgeAnimation] = useState(false);
+  
+  // Flagship Product Quick Buy states on Home Page
+  const [flagshipSize, setFlagshipSize] = useState("500g");
+  const [flagshipQty, setFlagshipQty] = useState(1);
+  
+  // Catalog / Search states
+  const [catalogSearch, setCatalogSearch] = useState('');
+  const [catalogCategory, setCatalogCategory] = useState('all');
+  
+  // Modal detail view
+  const [viewProduct, setViewProduct] = useState(null);
+  const [viewProductSize, setViewProductSize] = useState("");
+
+  // Promo Code States
+  const [promoCode, setPromoCode] = useState('');
+  const [discountPercent, setDiscountPercent] = useState(0); // e.g. 0.20 for 20%
+
+  // Checkout Form States (Localized for Nigerian shipping flow)
+  const [checkoutForm, setCheckoutForm] = useState({
+    name: '',
+    email: '',
+    address: '',
+    city: '',
+    stateRegion: 'Lagos',
+    phone: '',
+    cardNumber: '',
+    expiry: '',
+    cvv: ''
+  });
+  const [lastOrder, setLastOrder] = useState(null);
+
+  // Contact Page Form States
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+
+  // Auto-scroll to top on tab change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentTab]);
+
+  // Alert/Toast controller
+  const triggerToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // --- CART HANDLERS ---
+  const addToCart = (product, size, qty = 1) => {
+    setCart(prev => {
+      const matchIndex = prev.findIndex(item => item.product.id === product.id && item.size === size);
+      if (matchIndex > -1) {
+        const next = [...prev];
+        next[matchIndex].quantity += qty;
+        return next;
+      }
+      return [...prev, { product, size, quantity: qty }];
+    });
+    
+    // Trigger intense visual pulsing feedback on the basket icon
+    setBadgeAnimation(true);
+    setTimeout(() => setBadgeAnimation(false), 500);
+    
+    // Explicitly do not open the cart drawer automatically. Only show the success toast.
+    triggerToast(`Added ${qty}x ${product.title} (${size}) to your cart!`);
+  };
+
+  const updateCartQty = (productId, size, change) => {
+    setCart(prev => {
+      return prev.map(item => {
+        if (item.product.id === productId && item.size === size) {
+          const nextQty = item.quantity + change;
+          return nextQty > 0 ? { ...item, quantity: nextQty } : null;
+        }
+        return item;
+      }).filter(Boolean);
+    });
+  };
+
+  const removeItem = (productId, size) => {
+    setCart(prev => prev.filter(item => !(item.product.id === productId && item.size === size)));
+    triggerToast("Item removed from your cart.");
+  };
+
+  // Pricing calculations (Naira Based ₦)
+  const cartSubtotal = useMemo(() => {
+    return cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  }, [cart]);
+
+  const discountAmount = useMemo(() => {
+    return cartSubtotal * discountPercent;
+  }, [cartSubtotal, discountPercent]);
+
+  // Delivery fee: Free for orders over ₦45,000, otherwise flat ₦3,500 for dispatch
+  const deliveryFee = useMemo(() => {
+    return cartSubtotal > 45000 ? 0 : (cartSubtotal > 0 ? 3500 : 0);
+  }, [cartSubtotal]);
+
+  const cartTotal = useMemo(() => {
+    return Math.max(0, cartSubtotal - discountAmount + deliveryFee);
+  }, [cartSubtotal, discountAmount, deliveryFee]);
+
+  // Handle promo code submission
+  const handleApplyPromo = (e) => {
+    e.preventDefault();
+    if (promoCode.trim().toUpperCase() === 'GOLDEN20') {
+      setDiscountPercent(0.20);
+      triggerToast("Promo 'GOLDEN20' applied! 20% off your subtotal.");
+    } else {
+      triggerToast("Invalid discount coupon.");
+    }
+  };
+
+  // Filter products for the shop view
+  const filteredProducts = useMemo(() => {
+    return PRODUCTS.filter(p => {
+      const matchesCat = catalogCategory === 'all' || p.category === catalogCategory;
+      const matchesSearch = p.title.toLowerCase().includes(catalogSearch.toLowerCase()) || 
+                            p.desc.toLowerCase().includes(catalogSearch.toLowerCase());
+      return matchesCat && matchesSearch;
+    });
+  }, [catalogCategory, catalogSearch]);
+
+  // Form handle changes
+  const handleInputChange = (e) => {
+    setCheckoutForm({ ...checkoutForm, [e.target.name]: e.target.value });
+  };
+
+  const handleContactChange = (e) => {
+    setContactForm({ ...contactForm, [e.target.name]: e.target.value });
+  };
+
+  // Submit Contact Form
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    triggerToast(`Message sent! Thank you, ${contactForm.name}. Our apiculturists will reply soon.`);
+    setContactForm({ name: '', email: '', subject: '', message: '' });
+  };
+
+  // Submit Order (Familiar payment processing simulation with Paystack/Flutterwave design references)
+  const handlePlaceOrder = (e) => {
+    e.preventDefault();
+    if (!checkoutForm.name || !checkoutForm.email || !checkoutForm.address || !checkoutForm.phone) {
+      triggerToast("Please complete all required shipping fields.");
+      return;
+    }
+
+    const receiptNum = "NEX-NG-" + Math.floor(100000 + Math.random() * 900000);
+    setLastOrder({
+      id: receiptNum,
+      customer: checkoutForm,
+      items: [...cart],
+      subtotal: cartSubtotal,
+      discount: discountAmount,
+      delivery: deliveryFee,
+      total: cartTotal
+    });
+
+    // Reset store state
+    setCart([]);
+    setDiscountPercent(0);
+    setPromoCode('');
+    setCheckoutForm({
+      name: '',
+      email: '',
+      address: '',
+      city: '',
+      stateRegion: 'Lagos',
+      phone: '',
+      cardNumber: '',
+      expiry: '',
+      cvv: ''
+    });
+    
+    setCurrentTab('success');
+  };
+
+  // Robust function to navigate and smoothly scroll to flagship product section
+  const handleShopFlagshipScroll = () => {
+    setCurrentTab('home');
+    setMobileMenuOpen(false);
+    setTimeout(() => {
+      const targetElement = document.getElementById('flagship-buy-now');
+      if (targetElement) {
+        const offset = 100; // navbar buffer offset
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = targetElement.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 150);
+  };
+
+  return (
+    <div className="bg-[#fbfbfa] text-stone-900 font-sans min-h-screen relative antialiased flex flex-col justify-between">
+      
+      {/* Dynamic Gradients for Custom SVG jar assets */}
+      <svg className="absolute w-0 h-0" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="honeyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#f7e491" />
+            <stop offset="40%" stopColor="#e5b128" />
+            <stop offset="100%" stopColor="#855619" />
+          </linearGradient>
+          <linearGradient id="royalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="50%" stopColor="#fdfbeb" />
+            <stop offset="100%" stopColor="#f7e491" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      {/* --- FLOATING TOAST --- */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#101d18]/95 backdrop-blur border border-amber-400 px-6 py-4 rounded-xl shadow-xl flex items-center gap-3 animate-slide-in max-w-sm">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          <span className="text-xs font-semibold tracking-wide">{toast}</span>
+        </div>
+      )}
+
+      {/* --- TOP HEADER NAVIGATION --- */}
+      <header className="sticky top-0 left-0 w-full z-40 bg-[#101d18] text-white border-b border-white/10 shadow-md">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          
+          {/* Logo */}
+          <button onClick={() => { setCurrentTab('home'); setMobileMenuOpen(false); }} className="flex items-center gap-3 text-left group">
+            <div className="w-10 h-10 rounded-xl bg-amber-400 flex items-center justify-center text-stone-950 font-bold shadow-md transform group-hover:rotate-6 transition-transform">
+              🍯
+            </div>
+            <div>
+              <span className="text-lg font-black tracking-tight block">Nectar<span className="text-amber-400">Elix</span></span>
+              <span className="text-[9px] uppercase tracking-widest text-stone-400 block -mt-1 font-bold">Raw Nigerian Honey</span>
+            </div>
+          </button>
+
+          {/* Familiar Center Navigation Menu (Routes perfectly between pages on desktop) */}
+          <nav className="hidden lg:flex items-center gap-8">
+            <button onClick={() => setCurrentTab('home')} className={`text-xs font-black uppercase tracking-widest transition-colors ${currentTab === 'home' ? 'text-amber-400' : 'text-stone-300 hover:text-amber-400'}`}>
+              Home
+            </button>
+            <button onClick={() => { setCatalogCategory('all'); setCurrentTab('shop'); }} className={`text-xs font-black uppercase tracking-widest transition-colors ${currentTab === 'shop' ? 'text-amber-400' : 'text-stone-300 hover:text-amber-400'}`}>
+              Shop Range
+            </button>
+            <button onClick={() => setCurrentTab('about')} className={`text-xs font-black uppercase tracking-widest transition-colors ${currentTab === 'about' ? 'text-amber-400' : 'text-stone-300 hover:text-amber-400'}`}>
+              Our Story
+            </button>
+            <button onClick={() => setCurrentTab('contact')} className={`text-xs font-black uppercase tracking-widest transition-colors ${currentTab === 'contact' ? 'text-amber-400' : 'text-stone-300 hover:text-amber-400'}`}>
+              Contact Us
+            </button>
+          </nav>
+
+          {/* Search Shortcut, Cart Widget, and Mobile Hamburger trigger */}
+          <div className="flex items-center gap-4">
+            {/* Quick Search trigger which opens Shop Tab */}
+            <button onClick={() => { setCurrentTab('shop'); setMobileMenuOpen(false); }} className="p-2 text-stone-300 hover:text-amber-400 transition-colors" title="Search Range">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+            
+            {/* Real-time Shopping Cart Button */}
+            <button onClick={() => { setCartOpen(true); setMobileMenuOpen(false); }} className="relative p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all" title="View Reservation Cart">
+              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+              {cart.length > 0 && (
+                <span className={`absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-500 text-stone-950 font-black text-[10px] rounded-full flex items-center justify-center shadow-md ${badgeAnimation ? 'animate-cart-pulse' : ''}`}>
+                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                </span>
+              )}
+            </button>
+
+            {/* Mobile Hamburger menu button */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              className="lg:hidden p-2 text-stone-300 hover:text-white transition-colors"
+              aria-label="Toggle Menu"
+            >
+              {mobileMenuOpen ? (
+                <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7"/>
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* --- MOBILE DRAW-DOWN DRAWER (Mobile First) --- */}
+        <div className={`lg:hidden transition-all duration-350 ease-in-out border-t border-white/10 ${mobileMenuOpen ? 'max-h-72 py-4' : 'max-h-0 py-0 overflow-hidden'}`}>
+          <div className="flex flex-col px-6 gap-4 text-left">
+            <button onClick={() => { setCurrentTab('home'); setMobileMenuOpen(false); }} className={`py-2 text-sm font-black uppercase tracking-widest text-left ${currentTab === 'home' ? 'text-amber-400' : 'text-stone-300'}`}>
+              Home
+            </button>
+            <button onClick={() => { setCatalogCategory('all'); setCurrentTab('shop'); setMobileMenuOpen(false); }} className={`py-2 text-sm font-black uppercase tracking-widest text-left ${currentTab === 'shop' ? 'text-amber-400' : 'text-stone-300'}`}>
+              Shop Range
+            </button>
+            <button onClick={() => { setCurrentTab('about'); setMobileMenuOpen(false); }} className={`py-2 text-sm font-black uppercase tracking-widest text-left ${currentTab === 'about' ? 'text-amber-400' : 'text-stone-300'}`}>
+              Our Story
+            </button>
+            <button onClick={() => { setCurrentTab('contact'); setMobileMenuOpen(false); }} className={`py-2 text-sm font-black uppercase tracking-widest text-left ${currentTab === 'contact' ? 'text-amber-400' : 'text-stone-300'}`}>
+              Contact Us
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* --- PERSISTENT SUB-HERO ANNOUNCEMENT BAR --- */}
+      <div className="bg-amber-400 text-stone-950 py-2.5 text-center text-[11px] font-black uppercase tracking-widest shadow-inner px-4">
+        🎉 Free Delivery Nationwide On All Orders Over ₦45,000! Use Code <span className="underline font-bold">GOLDEN20</span> for 20% off your purchase!
+      </div>
+
+      {/* --- PRIMARY VIEWS SWITCHER --- */}
+      <main className="flex-grow">
+        
+        {/* ========================================================= */}
+        {/* 1. HOMEPAGE VIEW (Familiar Scrollable Landing + Shop combo) */}
+        {/* ========================================================= */}
+        {currentTab === 'home' && (
+          <div>
+            {/* HERO SECTION */}
+            <section className="relative bg-[#101d18] text-white py-20 px-6 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(229,177,40,0.1),transparent_50%)]"></div>
+              
+              <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+                {/* Left Text details */}
+                <div className="lg:col-span-7 space-y-6 text-left">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-amber-400">
+                    🇳🇬 NAFDAC Approved Beekeeping & Wellness Sourcing
+                  </div>
+                  
+                  <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-normal leading-[1.1] text-stone-100">
+                    Pure Wild <br/>
+                    <span className="font-cormorant font-light italic text-amber-400 capitalize tracking-wide block py-2">Honey</span> <span className="font-sans font-light italic text-stone-300">Bottled</span> <br/>
+                    At The Source
+                  </h1>
+
+                  <p className="text-stone-300 text-sm md:text-base max-w-xl leading-relaxed">
+                    NectarElix preserves the raw, unheated micro-nutrition of Nigeria's pristine wild biomes. Untreated, unpasteurized, and gravity-filtered to support your immune system.
+                  </p>
+
+                  <div className="flex flex-wrap gap-4 pt-2">
+                    <button 
+                      onClick={handleShopFlagshipScroll} 
+                      className="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black tracking-widest uppercase rounded-xl transition-all shadow-lg shadow-amber-500/10"
+                    >
+                      Shop Flagship Honey
+                    </button>
+                    <button onClick={() => { setCatalogCategory('all'); setCurrentTab('shop'); }} className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 font-bold uppercase tracking-widest text-xs rounded-xl transition-colors">
+                      Browse Full Collection
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right Hero Image */}
+                <div className="lg:col-span-5 flex justify-center relative">
+                  <div className="absolute w-80 h-80 bg-amber-400/20 rounded-full blur-[90px]"></div>
+                  <div className="relative w-full max-w-[340px] animate-float">
+                    {PRODUCTS[0].svg}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* QUICK TRUST BAR (As seen on standard high-end stores) */}
+            <section className="bg-white border-y border-stone-200 py-6 px-6">
+              <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div>
+                  <span className="text-xs font-black uppercase tracking-widest text-[#101d18] block">No Heat treatment</span>
+                  <span className="text-[10px] text-stone-400 block">Preserving live health enzymes</span>
+                </div>
+                <div className="border-l border-stone-200">
+                  <span class="text-xs font-black uppercase tracking-widest text-[#101d18] block">Wild Nigerian Apiaries</span>
+                  <span class="text-[10px] text-stone-400 block">Sourced deep in Taraba & Ondo forests</span>
+                </div>
+                <div className="border-l border-stone-200">
+                  <span class="text-xs font-black uppercase tracking-widest text-[#101d18] block">Certified Pure</span>
+                  <span class="text-[10px] text-stone-400 block">Tested with zero sugar additions</span>
+                </div>
+                <div class="border-l border-stone-200">
+                  <span class="text-xs font-black uppercase tracking-widest text-[#101d18] block">NAFDAC Certified</span>
+                  <span class="text-[10px] text-stone-400 block">Approved for premium wellness</span>
+                </div>
+              </div>
+            </section>
+
+            {/* ========================================================= */}
+            {/* FAMILIAR FLAGSHIP BUY WIDGET (Direct purchases build high trust) */}
+            {/* ========================================================= */}
+            <section id="flagship-buy-now" className="py-20 px-6 max-w-7xl mx-auto scroll-mt-24">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start bg-white rounded-3xl p-8 md:p-12 border border-stone-200 shadow-xl shadow-stone-100">
+                
+                {/* Product View Image on Left */}
+                <div className="lg:col-span-6 bg-[#f6f5f0] rounded-2xl p-8 flex items-center justify-center relative min-h-[350px] lg:min-h-[480px]">
+                  <div className="absolute w-64 h-64 bg-amber-400/10 rounded-full blur-[80px]"></div>
+                  {PRODUCTS[0].svg}
+                </div>
+
+                {/* Familiar Purchase Controls on Right */}
+                <div className="lg:col-span-6 text-left space-y-6">
+                  <div className="space-y-1">
+                    <span className="text-xs font-black tracking-widest uppercase text-amber-600 block">Our Premium Flagship</span>
+                    <h2 className="font-serif text-4xl font-bold text-[#101d18]">{PRODUCTS[0].title}</h2>
+                    <div className="flex items-center gap-2">
+                      <span className="text-amber-500 font-bold">★★★★★</span>
+                      <span className="text-xs text-stone-400 font-bold">(142 Customer reviews)</span>
+                    </div>
+                  </div>
+
+                  <div className="text-3xl font-black text-[#101d18]">
+                    ₦{PRODUCTS[0].price.toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                  </div>
+
+                  <p className="text-sm text-stone-600 leading-relaxed">
+                    Sourced from the deep botanical woodlands of the Mambilla Plateau (Taraba State), our raw forest nectar is cold extracted and bottled with zero pasteurization. Perfect for daily immune defense, children's nutritional energy, or premium culinary tea pairings.
+                  </p>
+
+                  {/* Size Selector */}
+                  <div className="space-y-2">
+                    <span className="text-xs font-black uppercase tracking-widest text-stone-400 block">1. Select Jar Size:</span>
+                    <div className="flex gap-3">
+                      {PRODUCTS[0].sizes.map(size => (
+                        <button key={size} onClick={() => setFlagshipSize(size)} className={`px-4 py-2.5 rounded-xl text-xs font-black tracking-widest uppercase border transition-all ${flagshipSize === size ? 'bg-[#101d18] text-white border-[#101d18]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'}`}>
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Qty Selector & Add to Cart */}
+                  <div className="space-y-2 pt-2">
+                    <span className="text-xs font-black uppercase tracking-widest text-stone-400 block">2. Quantity & Add:</span>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      {/* Qty Select */}
+                      <div className="flex items-center border border-stone-200 rounded-xl overflow-hidden bg-[#f6f5f0] self-start">
+                        <button onClick={() => setFlagshipQty(prev => Math.max(1, prev - 1))} className="w-12 h-12 flex items-center justify-center text-stone-600 hover:bg-stone-200 text-lg font-bold">-</button>
+                        <span className="w-10 text-center font-bold text-sm">{flagshipQty}</span>
+                        <button onClick={() => setFlagshipQty(prev => prev + 1)} className="w-12 h-12 flex items-center justify-center text-stone-600 hover:bg-stone-200 text-lg font-bold">+</button>
+                      </div>
+
+                      {/* Add Button */}
+                      <button onClick={() => addToCart(PRODUCTS[0], flagshipSize, flagshipQty)} className="flex-1 py-4 bg-[#101d18] hover:bg-amber-500 hover:text-stone-950 text-white font-black tracking-widest uppercase rounded-xl transition-all duration-300 text-center flex items-center justify-center gap-3 shadow-lg shadow-[#101d18]/10">
+                        <span>Add To Reservation</span>
+                        <span>&rarr;</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Bullet Spec Highlights */}
+                  <div className="grid grid-cols-2 gap-4 border-t border-stone-100 pt-6 text-xs text-stone-500">
+                    <div>
+                      <span class="block font-black text-[#101d18] uppercase tracking-wide mb-0.5">Origin Apiary</span>
+                      <span>Mambilla Plateau Highlands</span>
+                    </div>
+                    <div>
+                      <span class="block font-black text-[#101d18] uppercase tracking-wide mb-0.5">NAFDAC Registry No.</span>
+                      <span>{PRODUCTS[0].enzymes}</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            {/* PROCESS & FLOW CHANNELS */}
+            <section className="py-16 px-6 bg-stone-50 border-t border-stone-200">
+              <div className="max-w-7xl mx-auto text-center space-y-2 mb-12">
+                <span className="text-xs font-black tracking-widest uppercase text-amber-600">The Beekeeping Stewardship</span>
+                <h2 className="font-serif text-3xl font-bold text-[#101d18]">Natural Honey Extraction</h2>
+                <p className="text-xs text-stone-400">Discover how our certified master beekeepers secure each season's golden honey reserves.</p>
+              </div>
+              <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-white rounded-2xl p-6 border border-stone-200 text-left space-y-3 shadow-sm">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center text-stone-900 font-bold">1</div>
+                  <h3 className="font-serif font-bold text-lg text-[#101d18]">Wild Foraged Reserves</h3>
+                  <p className="text-xs text-stone-500 leading-relaxed">Nestled in deep ecological woodlands away from industrial chemicals, our active colonies forage on rich native Nigerian forest flora.</p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-stone-200 text-left space-y-3 shadow-sm">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center text-stone-900 font-bold">2</div>
+                  <h3 className="font-serif font-bold text-lg text-[#101d18]">Cold Gravity Sieve</h3>
+                  <p className="text-xs text-stone-500 leading-relaxed">No high-heat boiling ensures essential enzymes, organic bee pollen, and active royal nutrients stay completely intact.</p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-stone-200 text-left space-y-3 shadow-sm">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center text-stone-900 font-bold">3</div>
+                  <h3 className="font-serif font-bold text-lg text-[#101d18]">Ethical Yield Cap</h3>
+                  <p className="text-xs text-stone-500 leading-relaxed">We verify hive health with precision, maintaining abundant honeycomb stores for winter colony wellness.</p>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* 2. CATALOG VIEW (A standard familiar filter grid) */}
+        {/* ========================================================= */}
+        {currentTab === 'shop' && (
+          <section className="py-16 px-6 max-w-7xl mx-auto text-left">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-stone-200">
+              <div>
+                <span className="text-xs font-black tracking-widest uppercase text-amber-600">The NectarElix Collection</span>
+                <h1 className="font-serif text-4xl font-bold text-[#101d18] mt-1">Our Complete Catalog</h1>
+              </div>
+
+              {/* Standard Familiar Category Pills */}
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                {[
+                  { id: 'all', label: 'All Products' },
+                  { id: 'honey', label: 'Raw Honey' },
+                  { id: 'apothecary', label: 'Bee Apothecary' }
+                ].map(cat => (
+                  <button key={cat.id} onClick={() => setCatalogCategory(cat.id)} className={`px-5 py-2.5 rounded-xl text-xs font-black tracking-widest uppercase transition-all whitespace-nowrap ${catalogCategory === cat.id ? 'bg-[#101d18] text-white' : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'}`}>
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Live Search and Filter inputs */}
+            <div className="bg-white rounded-2xl border border-stone-200 p-4 mb-10 flex flex-col md:flex-row gap-4 items-center">
+              <div className="w-full flex items-center gap-3 bg-stone-50 px-4 py-3 rounded-xl border border-stone-200">
+                <span className="text-stone-400">🔍</span>
+                <input type="text" value={catalogSearch} onChange={(e) => setCatalogSearch(e.target.value)} placeholder="Search wildflower honey, honeycomb, propolis drops..." className="bg-transparent text-sm w-full focus:outline-none"/>
+                {catalogSearch && (
+                  <button onClick={() => setCatalogSearch('')} className="text-xs text-stone-400 hover:text-stone-900">Clear</button>
+                )}
+              </div>
+              <div className="text-xs text-stone-400 font-bold whitespace-nowrap">
+                Showing {filteredProducts.length} premium products
+              </div>
+            </div>
+
+            {/* Products results grid */}
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-20 bg-white rounded-3xl border border-stone-200 space-y-4">
+                <span className="text-4xl block">🔍</span>
+                <h3 className="font-serif text-xl font-bold">No results match your search</h3>
+                <p className="text-sm text-stone-400 max-w-sm mx-auto">Try refining your filter or looking up 'nectar', 'propolis' or 'honeycomb'.</p>
+                <button onClick={() => { setCatalogSearch(''); setCatalogCategory('all'); }} className="text-xs font-black uppercase tracking-wider text-amber-600">Reset Search</button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {filteredProducts.map(p => (
+                  <div key={p.id} className="group bg-white rounded-3xl border border-stone-200/60 p-6 flex flex-col justify-between hover:shadow-2xl hover:border-amber-400/50 transition-all duration-300 transform hover:-translate-y-1">
+                    <div onClick={() => { setViewProduct(p); setViewProductSize(p.sizes[0]); }} className="cursor-pointer space-y-4">
+                      <div className="bg-stone-50 rounded-2xl p-4 flex items-center justify-center relative overflow-hidden h-48 group-hover:bg-amber-50/20 transition-colors">
+                        {p.svg}
+                        <span className="absolute top-3 left-3 px-2.5 py-1 bg-[#101d18] text-white text-[9px] font-extrabold tracking-wider uppercase rounded-full">
+                          {p.badge}
+                        </span>
+                      </div>
+                      
+                      <div>
+                        <span className="text-[10px] font-black tracking-widest uppercase text-amber-600 block mb-1">
+                          {p.categoryLabel}
+                        </span>
+                        <h3 className="font-serif text-xl font-bold text-stone-900 group-hover:text-amber-600 transition-colors">
+                          {p.title}
+                        </h3>
+                        <p className="text-xs text-stone-500 line-clamp-2 mt-2 leading-relaxed">
+                          {p.tagline}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-stone-100 mt-6">
+                      <span className="text-lg font-black text-[#101d18]">₦{p.price.toLocaleString('en-NG')}</span>
+                      <button onClick={() => addToCart(p, p.sizes[0], 1)} className="px-4 py-2 bg-[#101d18] hover:bg-amber-500 hover:text-stone-950 text-white font-black tracking-widest text-[11px] uppercase rounded-xl transition-all duration-300">
+                        + Add to Cart
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ========================================================= */}
+        {/* 3. DEDICATED BRAND ABOUT US PAGE (Our Story) */}
+        {/* ========================================================= */}
+        {currentTab === 'about' && (
+          <section className="py-16 px-6 max-w-5xl mx-auto text-left space-y-16">
+            <div className="text-center space-y-3">
+              <span className="text-xs font-black tracking-widest uppercase text-amber-600">Pure Craft Stewardship</span>
+              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-[#101d18]">The Story of NectarElix</h1>
+              <p className="text-stone-500 max-w-xl mx-auto text-sm leading-relaxed">Bridging ancient apicultural science with raw, unheated, biological nutrition directly from the wild Nigerian landscapes.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <h3 className="font-serif text-2xl font-bold text-[#101d18]">Sustainably Wild Sourced</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">
+                  Our colonies are situated inside pristine, remote ecosystems across Nigeria, deep within chemical-free nature reserves. Our bees gather nectar exclusively from rich wildflower reserves of the Mambilla highlands and the dense tree canopies of Idanre forests.
+                </p>
+                <p className="text-stone-600 text-sm leading-relaxed">
+                  We rigorously test our extractions for compliance, ensuring our local operations strictly preserve the natural health enzymes that make raw honey so powerful.
+                </p>
+              </div>
+              <div className="bg-[#f6f5f0] p-8 rounded-2xl flex items-center justify-center border border-stone-200">
+                <div className="w-56 h-56 text-amber-500 animate-float">
+                  <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <polygon points="50,15 90,35 90,75 50,95 10,75 10,35" fill="none" stroke="currentColor"/>
+                    <circle cx="50" cy="55" r="16" fill="currentColor" fillOpacity="0.1"/>
+                    <path d="M50 20 L50 90 M20 55 L80 55" stroke="currentColor" opacity="0.3"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 border-t border-stone-200">
+              <div className="space-y-2">
+                <h4 className="font-serif font-bold text-lg text-[#101d18]">Beekeeper Protection</h4>
+                <p className="text-xs text-stone-500 leading-relaxed">We protect natural colonies from industrial commercial stress. Our hives operate sustainably with zero chemical treatments, additives, or synthetic feeds.</p>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-serif font-bold text-lg text-[#101d18]">Raw Living Enzymes</h4>
+                <p className="text-xs text-stone-500 leading-relaxed">Unlike typical table syrups, we never pasteurize or micro-filter. All bioactive minerals, propolis particles, and trace pollen elements are retained in their natural active state.</p>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-serif font-bold text-lg text-[#101d18]">NAFDAC Regulated</h4>
+                <p className="text-xs text-stone-500 leading-relaxed">Every bottle represents a compliant, premium batch. Customers can confidently use our honey for therapeutic, cosmetic, and nutritional needs.</p>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ========================================================= */}
+        {/* 4. DEDICATED CONTACT US PAGE */}
+        {/* ========================================================= */}
+        {currentTab === 'contact' && (
+          <section className="py-16 px-6 max-w-5xl mx-auto text-left">
+            <div className="text-center space-y-3 mb-16">
+              <span className="text-xs font-black tracking-widest uppercase text-amber-600">Get in Touch</span>
+              <h1 className="font-serif text-4xl md:text-5xl font-bold text-[#101d18]">Contact NectarElix</h1>
+              <p className="text-stone-500 max-w-xl mx-auto text-sm leading-relaxed">Have questions about order allocations, wholesale supply, or NAFDAC compliance? Drop us a line.</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              
+              {/* Message Submission Form */}
+              <form onSubmit={handleContactSubmit} className="lg:col-span-7 bg-white rounded-3xl p-8 border border-stone-200 shadow-xl shadow-stone-200/5 space-y-6">
+                <h3 className="font-serif text-xl font-bold text-[#101d18] border-b border-stone-100 pb-3">Send a Message</h3>
+                
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Your Name</label>
+                  <input type="text" name="name" value={contactForm.name} onChange={handleContactChange} required placeholder="Chinedu Okafor" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400"/>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Email Address</label>
+                  <input type="email" name="email" value={contactForm.email} onChange={handleContactChange} required placeholder="chinedu@gmail.com" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400"/>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Subject</label>
+                  <input type="text" name="subject" value={contactForm.subject} onChange={handleContactChange} required placeholder="Wholesale Inquiry / Partnership" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400"/>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Your Message</label>
+                  <textarea rows="5" name="message" value={contactForm.message} onChange={handleContactChange} required placeholder="Write details here..." className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 custom-scrollbar resize-none"></textarea>
+                </div>
+
+                <button type="submit" className="w-full py-4 bg-[#101d18] hover:bg-amber-500 hover:text-stone-950 text-white font-black tracking-widest uppercase rounded-xl transition-all duration-300 shadow-lg shadow-[#101d18]/5">
+                  Send Message
+                </button>
+              </form>
+
+              {/* Sidebar Info cards */}
+              <div className="lg:col-span-5 space-y-8">
+                <div className="bg-[#101d18] text-white p-6 rounded-3xl space-y-4">
+                  <span className="text-[10px] font-black tracking-widest uppercase text-amber-400 block">Current Status</span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-3.5 h-3.5 bg-emerald-500 rounded-full animate-ping"></span>
+                    <span className="font-bold text-sm">Apiculturists Online</span>
+                  </div>
+                  <p className="text-xs text-stone-400 leading-relaxed">Our support lines are fully staffed. Average response interval: ~15 mins.</p>
+                </div>
+
+                <div className="border border-stone-200 bg-white p-6 rounded-3xl space-y-4">
+                  <h4 className="font-serif font-bold text-lg text-[#101d18]">Contact Details</h4>
+                  
+                  <div className="space-y-3 text-xs text-stone-600 font-medium">
+                    <div className="flex gap-2">
+                      <span>📍</span>
+                      <span>Plot 142, Aminu Kano Crescent, Wuse II, Abuja, Nigeria</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <span>✉</span>
+                      <span>care@nectarelix.ng</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <span>☎</span>
+                      <span>+234 (0) 803 123 4567</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        )}
+
+        {/* ========================================================= */}
+        {/* 5. CHECKOUT VIEW PAGE (Two-Column Standard checkout form) */}
+        {/* ========================================================= */}
+        {currentTab === 'checkout' && (
+          <section className="py-16 px-6 max-w-7xl mx-auto text-left">
+            <button onClick={() => setCurrentTab('shop')} className="text-xs font-black tracking-widest uppercase text-amber-600 hover:text-amber-700 flex items-center gap-2 mb-8">
+              &larr; Continue shopping
+            </button>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+              
+              {/* Left Column: Traditional Billing & Shipping Forms */}
+              <form onSubmit={handlePlaceOrder} className="lg:col-span-7 bg-white rounded-3xl p-8 border border-stone-200/80 space-y-6 shadow-xl shadow-stone-200/10">
+                <h3 className="font-serif text-2xl font-bold text-[#101d18] border-b border-stone-100 pb-4">Delivery & Billing</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Full Name</label>
+                    <input type="text" name="name" value={checkoutForm.name} onChange={handleInputChange} required placeholder="Jane Doe" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors"/>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Email Address</label>
+                    <input type="email" name="email" value={checkoutForm.email} onChange={handleInputChange} required placeholder="jane@example.com" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors"/>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Phone Number (Active)</label>
+                    <input type="tel" name="phone" value={checkoutForm.phone} onChange={handleInputChange} required placeholder="+234 803 123 4567" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors"/>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">City</label>
+                    <input type="text" name="city" value={checkoutForm.city} onChange={handleInputChange} required placeholder="Ikeja / Garki" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors"/>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Delivery Address</label>
+                  <input type="text" name="address" value={checkoutForm.address} onChange={handleInputChange} required placeholder="Plot 10, Admiralty Way, Lekki Phase 1" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors"/>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">State / Region (Nigeria)</label>
+                  <select name="stateRegion" value={checkoutForm.stateRegion} onChange={handleInputChange} className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors">
+                    <option value="Lagos">Lagos State</option>
+                    <option value="Abuja">Abuja FCT</option>
+                    <option value="Rivers">Rivers State</option>
+                    <option value="Oyo">Oyo State</option>
+                    <option value="Delta">Delta State</option>
+                    <option value="Kano">Kano State</option>
+                    <option value="Enugu">Enugu State</option>
+                    <option value="Kaduna">Kaduna State</option>
+                    <option value="Other">Other State (Standard Dispatch)</option>
+                  </select>
+                </div>
+
+                {/* Secure Card Payment Section with local references */}
+                <div className="space-y-4 pt-6 border-t border-stone-100">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-serif text-2xl font-bold text-[#101d18]">Payment Details</h3>
+                    <span className="text-[10px] font-black uppercase text-amber-600 bg-amber-50 px-2 py-1 rounded">Secured via Paystack / Flutterwave</span>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Card Number</label>
+                    <div className="relative">
+                      <input type="text" name="cardNumber" value={checkoutForm.cardNumber} onChange={handleInputChange} required placeholder="5061 2222 3333 4444" className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-4 pr-12 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors"/>
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400">💳</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">Expiry (MM/YY)</label>
+                      <input type="text" name="expiry" value={checkoutForm.expiry} onChange={handleInputChange} required placeholder="12/28" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors"/>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-black tracking-widest uppercase text-stone-400">CVV</label>
+                      <input type="text" name="cvv" value={checkoutForm.cvv} onChange={handleInputChange} required placeholder="123" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 transition-colors"/>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" className="w-full py-4 bg-[#101d18] hover:bg-amber-500 hover:text-stone-950 text-white font-black tracking-widest uppercase rounded-xl transition-all duration-300 mt-6 shadow-xl shadow-[#101d18]/10 text-center">
+                  Place Order &bull; ₦{cartTotal.toLocaleString('en-NG')}
+                </button>
+              </form>
+
+              {/* Right Column: Order Cart Summary */}
+              <div className="lg:col-span-5 bg-white rounded-3xl p-8 border border-stone-200 shadow-xl shadow-stone-200/10 space-y-6">
+                <h3 className="font-serif text-2xl font-bold text-[#101d18] border-b border-stone-100 pb-4">Order Summary</h3>
+                
+                {cart.length === 0 ? (
+                  <p className="text-sm text-stone-400">Your cart is empty.</p>
+                ) : (
+                  <div className="space-y-4 max-h-72 overflow-y-auto custom-scrollbar pr-2">
+                    {cart.map(item => (
+                      <div key={`${item.product.id}-${item.size}`} className="flex justify-between items-center pb-3 border-b border-stone-100">
+                        <div className="flex gap-4 items-center">
+                          <div className="w-12 h-12 bg-stone-50 rounded-lg flex items-center justify-center p-1 border">
+                            {item.product.svg}
+                          </div>
+                          <div>
+                            <h4 className="font-serif text-xs font-bold text-stone-900">{item.product.title}</h4>
+                            <span className="text-[10px] text-stone-400 block">{item.size} &times; {item.quantity}</span>
+                          </div>
+                        </div>
+                        <span className="text-sm font-bold text-[#101d18]">₦{(item.product.price * item.quantity).toLocaleString('en-NG')}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Promo application block */}
+                <form onSubmit={handleApplyPromo} className="flex gap-2">
+                  <input type="text" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} placeholder="Promo Code (GOLDEN20)" className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-amber-400"/>
+                  <button type="submit" className="px-5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black tracking-widest text-xs uppercase rounded-xl transition-colors">Apply</button>
+                </form>
+
+                {/* Totals block */}
+                <div className="space-y-3 pt-4 border-t border-stone-100 text-sm">
+                  <div className="flex justify-between text-stone-500">
+                    <span>Subtotal</span>
+                    <span>₦{cartSubtotal.toLocaleString('en-NG')}</span>
+                  </div>
+                  {discountPercent > 0 && (
+                    <div className="flex justify-between text-emerald-600 font-bold">
+                      <span>Promo Discount (20%)</span>
+                      <span>-₦{discountAmount.toLocaleString('en-NG')}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-stone-500">
+                    <span>Shipping Allocation</span>
+                    <span>{deliveryFee === 0 ? "FREE" : `₦${deliveryFee.toLocaleString('en-NG')}`}</span>
+                  </div>
+                  <div className="flex justify-between items-end pt-3 border-t border-stone-100">
+                    <span className="font-serif font-bold text-lg text-[#101d18]">Total Due</span>
+                    <span className="text-2xl font-black text-[#101d18]">₦{cartTotal.toLocaleString('en-NG')}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        )}
+
+        {/* ========================================================= */}
+        {/* 6. SUCCESS TRANSACTION CONFIRMATION VIEW */}
+        {/* ========================================================= */}
+        {currentTab === 'success' && lastOrder && (
+          <section className="py-24 px-6 max-w-2xl mx-auto text-center">
+            <div className="bg-white rounded-3xl border border-stone-200 p-8 md:p-12 space-y-8 shadow-2xl relative overflow-hidden">
+              <div className="absolute -top-12 -left-12 w-32 h-32 bg-amber-400/10 rounded-full blur-xl"></div>
+              
+              <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto text-3xl shadow-lg border border-emerald-100">
+                ✓
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-xs font-black tracking-widest uppercase text-amber-600">Reservation Locked</span>
+                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#101d18]">Order Placed Successfully!</h1>
+                <p className="text-sm text-stone-500">Thank you for sponsoring our organic local apiaries. Your receipt and dispatch logs are recorded below.</p>
+              </div>
+
+              {/* Receipt Summary details */}
+              <div className="bg-stone-50 rounded-2xl p-6 text-left border border-stone-200/60 space-y-4">
+                <div className="flex justify-between border-b border-stone-200 pb-3 text-xs font-bold text-stone-500 uppercase tracking-wider">
+                  <span>Receipt registry ID</span>
+                  <span className="text-[#101d18]">{lastOrder.id}</span>
+                </div>
+
+                <div className="space-y-2 text-sm text-stone-700">
+                  <div className="flex justify-between">
+                    <span>Consignee</span>
+                    <span className="font-bold text-[#101d18]">{lastOrder.customer.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Address</span>
+                    <span className="font-bold text-[#101d18] truncate max-w-[200px]">{lastOrder.customer.address}, {lastOrder.customer.city} ({lastOrder.customer.stateRegion})</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Phone number</span>
+                    <span className="font-bold text-[#101d18]">{lastOrder.customer.phone}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Contact Email</span>
+                    <span className="font-bold text-[#101d18]">{lastOrder.customer.email}</span>
+                  </div>
+                </div>
+
+                <div className="border-t border-stone-200 pt-3 text-sm">
+                  {lastOrder.items.map(it => (
+                    <div key={`${it.product.id}-${it.size}`} className="flex justify-between text-xs py-1">
+                      <span className="text-stone-600">{it.product.title} ({it.size}) &times; {it.quantity}</span>
+                      <span className="font-bold text-[#101d18]">₦{(it.product.price * it.quantity).toLocaleString('en-NG')}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {lastOrder.discount > 0 && (
+                  <div className="flex justify-between text-xs text-emerald-600 font-bold">
+                    <span>Promo Discount (20%)</span>
+                    <span>-₦{lastOrder.discount.toLocaleString('en-NG')}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-between text-xs text-stone-500">
+                  <span>Shipping Dispatch</span>
+                  <span>{lastOrder.delivery === 0 ? "FREE" : `₦${lastOrder.delivery.toLocaleString('en-NG')}`}</span>
+                </div>
+
+                <div className="flex justify-between items-end pt-3 border-t border-stone-200 text-[#101d18]">
+                  <span className="font-serif font-bold text-base">Total Charged</span>
+                  <span className="text-xl font-black">₦{lastOrder.total.toLocaleString('en-NG')}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button onClick={() => setCurrentTab('home')} className="flex-1 py-4 bg-[#101d18] hover:bg-[#1a2e26] text-white font-black tracking-widest uppercase rounded-xl transition-colors">
+                  Return to Home
+                </button>
+                <button onClick={() => window.print()} className="flex-1 py-4 bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 font-bold tracking-widest uppercase rounded-xl transition-colors">
+                  Print Invoice
+                </button>
+              </div>
+
+              <p className="text-[10px] text-stone-400">An order confirmation message has been forwarded to <strong>{lastOrder.customer.email}</strong>. Nationwide delivery typically occurs within 1-3 business days.</p>
+            </div>
+          </section>
+        )}
+      </main>
+
+      {/* --- PERSISTENT FOOTER --- */}
+      <footer className="bg-[#101d18] text-white pt-16 pb-12 px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-12 border-b border-white/10">
+          <div className="lg:col-span-4 space-y-6 text-left">
+            <div className="flex items-center gap-3 animate-float">
+              <span className="text-lg font-black tracking-tight">NectarElix Nigeria</span>
+            </div>
+            <p className="text-stone-400 text-sm leading-relaxed max-w-sm">
+              Supporting forest biodiversity and colony wellness across Taraba, Ondo, and Cross River states since 2018. Cold gravity-filtered micro-nutrition direct from source.
+            </p>
+          </div>
+
+          <div className="lg:col-span-3 space-y-4 text-left">
+            <h4 className="text-xs font-black tracking-widest uppercase text-amber-400">Discover Products</h4>
+            <ul className="space-y-2 text-sm text-stone-400 font-medium text-left">
+              <li><button onClick={() => { setCatalogCategory('honey'); setCurrentTab('shop'); }} class="hover:text-amber-400 transition-colors">Raw Mambilla Nectar</button></li>
+              <li><button onClick={() => { setCatalogCategory('honey'); setCurrentTab('shop'); }} class="hover:text-amber-400 transition-colors">Raw Idanre Comb Cuts</button></li>
+              <li><button onClick={() => { setCatalogCategory('apothecary'); setCurrentTab('shop'); }} class="hover:text-amber-400 transition-colors">Rainforest Propolis Drops</button></li>
+              <li><button onClick={() => { setCatalogCategory('apothecary'); setCurrentTab('shop'); }} class="hover:text-amber-400 transition-colors">Royal Jelly Glow Elixir</button></li>
+            </ul>
+          </div>
+
+          <div className="lg:col-span-5 space-y-4 text-left">
+            <h4 className="text-xs font-black tracking-widest uppercase text-amber-400">Seasonal Bulletins</h4>
+            <p className="text-stone-400 text-sm font-medium">Join our allocation alert list to be notified of fresh forest jar harvests across Nigerian apiaries.</p>
+            <form onSubmit={(e) => { e.preventDefault(); triggerToast("Successfully added to our reservation bulletin!"); e.target.reset(); }} className="flex gap-2">
+              <input type="email" required placeholder="Enter email address" className="w-full bg-white/5 border border-white/10 px-4 py-3 text-sm rounded-xl focus:outline-none focus:border-amber-400 text-white"/>
+              <button type="submit" className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-black tracking-widest text-xs uppercase px-6 rounded-xl transition-colors">Join</button>
+            </form>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-stone-500 gap-4">
+          <span>&copy; 2026 NectarElix Nigeria. Harvested sustainably. All rights reserved.</span>
+          <div className="flex gap-6">
+            <button onClick={() => setCurrentTab('about')} className="hover:text-stone-300">Our Story</button>
+            <button onClick={() => setCur
