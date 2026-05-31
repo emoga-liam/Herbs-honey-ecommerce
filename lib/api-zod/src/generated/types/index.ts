@@ -9,6 +9,7 @@
 export * from './adminLogout200';
 export * from './adminStats';
 export * from './adminUser';
+export * from './contactFormInput';
 export * from './healthStatus';
 export * from './listOrdersParams';
 export * from './listProductsParams';
@@ -21,4 +22,7 @@ export * from './orderStatusUpdate';
 export * from './product';
 export * from './productInput';
 export * from './productUpdate';
+export * from './siteSettings';
+export * from './siteSettingsUpdate';
 export * from './statusCount';
+export * from './submitContactForm200';

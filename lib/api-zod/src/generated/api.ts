@@ -310,3 +310,72 @@ export const GetAdminStatsResponse = zod.object({
 })
 
 
+/**
+ * @summary Get all site settings (public)
+ */
+export const GetSiteSettingsResponse = zod.object({
+  "heroTitle": zod.string(),
+  "heroSubtitle": zod.string(),
+  "heroCtaText": zod.string(),
+  "heroCtaSecondaryText": zod.string(),
+  "companyTagline": zod.string(),
+  "aboutText": zod.string(),
+  "contactPhone": zod.string(),
+  "contactEmail": zod.string(),
+  "contactAddress": zod.string(),
+  "whatsappNumber": zod.string(),
+  "footerText": zod.string(),
+  "announcementBanner": zod.string()
+})
+
+
+/**
+ * @summary Update site settings (admin)
+ */
+export const UpdateSiteSettingsBody = zod.object({
+  "heroTitle": zod.string().optional(),
+  "heroSubtitle": zod.string().optional(),
+  "heroCtaText": zod.string().optional(),
+  "heroCtaSecondaryText": zod.string().optional(),
+  "companyTagline": zod.string().optional(),
+  "aboutText": zod.string().optional(),
+  "contactPhone": zod.string().optional(),
+  "contactEmail": zod.string().optional(),
+  "contactAddress": zod.string().optional(),
+  "whatsappNumber": zod.string().optional(),
+  "footerText": zod.string().optional(),
+  "announcementBanner": zod.string().optional()
+})
+
+export const UpdateSiteSettingsResponse = zod.object({
+  "heroTitle": zod.string(),
+  "heroSubtitle": zod.string(),
+  "heroCtaText": zod.string(),
+  "heroCtaSecondaryText": zod.string(),
+  "companyTagline": zod.string(),
+  "aboutText": zod.string(),
+  "contactPhone": zod.string(),
+  "contactEmail": zod.string(),
+  "contactAddress": zod.string(),
+  "whatsappNumber": zod.string(),
+  "footerText": zod.string(),
+  "announcementBanner": zod.string()
+})
+
+
+/**
+ * @summary Submit contact form message
+ */
+export const SubmitContactFormBody = zod.object({
+  "name": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string().optional(),
+  "subject": zod.string(),
+  "message": zod.string()
+})
+
+export const SubmitContactFormResponse = zod.object({
+  "message": zod.string()
+})
+
+

@@ -18,6 +18,8 @@ tags:
     description: Admin authentication
   - name: admin
     description: Admin dashboard
+  - name: settings
+    description: Site settings (CMS)
 paths:
   /healthz:
     get:
@@ -325,6 +327,62 @@ paths:
         "401":
           description: Unauthorized
 
+  /settings:
+    get:
+      operationId: getSiteSettings
+      tags: [settings]
+      summary: Get all site settings (public)
+      responses:
+        "200":
+          description: Site settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteSettings"
+    patch:
+      operationId: updateSiteSettings
+      tags: [settings]
+      summary: Update site settings (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteSettingsUpdate"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteSettings"
+        "401":
+          description: Unauthorized
+
+  /contact:
+    post:
+      operationId: submitContactForm
+      tags: [settings]
+      summary: Submit contact form message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactFormInput"
+      responses:
+        "200":
+          description: Message received
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+
 components:
   schemas:
     HealthStatus:
@@ -590,3 +648,91 @@ components:
       required:
         - status
         - count
+
+    SiteSettings:
+      type: object
+      properties:
+        heroTitle:
+          type: string
+        heroSubtitle:
+          type: string
+        heroCtaText:
+          type: string
+        heroCtaSecondaryText:
+          type: string
+        companyTagline:
+          type: string
+        aboutText:
+          type: string
+        contactPhone:
+          type: string
+        contactEmail:
+          type: string
+        contactAddress:
+          type: string
+        whatsappNumber:
+          type: string
+        footerText:
+          type: string
+        announcementBanner:
+          type: string
+      required:
+        - heroTitle
+        - heroSubtitle
+        - heroCtaText
+        - heroCtaSecondaryText
+        - companyTagline
+        - aboutText
+        - contactPhone
+        - contactEmail
+        - contactAddress
+        - whatsappNumber
+        - footerText
+        - announcementBanner
+
+    SiteSettingsUpdate:
+      type: object
+      properties:
+        heroTitle:
+          type: string
+        heroSubtitle:
+          type: string
+        heroCtaText:
+          type: string
+        heroCtaSecondaryText:
+          type: string
+        companyTagline:
+          type: string
+        aboutText:
+          type: string
+        contactPhone:
+          type: string
+        contactEmail:
+          type: string
+        contactAddress:
+          type: string
+        whatsappNumber:
+          type: string
+        footerText:
+          type: string
+        announcementBanner:
+          type: string
+
+    ContactFormInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+      required:
+        - name
+        - email
+        - subject
+        - message

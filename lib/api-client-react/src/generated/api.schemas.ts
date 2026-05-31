@@ -120,6 +120,44 @@ export interface AdminStats {
   ordersByStatus: StatusCount[];
 }
 
+export interface SiteSettings {
+  heroTitle: string;
+  heroSubtitle: string;
+  heroCtaText: string;
+  heroCtaSecondaryText: string;
+  companyTagline: string;
+  aboutText: string;
+  contactPhone: string;
+  contactEmail: string;
+  contactAddress: string;
+  whatsappNumber: string;
+  footerText: string;
+  announcementBanner: string;
+}
+
+export interface SiteSettingsUpdate {
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroCtaText?: string;
+  heroCtaSecondaryText?: string;
+  companyTagline?: string;
+  aboutText?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  contactAddress?: string;
+  whatsappNumber?: string;
+  footerText?: string;
+  announcementBanner?: string;
+}
+
+export interface ContactFormInput {
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+}
+
 export type ListProductsParams = {
 flavor?: string;
 type?: string;
@@ -132,6 +170,10 @@ limit?: number;
 };
 
 export type AdminLogout200 = {
+  message: string;
+};
+
+export type SubmitContactForm200 = {
   message: string;
 };
 

@@ -3,15 +3,17 @@ import { Link, useLocation } from "wouter";
 import { formatNaira } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Package, ShoppingCart, TrendingUp, Clock, LogOut, LayoutDashboard, Archive } from "lucide-react";
+import {
+  Package, ShoppingCart, TrendingUp, Clock,
+  LogOut, LayoutDashboard, Archive, Settings2, Globe,
+} from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
   title: string;
-  adminName?: string;
 }
 
-export function AdminLayout({ children, title, adminName }: AdminLayoutProps) {
+export function AdminLayout({ children, title }: AdminLayoutProps) {
   const [location] = useLocation();
   const [, navigate] = useLocation();
   const logout = useAdminLogout();
@@ -20,6 +22,7 @@ export function AdminLayout({ children, title, adminName }: AdminLayoutProps) {
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/products", label: "Products", icon: Package },
     { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+    { href: "/admin/site-settings", label: "Site Settings", icon: Settings2 },
   ];
 
   return (
@@ -27,7 +30,7 @@ export function AdminLayout({ children, title, adminName }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside className="w-56 flex-shrink-0 bg-sidebar text-sidebar-foreground flex flex-col border-r border-sidebar-border">
         <div className="p-5 border-b border-sidebar-border">
-          <h1 className="font-serif font-bold text-lg text-sidebar-primary">FFG Foods</h1>
+          <h1 className="font-serif font-bold text-lg text-sidebar-primary leading-tight">FFG Foods</h1>
           <p className="text-xs text-sidebar-foreground/60 mt-0.5">Admin Panel</p>
         </div>
         <nav className="flex-1 p-3 space-y-1">
@@ -43,28 +46,29 @@ export function AdminLayout({ children, title, adminName }: AdminLayoutProps) {
               </div>
             </Link>
           ))}
+          <div className="pt-2 border-t border-sidebar-border/50 mt-2">
+            <Link href="/">
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/50 hover:bg-sidebar-accent/40 hover:text-sidebar-accent-foreground transition-colors cursor-pointer">
+                <Globe className="h-4 w-4" />
+                View Store
+              </div>
+            </Link>
+          </div>
         </nav>
         <div className="p-3 border-t border-sidebar-border">
-          {adminName && <p className="text-xs text-sidebar-foreground/50 px-3 mb-2">{adminName}</p>}
           <button
             onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/admin/login") })}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-red-900/30 hover:text-red-400 transition-colors w-full"
           >
-            <LogOut className="h-4 w-4" />
-            Sign Out
+            <LogOut className="h-4 w-4" /> Sign Out
           </button>
         </div>
       </aside>
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-border flex items-center px-6 gap-3 bg-card">
+        <header className="h-14 border-b border-border flex items-center px-6 bg-card">
           <h2 className="font-serif font-bold text-lg">{title}</h2>
-          <div className="ml-auto">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/">View Store</Link>
-            </Button>
-          </div>
         </header>
         <main className="flex-1 p-6 overflow-auto">{children}</main>
       </div>
@@ -111,12 +115,29 @@ export default function AdminDashboardPage() {
                 <card.icon className={`h-4 w-4 ${card.color}`} />
               </div>
             </div>
-            <div className="text-2xl font-bold text-foreground">{card.value}</div>
+            <div className="text-2xl font-bold">{card.value}</div>
           </div>
         ))}
       </div>
 
-      {/* Status Breakdown */}
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        {[
+          { href: "/admin/products", label: "Manage Products", icon: Package, desc: "Add, edit, or remove products" },
+          { href: "/admin/orders", label: "View Orders", icon: ShoppingCart, desc: "Track and update order status" },
+          { href: "/admin/site-settings", label: "Edit Site Content", icon: Settings2, desc: "Customize homepage, contact & more" },
+        ].map(({ href, label, icon: Icon, desc }) => (
+          <Link key={href} href={href}>
+            <div className="rounded-xl bg-card border border-border p-5 hover:border-primary/30 hover:shadow-md transition-all cursor-pointer">
+              <Icon className="h-5 w-5 text-primary mb-3" />
+              <h3 className="font-semibold text-sm mb-1">{label}</h3>
+              <p className="text-xs text-muted-foreground">{desc}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Status breakdown */}
       {stats?.ordersByStatus && stats.ordersByStatus.length > 0 && (
         <div className="rounded-xl bg-card border border-border p-5 mb-6">
           <h3 className="font-serif font-bold text-lg mb-4">Orders by Status</h3>
@@ -130,13 +151,11 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {/* Recent Orders */}
+      {/* Recent orders */}
       <div className="rounded-xl bg-card border border-border p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-serif font-bold text-lg">Recent Orders</h3>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/admin/orders">View All</Link>
-          </Button>
+          <Button asChild variant="outline" size="sm"><Link href="/admin/orders">View All</Link></Button>
         </div>
         {!stats?.recentOrders?.length ? (
           <p className="text-muted-foreground text-sm py-4 text-center">No orders yet</p>
@@ -149,12 +168,7 @@ export default function AdminDashboardPage() {
                   <div className="text-xs text-muted-foreground">{new Date(order.createdAt).toLocaleDateString("en-NG")}</div>
                 </div>
                 <div className="text-sm font-bold text-primary">{formatNaira(order.totalKobo)}</div>
-                <Badge variant="outline" className={`text-xs ${STATUS_COLORS[order.status] ?? ""}`}>
-                  {order.status}
-                </Badge>
-                <Button asChild variant="ghost" size="sm">
-                  <Link href={`/admin/orders`}>View</Link>
-                </Button>
+                <Badge variant="outline" className={`text-xs ${STATUS_COLORS[order.status] ?? ""}`}>{order.status}</Badge>
               </div>
             ))}
           </div>
