@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -47,99 +46,86 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ─── Dark premium theme (default) ─────────────────────────────── */
 :root {
-  --background: 42 30% 97%;
-  --foreground: 25 30% 12%;
-  --border: 35 20% 85%;
-  --input: 35 20% 82%;
-  --ring: 36 95% 42%;
-  --card: 40 40% 98%;
-  --card-foreground: 25 30% 12%;
-  --popover: 40 40% 98%;
-  --popover-foreground: 25 30% 12%;
-  --primary: 36 95% 48%;
-  --primary-foreground: 25 30% 10%;
-  --secondary: 145 40% 92%;
-  --secondary-foreground: 145 50% 20%;
-  --muted: 40 25% 93%;
-  --muted-foreground: 25 15% 45%;
-  --accent: 36 60% 90%;
-  --accent-foreground: 36 95% 25%;
-  --destructive: 0 72% 51%;
-  --destructive-foreground: 0 0% 98%;
-  --chart-1: 36 95% 48%;
-  --chart-2: 145 50% 40%;
-  --chart-3: 0 65% 50%;
-  --chart-4: 260 55% 55%;
-  --chart-5: 200 65% 45%;
-  --sidebar: 25 20% 15%;
-  --sidebar-foreground: 40 30% 92%;
-  --sidebar-border: 25 15% 22%;
-  --sidebar-primary: 36 95% 48%;
-  --sidebar-primary-foreground: 25 30% 10%;
-  --sidebar-accent: 25 20% 22%;
-  --sidebar-accent-foreground: 40 30% 88%;
-  --radius: 0.625rem;
-}
-
-.dark {
-  --background: 25 25% 8%;
-  --foreground: 40 30% 92%;
-  --border: 25 15% 20%;
-  --input: 25 15% 22%;
+  --background: 133 38% 6%;
+  --foreground: 43 40% 90%;
+  --border: 133 30% 15%;
+  --input: 133 28% 14%;
   --ring: 36 95% 52%;
-  --card: 25 22% 11%;
-  --card-foreground: 40 30% 92%;
-  --popover: 25 22% 11%;
-  --popover-foreground: 40 30% 92%;
+  --card: 133 32% 10%;
+  --card-foreground: 43 40% 88%;
+  --popover: 133 32% 10%;
+  --popover-foreground: 43 40% 88%;
   --primary: 36 95% 52%;
-  --primary-foreground: 25 30% 8%;
-  --secondary: 145 30% 18%;
-  --secondary-foreground: 145 50% 80%;
-  --muted: 25 20% 16%;
-  --muted-foreground: 40 15% 55%;
-  --accent: 36 40% 20%;
+  --primary-foreground: 133 38% 6%;
+  --secondary: 133 25% 16%;
+  --secondary-foreground: 43 40% 80%;
+  --muted: 133 28% 13%;
+  --muted-foreground: 43 20% 52%;
+  --accent: 36 50% 18%;
   --accent-foreground: 36 95% 70%;
-  --destructive: 0 65% 50%;
+  --destructive: 0 65% 52%;
   --destructive-foreground: 0 0% 98%;
   --chart-1: 36 95% 52%;
   --chart-2: 145 55% 50%;
-  --sidebar: 25 25% 6%;
-  --sidebar-foreground: 40 30% 88%;
-  --sidebar-border: 25 15% 14%;
+  --chart-3: 0 65% 50%;
+  --chart-4: 260 55% 60%;
+  --chart-5: 200 65% 50%;
+  --sidebar: 133 42% 4%;
+  --sidebar-foreground: 43 35% 82%;
+  --sidebar-border: 133 30% 10%;
   --sidebar-primary: 36 95% 52%;
-  --sidebar-primary-foreground: 25 30% 8%;
-  --sidebar-accent: 25 20% 14%;
-  --sidebar-accent-foreground: 40 30% 85%;
+  --sidebar-primary-foreground: 133 38% 6%;
+  --sidebar-accent: 133 35% 9%;
+  --sidebar-accent-foreground: 43 35% 85%;
+  --radius: 0.625rem;
 }
 
 @layer base {
   * { @apply border-border; }
+  html { color-scheme: dark; }
   body { @apply font-sans antialiased bg-background text-foreground; }
   h1, h2, h3 { letter-spacing: -0.01em; }
 }
 
 @layer utilities {
-  .font-cormorant { font-family: 'Cormorant Garamond', Georgia, serif; }
+  .font-cormorant { font-family: 'Cormorant Garamond', Georgia, serif !important; }
 
   @keyframes float {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-8px) rotate(0.5deg); }
+    50% { transform: translateY(-10px) rotate(0.5deg); }
   }
   @keyframes float-subtle {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-3px); }
+    50% { transform: translateY(-4px); }
   }
-  @keyframes cart-pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-    70% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(245,158,11,0.2); }
+    50% { box-shadow: 0 0 40px rgba(245,158,11,0.5); }
+  }
+
   .animate-float { animation: float 6s ease-in-out infinite; }
   .animate-float-subtle { animation: float-subtle 3s ease-in-out infinite; }
-  .animate-cart-pulse { animation: cart-pulse 0.4s ease-out; }
+  .animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
 
+  .gold-gradient {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #f59e0b 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glass-card {
+    background: rgba(26, 46, 30, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+  }
   .custom-scrollbar::-webkit-scrollbar { width: 6px; }
   .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #3d2b00; border-radius: 10px; }
 }

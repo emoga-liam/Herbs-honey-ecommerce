@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { db, siteSettings } from "@workspace/db";
-import { eq } from "drizzle-orm";
 
 const router = Router();
 
@@ -10,15 +9,14 @@ const DEFAULTS: Record<string, string> = {
     "Premium herbs-infused honey sachets in four delicious flavors — Original, Hibiscus, Ginger Lemon, and Cinnamon Lemon. Each 15ml sachet brings nature's goodness to your cup.",
   heroCtaText: "Shop All Products",
   heroCtaSecondaryText: "Buy in Bulk",
-  companyTagline: "Farm Fresh Grocery · Abuja, Nigeria",
+  companyTagline: "Grich20 · Abuja, Nigeria",
   aboutText:
-    "Farm Fresh Grocery (FFG) is a proudly Nigerian brand committed to delivering nature's best. Our herbs-infused honey sachets are distributed across Abuja by GRICH20 International General Services Limited, ensuring quality and freshness in every order.",
+    "Grich20 International General Services Limited is a proudly Nigerian company committed to delivering nature's best. Our herbs-infused honey sachets are crafted with premium natural ingredients and distributed fresh across Abuja.",
   contactPhone: "09061602332",
-  contactEmail: "info@ffgfoods.com",
+  contactEmail: "info@grich20.com",
   contactAddress: "68 Trade More Avenue, Lugbe, Abuja",
   whatsappNumber: "+2349061602332",
-  footerText:
-    "Distributed by GRICH20 International General Services Limited. All rights reserved.",
+  footerText: "Grich20 International General Services Limited. All rights reserved.",
   announcementBanner: "",
 };
 

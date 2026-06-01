@@ -17,12 +17,12 @@ export default function LoginPage() {
 
   if (!isConfigured) {
     return (
-      <div className="min-h-screen bg-[#0d1b12] flex items-center justify-center p-4">
-        <div className="bg-[#1a2e1e] border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
-          <img src={grich20Logo} alt="GRICH20" className="h-16 mx-auto mb-4 rounded-xl" />
-          <h2 className="font-serif text-2xl text-amber-400 mb-2">Authentication Not Set Up</h2>
+      <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
+        <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
+          <img src={grich20Logo} alt="Grich20" className="h-16 mx-auto mb-4 rounded-xl" />
+          <h2 className="font-cormorant text-2xl text-amber-400 mb-2">Authentication Not Set Up</h2>
           <p className="text-amber-200/60 text-sm mb-4">
-            Firebase authentication hasn't been configured yet. Add your Firebase credentials to enable customer accounts.
+            Firebase authentication hasn't been configured yet.
           </p>
           <Button asChild variant="outline" className="border-amber-700 text-amber-400">
             <Link href="/">Back to Store</Link>
@@ -55,21 +55,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d1b12] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.12),transparent_70%)]" />
+      <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/">
-            <img src={grich20Logo} alt="GRICH20" className="h-20 mx-auto mb-3 rounded-2xl cursor-pointer hover:opacity-80 transition-opacity" />
+            <div className="inline-flex flex-col items-center gap-3 cursor-pointer">
+              <div className="relative">
+                <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
+                <img src={grich20Logo} alt="Grich20" className="relative h-20 w-20 rounded-2xl object-cover ring-1 ring-amber-600/40 shadow-2xl hover:ring-amber-500/60 transition-all" />
+              </div>
+              <div>
+                <h1 className="font-cormorant font-bold text-3xl text-amber-400">Welcome Back</h1>
+                <p className="text-amber-200/40 text-sm mt-0.5">Sign in to your Grich20 account</p>
+              </div>
+            </div>
           </Link>
-          <h1 className="font-serif text-3xl text-amber-400 mb-1">Welcome Back</h1>
-          <p className="text-amber-200/50 text-sm">Sign in to your FFG Foods account</p>
         </div>
 
-        <div className="bg-[#1a2e1e] border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
           <Button
             onClick={handleGoogle}
             variant="outline"
-            className="w-full border-amber-700/50 text-amber-200 bg-transparent hover:bg-amber-900/20 mb-6 gap-3"
+            className="w-full border-amber-700/50 text-amber-200 bg-transparent hover:bg-amber-900/20 mb-6 gap-3 rounded-xl"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -82,30 +90,30 @@ export default function LoginPage() {
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-amber-900/30" /></div>
-            <div className="relative flex justify-center text-xs text-amber-200/40"><span className="bg-[#1a2e1e] px-3">or continue with email</span></div>
+            <div className="relative flex justify-center text-xs text-amber-200/30"><span className="bg-[#0f1e12] px-3">or continue with email</span></div>
           </div>
 
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-amber-200/70">Email</Label>
+              <Label className="text-amber-200/60 text-sm">Email</Label>
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com" required
-                className="bg-[#0d1b12] border-amber-900/40 text-amber-100 placeholder:text-amber-200/30" />
+                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-amber-200/70">Password</Label>
+              <Label className="text-amber-200/60 text-sm">Password</Label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••" required
-                className="bg-[#0d1b12] border-amber-900/40 text-amber-100 placeholder:text-amber-200/30" />
+                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
             </div>
-            <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-[#0d1b12] font-bold" disabled={submitting || isLoading}>
+            <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl" disabled={submitting || isLoading}>
               {submitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
-          <p className="text-center text-sm text-amber-200/50 mt-6">
+          <p className="text-center text-sm text-amber-200/40 mt-6">
             Don't have an account?{" "}
-            <Link href="/register" className="text-amber-400 hover:text-amber-300 font-medium">Create one</Link>
+            <Link href="/register" className="text-amber-400 hover:text-amber-300 font-semibold">Create one</Link>
           </p>
         </div>
       </div>

@@ -4,19 +4,53 @@ import { useSettings } from "@/contexts/settings-context";
 import { Layout } from "@/components/layout";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import bannerImg from "@assets/a19fa264-b1a2-4592-a852-d2e2934d4852_1780225496305.jpeg";
 import boxImg from "@assets/1bb59fff-c60a-495a-a645-92b6f7c19b0c_1780225496305.jpeg";
 import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
 
 const BENEFITS = [
-  { flavor: "Original Honey", color: "bg-amber-100 border-amber-300 dark:bg-amber-950/40 dark:border-amber-800", label: "Natural Sweetener", desc: "A healthier alternative to sugar — pure, rich, and golden." },
-  { flavor: "Hibiscus Honey", color: "bg-red-100 border-red-300 dark:bg-red-950/40 dark:border-red-800", label: "Heart Health", desc: "Supports heart health and helps regulate blood pressure." },
-  { flavor: "Ginger Lemon", color: "bg-green-100 border-green-300 dark:bg-green-950/40 dark:border-green-800", label: "Digestive Boost", desc: "Boosts digestion and eases bloating naturally." },
-  { flavor: "Cinnamon Lemon", color: "bg-purple-100 border-purple-300 dark:bg-purple-950/40 dark:border-purple-800", label: "Blood Sugar Balance", desc: "Supports blood sugar balance and metabolic wellness." },
+  {
+    icon: "🍯",
+    flavor: "Original Honey",
+    tag: "Natural Sweetener",
+    desc: "A healthier alternative to processed sugar — pure, rich and golden.",
+    border: "border-amber-700/40",
+    glow: "hover:border-amber-500/60",
+  },
+  {
+    icon: "🌺",
+    flavor: "Hibiscus Honey",
+    tag: "Heart Health",
+    desc: "Supports heart health and helps maintain healthy blood pressure.",
+    border: "border-red-800/40",
+    glow: "hover:border-red-500/60",
+  },
+  {
+    icon: "🫚",
+    flavor: "Ginger Lemon",
+    tag: "Digestive Boost",
+    desc: "Boosts digestion, eases bloating and warms from within.",
+    border: "border-green-800/40",
+    glow: "hover:border-green-500/60",
+  },
+  {
+    icon: "🍋",
+    flavor: "Cinnamon Lemon",
+    tag: "Blood Sugar Balance",
+    desc: "Supports metabolic wellness and blood sugar regulation.",
+    border: "border-purple-800/40",
+    glow: "hover:border-purple-500/60",
+  },
 ];
 
-const USES = ["Morning Tea", "Yoghurt Topping", "Bread & Cereals", "Cocktail Mixer", "Marinade for Meats", "Natural Sweetener"];
+const USES = ["Morning Tea", "Yoghurt Topping", "Bread & Cereals", "Cocktail Mixer", "Marinade for Meats", "Natural Sweetener", "Hot Chocolate", "Salad Dressings"];
+
+const STATS = [
+  { val: "4", label: "Flavors" },
+  { val: "15ml", label: "Per Sachet" },
+  { val: "30pcs", label: "Per Box" },
+  { val: "100%", label: "Natural" },
+];
 
 export default function HomePage() {
   const settings = useSettings();
@@ -24,138 +58,183 @@ export default function HomePage() {
 
   return (
     <Layout>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 dark:from-amber-950/30 dark:via-[#0d1b12] dark:to-amber-950/20 border-b border-amber-200/60 dark:border-amber-900/30">
-        <div className="container max-w-screen-2xl mx-auto px-4 py-20 md:py-28">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      {/* ── Hero ──────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden min-h-[90vh] flex items-center">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#050e07] via-[#0d1b12] to-[#0a1500]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(180,83,9,0.15),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(16,56,24,0.3),transparent_60%)]" />
+
+        {/* Decorative honeycomb dots */}
+        <div className="absolute top-20 left-10 w-2 h-2 rounded-full bg-amber-500/20" />
+        <div className="absolute top-40 left-24 w-1 h-1 rounded-full bg-amber-500/30" />
+        <div className="absolute bottom-32 right-20 w-3 h-3 rounded-full bg-amber-600/15" />
+
+        <div className="relative container max-w-screen-2xl mx-auto px-4 py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Left */}
             <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-700/40 bg-amber-900/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-amber-400">
+                <img src={grich20Logo} alt="Grich20" className="h-4 w-4 rounded-sm object-cover" />
+                {settings.companyTagline}
+              </div>
+
               <div>
-                <Badge className="mb-4 bg-amber-100 text-amber-800 border border-amber-300 font-semibold tracking-wide dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800">
-                  {settings.companyTagline}
-                </Badge>
-                <h1 className="font-cormorant font-bold text-5xl md:text-6xl text-amber-900 dark:text-amber-100 leading-tight">
-                  {settings.heroTitle.split(",").map((part, i, arr) => (
-                    <span key={i}>
-                      {part.trim()}
-                      {i < arr.length - 1 && <span className="text-primary">,</span>}
-                      {i < arr.length - 1 && <br />}
-                    </span>
-                  ))}
+                <h1 className="font-cormorant font-bold leading-[1.1] text-5xl md:text-6xl lg:text-7xl">
+                  <span className="text-amber-50">{settings.heroTitle.split(",")[0]?.trim()},</span>
+                  <br />
+                  <span className="gold-gradient">{settings.heroTitle.split(",")[1]?.trim() ?? "Herb-Infused"}</span>
                 </h1>
               </div>
-              <p className="text-lg text-amber-800/70 dark:text-amber-200/60 leading-relaxed max-w-lg">
+
+              <p className="text-amber-200/60 text-lg leading-relaxed max-w-lg">
                 {settings.heroSubtitle}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="font-semibold text-base px-8 animate-float-subtle">
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <Button asChild size="lg"
+                  className="bg-amber-500 hover:bg-amber-400 text-[#0a1500] font-bold text-base px-8 rounded-full shadow-lg shadow-amber-900/40 animate-glow-pulse">
                   <Link href="/products">{settings.heroCtaText}</Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="font-semibold text-base px-8 border-amber-300 text-amber-900 hover:bg-amber-50 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/20">
+                <Button asChild variant="outline" size="lg"
+                  className="border-amber-700/60 text-amber-300 hover:bg-amber-900/30 hover:border-amber-500 text-base px-8 rounded-full">
                   <Link href="/products?type=box">{settings.heroCtaSecondaryText}</Link>
                 </Button>
               </div>
-              <div className="flex items-center gap-6 pt-2">
-                {[["4", "Flavors"], ["15ml", "Per Sachet"], ["30pcs", "Per Box"]].map(([val, lbl]) => (
-                  <div key={lbl} className="text-center">
-                    <div className="text-2xl font-bold text-amber-900 dark:text-amber-300 font-cormorant">{val}</div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider">{lbl}</div>
+
+              {/* Stats */}
+              <div className="flex items-center gap-8 pt-4 border-t border-amber-900/30">
+                {STATS.map(({ val, label }, i) => (
+                  <div key={label} className="text-center">
+                    <div className="font-cormorant font-bold text-2xl text-amber-400">{val}</div>
+                    <div className="text-[10px] uppercase tracking-widest text-amber-200/40">{label}</div>
                   </div>
-                )).reduce((acc, el, i) => (
-                  i === 0 ? [el] : [...acc, <div key={`sep-${i}`} className="w-px h-10 bg-amber-200 dark:bg-amber-800" />, el]
-                ), [] as React.ReactNode[])}
+                ))}
               </div>
             </div>
+
+            {/* Right — product image */}
             <div className="relative flex justify-center">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl max-w-sm w-full animate-float">
-                <img src={bannerImg} alt="FFG Foods Herbs Infused Honey" className="w-full h-auto object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/30 to-transparent" />
-              </div>
-              <div className="absolute -bottom-4 -left-4 rounded-xl overflow-hidden shadow-xl w-40 hidden md:block">
-                <img src={boxImg} alt="Honey Box" className="w-full h-auto object-cover" />
+              <div className="relative">
+                <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-amber-600/20 to-amber-900/10 blur-2xl" />
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl max-w-sm w-full animate-float ring-1 ring-amber-700/30">
+                  <img src={bannerImg} alt="Grich20 Herbs-Infused Honey" className="w-full h-auto object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a1500]/40 to-transparent" />
+                </div>
+                {/* Box thumbnail */}
+                <div className="absolute -bottom-6 -left-8 rounded-xl overflow-hidden shadow-xl w-36 hidden md:block ring-1 ring-amber-700/30 animate-float-subtle">
+                  <img src={boxImg} alt="Honey Box" className="w-full h-auto object-cover" />
+                </div>
+                {/* Badge */}
+                <div className="absolute -top-4 -right-4 bg-amber-500 text-[#0a1500] rounded-full w-16 h-16 flex flex-col items-center justify-center shadow-lg">
+                  <span className="font-cormorant font-bold text-lg leading-none">100%</span>
+                  <span className="text-[9px] font-bold uppercase tracking-tight">Natural</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="py-16 bg-background">
+      {/* ── Benefits ───────────────────────────────────────────── */}
+      <section className="py-20 bg-[#080f09] border-y border-amber-900/20">
         <div className="container max-w-screen-2xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="font-cormorant font-bold text-4xl text-foreground mb-3">Every Flavor, A Purpose</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">Each variety is crafted to deliver specific health benefits alongside natural sweetness.</p>
+          <div className="text-center mb-14">
+            <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold mb-3">Four Distinct Varieties</p>
+            <h2 className="font-cormorant font-bold text-4xl md:text-5xl text-amber-50">Every Flavor, A Purpose</h2>
+            <p className="text-amber-200/50 mt-4 max-w-xl mx-auto">Each variety is crafted to deliver specific health benefits alongside nature's sweetness.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {BENEFITS.map((b) => (
-              <div key={b.flavor} className={`rounded-xl border p-6 space-y-3 ${b.color} transition-shadow hover:shadow-md`}>
-                <Badge variant="outline" className="font-semibold border-current">{b.label}</Badge>
-                <h3 className="font-cormorant font-bold text-xl">{b.flavor}</h3>
-                <p className="text-sm leading-relaxed opacity-80">{b.desc}</p>
+              <div key={b.flavor}
+                className={`rounded-2xl border ${b.border} ${b.glow} bg-card p-6 space-y-4 transition-all duration-300 hover:shadow-lg hover:shadow-amber-900/20 cursor-default`}>
+                <div className="text-3xl">{b.icon}</div>
+                <div>
+                  <span className="text-[10px] uppercase tracking-widest font-bold text-amber-500">{b.tag}</span>
+                  <h3 className="font-cormorant font-bold text-xl text-amber-100 mt-1">{b.flavor}</h3>
+                </div>
+                <p className="text-sm text-amber-200/50 leading-relaxed">{b.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-16 bg-muted/30">
+      {/* ── Featured Products ──────────────────────────────────── */}
+      <section className="py-20">
         <div className="container max-w-screen-2xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-end justify-between mb-12">
             <div>
-              <h2 className="font-cormorant font-bold text-4xl text-foreground mb-2">Featured Products</h2>
-              <p className="text-muted-foreground">Our bestselling honey varieties, ready to order.</p>
+              <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold mb-2">Our Bestsellers</p>
+              <h2 className="font-cormorant font-bold text-4xl md:text-5xl text-amber-50">Featured Products</h2>
             </div>
-            <Button asChild variant="outline" className="hidden sm:flex">
-              <Link href="/products">View All</Link>
+            <Button asChild variant="outline" className="hidden sm:flex border-amber-700/60 text-amber-400 hover:bg-amber-900/20 rounded-full">
+              <Link href="/products">View All →</Link>
             </Button>
           </div>
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => <div key={i} className="rounded-xl bg-card border animate-pulse h-80" />)}
+              {[...Array(4)].map((_, i) => <div key={i} className="rounded-xl bg-card border border-amber-900/20 animate-pulse h-80" />)}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featured.map((product) => <ProductCard key={product.id} product={product} />)}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Uses */}
-      <section className="py-16 bg-amber-900 dark:bg-amber-950 text-amber-50">
-        <div className="container max-w-screen-2xl mx-auto px-4 text-center">
-          <h2 className="font-cormorant font-bold text-4xl mb-4">Versatile. Delicious. Natural.</h2>
-          <p className="text-amber-200 mb-10 max-w-xl mx-auto">FFG Honey sachets fit perfectly into your daily routine — wherever you need a touch of sweetness.</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {USES.map((use) => (
-              <span key={use} className="rounded-full border border-amber-500/50 bg-amber-800/60 px-5 py-2 text-sm font-medium">{use}</span>
-            ))}
-          </div>
-          <div className="mt-12">
-            <Button asChild size="lg" className="bg-amber-400 hover:bg-amber-300 text-amber-900 font-bold px-8">
-              <Link href="/products">Order Now</Link>
+          <div className="mt-8 text-center sm:hidden">
+            <Button asChild variant="outline" className="border-amber-700/60 text-amber-400">
+              <Link href="/products">View All Products</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* About */}
-      <section className="py-16 bg-background">
+      {/* ── Ways to Use ───────────────────────────────────────── */}
+      <section className="py-20 bg-[#060d07] border-y border-amber-900/20">
+        <div className="container max-w-screen-2xl mx-auto px-4 text-center">
+          <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold mb-3">Versatile & Delicious</p>
+          <h2 className="font-cormorant font-bold text-4xl md:text-5xl text-amber-50 mb-4">Many Ways to Enjoy</h2>
+          <p className="text-amber-200/50 mb-10 max-w-xl mx-auto">
+            Grich20 honey sachets fit perfectly into your daily routine — wherever you need a touch of natural sweetness.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 mb-14">
+            {USES.map((use) => (
+              <span key={use}
+                className="rounded-full border border-amber-700/40 bg-amber-900/20 px-5 py-2 text-sm font-medium text-amber-300 hover:border-amber-500/60 hover:text-amber-200 transition-colors">
+                {use}
+              </span>
+            ))}
+          </div>
+          <Button asChild size="lg"
+            className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold px-10 rounded-full shadow-lg shadow-amber-900/40">
+            <Link href="/products">Order Now</Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* ── About ────────────────────────────────────────────── */}
+      <section className="py-20">
         <div className="container max-w-screen-2xl mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto glass-card rounded-3xl p-10 md:p-14">
             <div className="flex flex-col md:flex-row items-center gap-10">
               <div className="flex-shrink-0">
-                <img src={grich20Logo} alt="GRICH20 International General Services Limited" className="w-40 h-40 rounded-2xl object-contain shadow-xl border border-border" />
+                <div className="relative">
+                  <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
+                  <img src={grich20Logo} alt="Grich20" className="relative w-36 h-36 rounded-2xl object-contain shadow-2xl ring-1 ring-amber-600/30" />
+                </div>
               </div>
-              <div className="text-center md:text-left space-y-3">
-                <h2 className="font-cormorant font-bold text-4xl text-foreground">About Us</h2>
-                <p className="text-muted-foreground leading-relaxed">{settings.aboutText}</p>
-                <p className="text-muted-foreground">
-                  Contact: <span className="font-semibold text-primary">{settings.contactPhone}</span>
-                </p>
-                <Button asChild variant="outline">
-                  <Link href="/contact">Get In Touch</Link>
-                </Button>
+              <div className="text-center md:text-left space-y-4">
+                <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold">About Us</p>
+                <h2 className="font-cormorant font-bold text-4xl text-amber-50">Grich20 International</h2>
+                <p className="text-amber-200/60 leading-relaxed">{settings.aboutText}</p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start pt-2">
+                  <Button asChild className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-full">
+                    <Link href="/products">Shop Now</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="border-amber-700/60 text-amber-400 hover:bg-amber-900/20 rounded-full">
+                    <Link href="/contact">Contact Us</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

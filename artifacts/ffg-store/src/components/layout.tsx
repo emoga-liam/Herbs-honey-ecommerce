@@ -31,19 +31,19 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-amber-900/30 bg-[#0a1a0d]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0a1a0d]/80">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between mx-auto px-4">
         {/* Logo */}
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3 group">
             <img
               src={grich20Logo}
-              alt="GRICH20 / FFG Foods"
-              className="h-9 w-9 rounded-lg object-cover"
+              alt="Grich20"
+              className="h-9 w-9 rounded-lg object-cover ring-1 ring-amber-600/30 group-hover:ring-amber-500/60 transition-all"
             />
             <div className="hidden sm:block">
-              <div className="font-serif font-bold text-base text-primary leading-tight tracking-tight">FFG Foods</div>
-              <div className="text-[10px] text-muted-foreground leading-none tracking-wider uppercase">by GRICH20</div>
+              <div className="font-cormorant font-bold text-lg text-amber-400 leading-tight tracking-wide">Grich20</div>
+              <div className="text-[9px] text-amber-200/40 leading-none tracking-widest uppercase">Herbs-Infused Honey</div>
             </div>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -51,8 +51,10 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition-colors hover:text-foreground/80 ${
-                  location === link.href ? "text-foreground font-semibold" : "text-foreground/60"
+                className={`transition-colors ${
+                  location === link.href
+                    ? "text-amber-400 font-semibold"
+                    : "text-amber-200/60 hover:text-amber-300"
                 }`}
               >
                 {link.label}
@@ -63,26 +65,24 @@ export function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          {/* Cart */}
           <Link href="/cart">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative text-amber-200 hover:text-amber-400 hover:bg-amber-900/30">
               <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-amber-500 text-[#0a1a0d] text-xs font-bold flex items-center justify-center animate-float-subtle">
                   {totalItems}
                 </span>
               )}
             </Button>
           </Link>
 
-          {/* User auth */}
           {isConfigured ? (
             user ? (
               <div className="relative hidden md:block">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="gap-2"
+                  className="gap-2 text-amber-200 hover:text-amber-400 hover:bg-amber-900/30"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
                   {user.photoURL ? (
@@ -94,14 +94,14 @@ export function Navbar() {
                   <ChevronDown className="h-3 w-3" />
                 </Button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-10 bg-card border border-border rounded-xl shadow-xl w-44 py-1 z-50">
+                  <div className="absolute right-0 top-10 bg-[#1a2e1e] border border-amber-900/40 rounded-xl shadow-2xl w-44 py-1 z-50">
                     <Link href="/account" onClick={() => setUserMenuOpen(false)}>
-                      <div className="px-4 py-2.5 text-sm hover:bg-muted cursor-pointer">My Account</div>
+                      <div className="px-4 py-2.5 text-sm text-amber-200 hover:bg-amber-900/30 cursor-pointer">My Account</div>
                     </Link>
-                    <div className="border-t border-border my-1" />
+                    <div className="border-t border-amber-900/30 my-1" />
                     <button
                       onClick={() => { logout(); setUserMenuOpen(false); }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-muted"
+                      className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-900/20"
                     >
                       Sign Out
                     </button>
@@ -110,21 +110,20 @@ export function Navbar() {
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Button variant="ghost" size="sm" asChild>
+                <Button variant="ghost" size="sm" className="text-amber-200/70 hover:text-amber-300" asChild>
                   <Link href="/login">Sign In</Link>
                 </Button>
-                <Button size="sm" asChild>
+                <Button size="sm" className="bg-amber-500 hover:bg-amber-400 text-[#0a1a0d] font-bold" asChild>
                   <Link href="/register">Register</Link>
                 </Button>
               </div>
             )
           ) : null}
 
-          {/* Mobile menu toggle */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden text-amber-200 hover:text-amber-400"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -134,33 +133,34 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden border-b border-border bg-background px-4 py-4 space-y-3">
+        <div className="md:hidden border-b border-amber-900/30 bg-[#0a1a0d] px-4 py-4 space-y-3">
           <nav className="flex flex-col space-y-3 text-sm font-medium">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)}
-                className={`transition-colors hover:text-foreground/80 ${location === link.href ? "text-foreground" : "text-foreground/60"}`}>
+                className={`transition-colors ${location === link.href ? "text-amber-400" : "text-amber-200/60"}`}>
                 {link.label}
               </Link>
             ))}
           </nav>
           {isConfigured && (
-            <div className="pt-3 border-t border-border flex flex-col gap-2">
+            <div className="pt-3 border-t border-amber-900/30 flex flex-col gap-2">
               {user ? (
                 <>
                   <Link href="/account" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="outline" size="sm" className="w-full gap-2">
+                    <Button variant="outline" size="sm" className="w-full gap-2 border-amber-700 text-amber-300">
                       <User className="h-4 w-4" /> {user.displayName ?? "My Account"}
                     </Button>
                   </Link>
-                  <Button variant="ghost" size="sm" onClick={() => { logout(); setIsMenuOpen(false); }}
-                    className="w-full text-destructive">Sign Out</Button>
+                  <Button variant="ghost" size="sm"
+                    onClick={() => { logout(); setIsMenuOpen(false); }}
+                    className="w-full text-red-400">Sign Out</Button>
                 </>
               ) : (
                 <>
-                  <Button variant="outline" size="sm" asChild className="w-full">
+                  <Button variant="outline" size="sm" asChild className="w-full border-amber-700 text-amber-300">
                     <Link href="/login" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
                   </Button>
-                  <Button size="sm" asChild className="w-full">
+                  <Button size="sm" asChild className="w-full bg-amber-500 text-[#0a1a0d] font-bold">
                     <Link href="/register" onClick={() => setIsMenuOpen(false)}>Create Account</Link>
                   </Button>
                 </>
@@ -176,46 +176,42 @@ export function Navbar() {
 export function Footer() {
   const settings = useSettings();
   return (
-    <footer className="border-t bg-card mt-auto">
-      <div className="container px-4 py-12 mx-auto max-w-screen-2xl">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
+    <footer className="border-t border-amber-900/30 bg-[#060f09] mt-auto">
+      <div className="container px-4 py-14 mx-auto max-w-screen-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          <div className="space-y-4 md:col-span-2">
             <div className="flex items-center gap-3">
-              <img src={grich20Logo} alt="GRICH20" className="h-10 w-10 rounded-lg object-cover" />
+              <img src={grich20Logo} alt="Grich20" className="h-11 w-11 rounded-xl object-cover ring-1 ring-amber-700/30" />
               <div>
-                <h3 className="font-serif font-bold text-base text-primary">FFG Foods</h3>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">by GRICH20</p>
+                <h3 className="font-cormorant font-bold text-xl text-amber-400">Grich20</h3>
+                <p className="text-[10px] text-amber-200/40 uppercase tracking-widest">International General Services Ltd</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Premium herbs-infused honey sourced naturally and crafted with care.
+            <p className="text-sm text-amber-200/50 leading-relaxed max-w-xs">
+              Premium herbs-infused honey sachets — crafted with care, delivered fresh across Abuja.
             </p>
           </div>
           <div>
-            <h4 className="font-medium mb-4">Shop</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/products" className="hover:text-primary">All Products</Link></li>
-              <li><Link href="/products?type=sachet" className="hover:text-primary">Sachets</Link></li>
-              <li><Link href="/products?type=box" className="hover:text-primary">Boxes</Link></li>
+            <h4 className="font-semibold text-amber-400 mb-4 text-sm tracking-wide uppercase">Shop</h4>
+            <ul className="space-y-2 text-sm text-amber-200/50">
+              <li><Link href="/products" className="hover:text-amber-400 transition-colors">All Products</Link></li>
+              <li><Link href="/products?type=sachet" className="hover:text-amber-400 transition-colors">Sachets</Link></li>
+              <li><Link href="/products?type=box" className="hover:text-amber-400 transition-colors">Boxes</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-medium mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/contact" className="hover:text-primary">Contact Us</Link></li>
-              <li><Link href="/admin" className="hover:text-primary">Admin</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium mb-4">Contact</h4>
-            <div className="space-y-2 text-sm text-muted-foreground">
+            <h4 className="font-semibold text-amber-400 mb-4 text-sm tracking-wide uppercase">Contact</h4>
+            <div className="space-y-2 text-sm text-amber-200/50">
               <p>{settings.contactPhone}</p>
               <p>{settings.contactEmail}</p>
               <p>{settings.contactAddress}</p>
             </div>
+            <Link href="/contact" className="inline-block mt-3 text-xs text-amber-500 hover:text-amber-400 font-medium">
+              Send us a message →
+            </Link>
           </div>
         </div>
-        <div className="border-t mt-12 pt-8 text-center text-sm text-muted-foreground">
+        <div className="border-t border-amber-900/20 mt-12 pt-8 text-center text-xs text-amber-200/30">
           <p>&copy; {new Date().getFullYear()} {settings.footerText}</p>
         </div>
       </div>
