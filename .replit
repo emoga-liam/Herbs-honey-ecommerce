@@ -33,3 +33,13 @@ externalPort = 3000
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+VITE_FIREBASE_API_KEY = "AIzaSyDN6rMot6ApIS1YN4QNycm_PvDjUe4JxOw"
+VITE_FIREBASE_AUTH_DOMAIN = "herbs-honey.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID = "herbs-honey"
+VITE_FIREBASE_STORAGE_BUCKET = "herbs-honey.firebasestorage.app"
+VITE_FIREBASE_MESSAGING_SENDER_ID = "263784961656"
+VITE_FIREBASE_APP_ID = "1:263784961656:web:e75e7d0b369024dfc2ff8d"
