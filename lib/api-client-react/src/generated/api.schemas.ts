@@ -73,6 +73,11 @@ export interface Order {
   status: string;
   /** @nullable */
   notes?: string | null;
+  /**
+     * Paystack payment reference
+     * @nullable
+     */
+  paymentReference?: string | null;
   createdAt: string;
 }
 
@@ -88,6 +93,8 @@ export interface OrderInput {
   deliveryAddress: string;
   /** @nullable */
   notes?: string | null;
+  /** @nullable */
+  paymentReference?: string | null;
   items: OrderItemInput[];
 }
 
@@ -125,6 +132,7 @@ export interface SiteSettings {
   heroSubtitle: string;
   heroCtaText: string;
   heroCtaSecondaryText: string;
+  heroImageUrl: string;
   companyTagline: string;
   aboutText: string;
   contactPhone: string;
@@ -140,6 +148,7 @@ export interface SiteSettingsUpdate {
   heroSubtitle?: string;
   heroCtaText?: string;
   heroCtaSecondaryText?: string;
+  heroImageUrl?: string;
   companyTagline?: string;
   aboutText?: string;
   contactPhone?: string;

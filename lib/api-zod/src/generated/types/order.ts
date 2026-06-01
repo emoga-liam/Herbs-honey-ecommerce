@@ -19,5 +19,10 @@ export interface Order {
   status: string;
   /** @nullable */
   notes?: string | null;
+  /**
+     * Paystack payment reference
+     * @nullable
+     */
+  paymentReference?: string | null;
   createdAt: string;
 }

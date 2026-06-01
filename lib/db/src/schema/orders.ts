@@ -16,8 +16,9 @@ export const ordersTable = pgTable("orders", {
     priceKobo: number;
   }>>(),
   totalKobo: integer("total_kobo").notNull(),
-  status: text("status").notNull().default("pending"), // pending | processing | shipped | delivered | cancelled
+  status: text("status").notNull().default("pending"),
   notes: text("notes"),
+  paymentReference: text("payment_reference"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

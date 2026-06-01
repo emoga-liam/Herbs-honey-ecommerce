@@ -510,6 +510,9 @@ components:
           description: "pending | processing | shipped | delivered | cancelled"
         notes:
           type: ["string", "null"]
+        paymentReference:
+          type: ["string", "null"]
+          description: Paystack payment reference
         createdAt:
           type: string
       required:
@@ -555,6 +558,8 @@ components:
         deliveryAddress:
           type: string
         notes:
+          type: ["string", "null"]
+        paymentReference:
           type: ["string", "null"]
         items:
           type: array
@@ -660,6 +665,8 @@ components:
           type: string
         heroCtaSecondaryText:
           type: string
+        heroImageUrl:
+          type: string
         companyTagline:
           type: string
         aboutText:
@@ -681,6 +688,7 @@ components:
         - heroSubtitle
         - heroCtaText
         - heroCtaSecondaryText
+        - heroImageUrl
         - companyTagline
         - aboutText
         - contactPhone
@@ -700,6 +708,8 @@ components:
         heroCtaText:
           type: string
         heroCtaSecondaryText:
+          type: string
+        heroImageUrl:
           type: string
         companyTagline:
           type: string

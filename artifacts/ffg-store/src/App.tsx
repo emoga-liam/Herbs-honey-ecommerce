@@ -6,6 +6,7 @@ import { CartProvider } from "@/components/cart-context";
 import { AuthProvider } from "@/contexts/auth-context";
 import { SettingsProvider } from "@/contexts/settings-context";
 import { AdminGuard } from "@/pages/admin/guard";
+import { StoreAuthGuard } from "@/components/auth-guard";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home";
 import ProductsPage from "@/pages/products";
@@ -30,16 +31,33 @@ const queryClient = new QueryClient({
 function Router() {
   return (
     <Switch>
+      {/* Public routes */}
       <Route path="/" component={HomePage} />
-      <Route path="/products" component={ProductsPage} />
-      <Route path="/products/:id" component={ProductDetailPage} />
-      <Route path="/cart" component={CartPage} />
-      <Route path="/checkout" component={CheckoutPage} />
-      <Route path="/order-confirmation" component={OrderConfirmationPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/register" component={RegisterPage} />
-      <Route path="/account" component={AccountPage} />
+
+      {/* Auth-protected store routes */}
+      <Route path="/products">
+        {() => <StoreAuthGuard><ProductsPage /></StoreAuthGuard>}
+      </Route>
+      <Route path="/products/:id">
+        {() => <StoreAuthGuard><ProductDetailPage /></StoreAuthGuard>}
+      </Route>
+      <Route path="/cart">
+        {() => <StoreAuthGuard><CartPage /></StoreAuthGuard>}
+      </Route>
+      <Route path="/checkout">
+        {() => <StoreAuthGuard><CheckoutPage /></StoreAuthGuard>}
+      </Route>
+      <Route path="/order-confirmation">
+        {() => <StoreAuthGuard><OrderConfirmationPage /></StoreAuthGuard>}
+      </Route>
+      <Route path="/account">
+        {() => <StoreAuthGuard><AccountPage /></StoreAuthGuard>}
+      </Route>
+
+      {/* Admin routes */}
       <Route path="/admin/login" component={AdminLoginPage} />
       <Route path="/admin">
         {() => <AdminGuard><AdminDashboardPage /></AdminGuard>}

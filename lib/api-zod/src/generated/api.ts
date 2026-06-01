@@ -165,6 +165,7 @@ export const ListOrdersResponseItem = zod.object({
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),
+  "paymentReference": zod.string().nullish().describe('Paystack payment reference'),
   "createdAt": zod.string()
 })
 export const ListOrdersResponse = zod.array(ListOrdersResponseItem)
@@ -179,6 +180,7 @@ export const CreateOrderBody = zod.object({
   "customerPhone": zod.string(),
   "deliveryAddress": zod.string(),
   "notes": zod.string().nullish(),
+  "paymentReference": zod.string().nullish(),
   "items": zod.array(zod.object({
   "productId": zod.number(),
   "quantity": zod.number()
@@ -209,6 +211,7 @@ export const GetOrderResponse = zod.object({
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),
+  "paymentReference": zod.string().nullish().describe('Paystack payment reference'),
   "createdAt": zod.string()
 })
 
@@ -240,6 +243,7 @@ export const UpdateOrderStatusResponse = zod.object({
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),
+  "paymentReference": zod.string().nullish().describe('Paystack payment reference'),
   "createdAt": zod.string()
 })
 
@@ -301,6 +305,7 @@ export const GetAdminStatsResponse = zod.object({
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),
+  "paymentReference": zod.string().nullish().describe('Paystack payment reference'),
   "createdAt": zod.string()
 })),
   "ordersByStatus": zod.array(zod.object({
@@ -318,6 +323,7 @@ export const GetSiteSettingsResponse = zod.object({
   "heroSubtitle": zod.string(),
   "heroCtaText": zod.string(),
   "heroCtaSecondaryText": zod.string(),
+  "heroImageUrl": zod.string(),
   "companyTagline": zod.string(),
   "aboutText": zod.string(),
   "contactPhone": zod.string(),
@@ -337,6 +343,7 @@ export const UpdateSiteSettingsBody = zod.object({
   "heroSubtitle": zod.string().optional(),
   "heroCtaText": zod.string().optional(),
   "heroCtaSecondaryText": zod.string().optional(),
+  "heroImageUrl": zod.string().optional(),
   "companyTagline": zod.string().optional(),
   "aboutText": zod.string().optional(),
   "contactPhone": zod.string().optional(),
@@ -352,6 +359,7 @@ export const UpdateSiteSettingsResponse = zod.object({
   "heroSubtitle": zod.string(),
   "heroCtaText": zod.string(),
   "heroCtaSecondaryText": zod.string(),
+  "heroImageUrl": zod.string(),
   "companyTagline": zod.string(),
   "aboutText": zod.string(),
   "contactPhone": zod.string(),

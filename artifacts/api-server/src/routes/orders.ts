@@ -40,7 +40,7 @@ router.post("/orders", async (req, res): Promise<void> => {
     const body = CreateOrderBody.safeParse(req.body);
     if (!body.success) { res.status(400).json({ error: "Invalid body" }); return; }
 
-    const { customerName, customerEmail, customerPhone, deliveryAddress, notes, items } = body.data;
+    const { customerName, customerEmail, customerPhone, deliveryAddress, notes, paymentReference, items } = body.data;
 
     // Fetch products to compute total and get names
     const productIds = items.map((i) => i.productId);
@@ -69,6 +69,7 @@ router.post("/orders", async (req, res): Promise<void> => {
         customerPhone,
         deliveryAddress,
         notes: notes ?? null,
+        paymentReference: paymentReference ?? null,
         items: orderItems,
         totalKobo,
         status: "pending",

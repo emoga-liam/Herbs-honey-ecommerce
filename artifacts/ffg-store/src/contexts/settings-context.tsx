@@ -8,6 +8,7 @@ const DEFAULTS: SiteSettings = {
     "Premium herbs-infused honey sachets in four delicious flavors — Original, Hibiscus, Ginger Lemon, and Cinnamon Lemon. Each 15ml sachet brings nature's goodness to your cup.",
   heroCtaText: "Shop All Products",
   heroCtaSecondaryText: "Buy in Bulk",
+  heroImageUrl: "",
   companyTagline: "Grich20 · Abuja, Nigeria",
   aboutText:
     "Grich20 International General Services Limited is a proudly Nigerian company committed to delivering nature's best. Our herbs-infused honey sachets are crafted with premium natural ingredients and distributed fresh across Abuja.",

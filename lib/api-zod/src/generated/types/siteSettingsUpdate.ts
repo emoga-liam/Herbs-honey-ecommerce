@@ -11,6 +11,7 @@ export interface SiteSettingsUpdate {
   heroSubtitle?: string;
   heroCtaText?: string;
   heroCtaSecondaryText?: string;
+  heroImageUrl?: string;
   companyTagline?: string;
   aboutText?: string;
   contactPhone?: string;

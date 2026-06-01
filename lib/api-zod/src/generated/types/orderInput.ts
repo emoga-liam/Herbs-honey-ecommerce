@@ -14,5 +14,7 @@ export interface OrderInput {
   deliveryAddress: string;
   /** @nullable */
   notes?: string | null;
+  /** @nullable */
+  paymentReference?: string | null;
   items: OrderItemInput[];
 }

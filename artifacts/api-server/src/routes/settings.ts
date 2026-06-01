@@ -9,6 +9,7 @@ const DEFAULTS: Record<string, string> = {
     "Premium herbs-infused honey sachets in four delicious flavors — Original, Hibiscus, Ginger Lemon, and Cinnamon Lemon. Each 15ml sachet brings nature's goodness to your cup.",
   heroCtaText: "Shop All Products",
   heroCtaSecondaryText: "Buy in Bulk",
+  heroImageUrl: "",
   companyTagline: "Grich20 · Abuja, Nigeria",
   aboutText:
     "Grich20 International General Services Limited is a proudly Nigerian company committed to delivering nature's best. Our herbs-infused honey sachets are crafted with premium natural ingredients and distributed fresh across Abuja.",
@@ -28,7 +29,6 @@ function rowsToSettings(rows: { key: string; value: string }[]) {
   return map;
 }
 
-// GET /settings — public
 router.get("/settings", async (req, res) => {
   try {
     const rows = await db
@@ -41,7 +41,6 @@ router.get("/settings", async (req, res) => {
   }
 });
 
-// PATCH /settings — admin only
 router.patch("/settings", async (req, res) => {
   if (!req.session?.adminId) {
     res.status(401).json({ error: "Unauthorized" });
@@ -66,7 +65,6 @@ router.patch("/settings", async (req, res) => {
   }
 });
 
-// POST /contact — public
 router.post("/contact", async (req, res) => {
   const { name, email, phone, subject, message } = req.body;
   req.log.info({ name, email, phone, subject }, "Contact form submission received");

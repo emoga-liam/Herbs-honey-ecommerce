@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,11 +9,16 @@ import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
-  const { signInWithEmail, signInWithGoogle, isConfigured, isLoading } = useAuth();
+  const search = useSearch();
+  const redirect = new URLSearchParams(search).get("redirect") ?? "/products";
+  const { signInWithEmail, signInWithGoogle, isConfigured, isLoading, user } = useAuth();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Already logged in
+  if (user) { navigate(redirect); return null; }
 
   if (!isConfigured) {
     return (
@@ -21,9 +26,7 @@ export default function LoginPage() {
         <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
           <img src={grich20Logo} alt="Grich20" className="h-16 mx-auto mb-4 rounded-xl" />
           <h2 className="font-cormorant text-2xl text-amber-400 mb-2">Authentication Not Set Up</h2>
-          <p className="text-amber-200/60 text-sm mb-4">
-            Firebase authentication hasn't been configured yet.
-          </p>
+          <p className="text-amber-200/60 text-sm mb-4">Firebase authentication hasn't been configured yet.</p>
           <Button asChild variant="outline" className="border-amber-700 text-amber-400">
             <Link href="/">Back to Store</Link>
           </Button>
@@ -37,7 +40,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await signInWithEmail(email, password);
-      navigate("/account");
+      navigate(redirect);
     } catch {
       toast({ title: "Sign in failed", description: "Check your email and password.", variant: "destructive" });
     } finally {
@@ -48,7 +51,7 @@ export default function LoginPage() {
   const handleGoogle = async () => {
     try {
       await signInWithGoogle();
-      navigate("/account");
+      navigate(redirect);
     } catch {
       toast({ title: "Google sign in failed", description: "Please try again.", variant: "destructive" });
     }
@@ -67,18 +70,15 @@ export default function LoginPage() {
               </div>
               <div>
                 <h1 className="font-cormorant font-bold text-3xl text-amber-400">Welcome Back</h1>
-                <p className="text-amber-200/40 text-sm mt-0.5">Sign in to your Grich20 account</p>
+                <p className="text-amber-200/40 text-sm mt-0.5">Sign in to shop at Grich20</p>
               </div>
             </div>
           </Link>
         </div>
 
         <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
-          <Button
-            onClick={handleGoogle}
-            variant="outline"
-            className="w-full border-amber-700/50 text-amber-200 bg-transparent hover:bg-amber-900/20 mb-6 gap-3 rounded-xl"
-          >
+          <Button onClick={handleGoogle} variant="outline"
+            className="w-full border-amber-700/50 text-amber-200 bg-transparent hover:bg-amber-900/20 mb-6 gap-3 rounded-xl">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -96,14 +96,12 @@ export default function LoginPage() {
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-amber-200/60 text-sm">Email</Label>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com" required
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" required
                 className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-amber-200/60 text-sm">Password</Label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••" required
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required
                 className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
             </div>
             <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl" disabled={submitting || isLoading}>
@@ -113,7 +111,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-amber-200/40 mt-6">
             Don't have an account?{" "}
-            <Link href="/register" className="text-amber-400 hover:text-amber-300 font-semibold">Create one</Link>
+            <Link href={`/register${search}`} className="text-amber-400 hover:text-amber-300 font-semibold">Create one</Link>
           </p>
         </div>
       </div>
