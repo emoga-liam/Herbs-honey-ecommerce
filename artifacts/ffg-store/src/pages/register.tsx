@@ -1,20 +1,24 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Mail } from "lucide-react";
 import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
 
 export default function RegisterPage() {
   const [, navigate] = useLocation();
+  const search = useSearch();
+  const redirect = new URLSearchParams(search).get("redirect") ?? "/products";
   const { signUpWithEmail, signInWithGoogle, isConfigured } = useAuth();
   const { toast } = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [registered, setRegistered] = useState(false);
 
   if (!isConfigured) {
     return (
@@ -31,6 +35,33 @@ export default function RegisterPage() {
     );
   }
 
+  if (registered) {
+    return (
+      <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.12),transparent_70%)]" />
+        <div className="relative bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-10 max-w-md w-full text-center shadow-2xl">
+          <div className="flex justify-center mb-5">
+            <div className="rounded-full bg-amber-900/30 border border-amber-700/40 p-4">
+              <Mail className="h-10 w-10 text-amber-400" />
+            </div>
+          </div>
+          <h2 className="font-cormorant font-bold text-3xl text-amber-200 mb-3">Verify Your Email</h2>
+          <p className="text-amber-200/60 text-sm leading-relaxed mb-2">
+            We've sent a verification link to <span className="text-amber-300 font-medium">{email}</span>.
+          </p>
+          <p className="text-amber-200/40 text-xs mb-6">Check your inbox and click the link to verify your account. You can still shop while unverified.</p>
+          <Button
+            onClick={() => navigate(redirect)}
+            className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl"
+          >
+            Continue to Shop
+          </Button>
+          <p className="text-center text-xs text-amber-200/30 mt-4">Didn't get it? Check spam or sign in to resend.</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 6) {
@@ -40,7 +71,7 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await signUpWithEmail(email, password, name);
-      navigate("/account");
+      setRegistered(true);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
       toast({
@@ -56,11 +87,13 @@ export default function RegisterPage() {
   const handleGoogle = async () => {
     try {
       await signInWithGoogle();
-      navigate("/account");
+      navigate(redirect);
     } catch {
-      toast({ title: "Google sign in failed", variant: "destructive" });
+      toast({ title: "Google sign in failed", description: "Please try again.", variant: "destructive" });
     }
   };
+
+  const inputClass = "bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl";
 
   return (
     <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
@@ -101,22 +134,22 @@ export default function RegisterPage() {
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-amber-200/60 text-sm">Full Name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Amaka Johnson" required
-                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Amaka Johnson" required className={inputClass} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-amber-200/60 text-sm">Email</Label>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com" required
-                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" required className={inputClass} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-amber-200/60 text-sm">Password</Label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min. 6 characters" required
-                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 6 characters" required className={inputClass} />
             </div>
+            <p className="text-xs text-amber-200/30">
+              By creating an account you agree to our{" "}
+              <Link href="/terms" className="text-amber-500 hover:text-amber-400">Terms & Conditions</Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="text-amber-500 hover:text-amber-400">Privacy Policy</Link>.
+            </p>
             <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl" disabled={submitting}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
@@ -124,7 +157,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm text-amber-200/40 mt-6">
             Already have an account?{" "}
-            <Link href="/login" className="text-amber-400 hover:text-amber-300 font-semibold">Sign in</Link>
+            <Link href={`/login${search}`} className="text-amber-400 hover:text-amber-300 font-semibold">Sign in</Link>
           </p>
         </div>
       </div>

@@ -18,6 +18,10 @@ import ContactPage from "@/pages/contact";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import AccountPage from "@/pages/account";
+import ForgotPasswordPage from "@/pages/forgot-password";
+import MyOrdersPage from "@/pages/my-orders";
+import TermsPage from "@/pages/terms";
+import PrivacyPage from "@/pages/privacy";
 import AdminLoginPage from "@/pages/admin/login";
 import AdminDashboardPage from "@/pages/admin/dashboard";
 import AdminProductsPage from "@/pages/admin/products";
@@ -36,6 +40,9 @@ function Router() {
       <Route path="/contact" component={ContactPage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/register" component={RegisterPage} />
+      <Route path="/forgot-password" component={ForgotPasswordPage} />
+      <Route path="/terms" component={TermsPage} />
+      <Route path="/privacy" component={PrivacyPage} />
 
       {/* Auth-protected store routes */}
       <Route path="/products">
@@ -55,6 +62,9 @@ function Router() {
       </Route>
       <Route path="/account">
         {() => <StoreAuthGuard><AccountPage /></StoreAuthGuard>}
+      </Route>
+      <Route path="/my-orders">
+        {() => <StoreAuthGuard><MyOrdersPage /></StoreAuthGuard>}
       </Route>
 
       {/* Admin routes */}

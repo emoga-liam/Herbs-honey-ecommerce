@@ -12,6 +12,7 @@ export interface SiteSettings {
   heroCtaText: string;
   heroCtaSecondaryText: string;
   heroImageUrl: string;
+  heroSecondaryImageUrl: string;
   companyTagline: string;
   aboutText: string;
   contactPhone: string;

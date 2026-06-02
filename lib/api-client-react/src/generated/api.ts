@@ -24,6 +24,7 @@ import type {
   AdminStats,
   AdminUser,
   ContactFormInput,
+  GetOrdersByEmailParams,
   HealthStatus,
   ListOrdersParams,
   ListProductsParams,
@@ -734,6 +735,90 @@ export const useCreateOrder = <TError = ErrorType<unknown>,
       > => {
       return useMutation(getCreateOrderMutationOptions(options));
     }
+
+export const getGetOrdersByEmailUrl = (params: GetOrdersByEmailParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/orders/by-email?${stringifiedParams}` : `/api/orders/by-email`
+}
+
+/**
+ * @summary Get orders by customer email
+ */
+export const getOrdersByEmail = async (params: GetOrdersByEmailParams, options?: RequestInit): Promise<Order[]> => {
+
+  return customFetch<Order[]>(getGetOrdersByEmailUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOrdersByEmailQueryKey = (params?: GetOrdersByEmailParams,) => {
+    return [
+    `/api/orders/by-email`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetOrdersByEmailQueryOptions = <TData = Awaited<ReturnType<typeof getOrdersByEmail>>, TError = ErrorType<unknown>>(params: GetOrdersByEmailParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOrdersByEmail>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrdersByEmailQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrdersByEmail>>> = ({ signal }) => getOrdersByEmail(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOrdersByEmail>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOrdersByEmailQueryResult = NonNullable<Awaited<ReturnType<typeof getOrdersByEmail>>>
+export type GetOrdersByEmailQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get orders by customer email
+ */
+
+export function useGetOrdersByEmail<TData = Awaited<ReturnType<typeof getOrdersByEmail>>, TError = ErrorType<unknown>>(
+ params: GetOrdersByEmailParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOrdersByEmail>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOrdersByEmailQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 
 export const getGetOrderUrl = (id: number,) => {
 

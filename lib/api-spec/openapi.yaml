@@ -208,6 +208,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/Order"
 
+  /orders/by-email:
+    get:
+      operationId: getOrdersByEmail
+      tags: [orders]
+      summary: Get orders by customer email
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Orders for this email
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
   /orders/{id}:
     get:
       operationId: getOrder
@@ -667,6 +688,8 @@ components:
           type: string
         heroImageUrl:
           type: string
+        heroSecondaryImageUrl:
+          type: string
         companyTagline:
           type: string
         aboutText:
@@ -689,6 +712,7 @@ components:
         - heroCtaText
         - heroCtaSecondaryText
         - heroImageUrl
+        - heroSecondaryImageUrl
         - companyTagline
         - aboutText
         - contactPhone
@@ -710,6 +734,8 @@ components:
         heroCtaSecondaryText:
           type: string
         heroImageUrl:
+          type: string
+        heroSecondaryImageUrl:
           type: string
         companyTagline:
           type: string

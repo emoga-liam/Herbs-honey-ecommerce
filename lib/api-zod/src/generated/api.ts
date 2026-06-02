@@ -189,6 +189,35 @@ export const CreateOrderBody = zod.object({
 
 
 /**
+ * @summary Get orders by customer email
+ */
+export const GetOrdersByEmailQueryParams = zod.object({
+  "email": zod.coerce.string()
+})
+
+export const GetOrdersByEmailResponseItem = zod.object({
+  "id": zod.number(),
+  "customerName": zod.string(),
+  "customerEmail": zod.string(),
+  "customerPhone": zod.string(),
+  "deliveryAddress": zod.string(),
+  "items": zod.array(zod.object({
+  "productId": zod.number(),
+  "productName": zod.string(),
+  "productType": zod.string(),
+  "quantity": zod.number(),
+  "priceKobo": zod.number()
+})),
+  "totalKobo": zod.number(),
+  "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
+  "notes": zod.string().nullish(),
+  "paymentReference": zod.string().nullish().describe('Paystack payment reference'),
+  "createdAt": zod.string()
+})
+export const GetOrdersByEmailResponse = zod.array(GetOrdersByEmailResponseItem)
+
+
+/**
  * @summary Get order by ID
  */
 export const GetOrderParams = zod.object({
@@ -324,6 +353,7 @@ export const GetSiteSettingsResponse = zod.object({
   "heroCtaText": zod.string(),
   "heroCtaSecondaryText": zod.string(),
   "heroImageUrl": zod.string(),
+  "heroSecondaryImageUrl": zod.string(),
   "companyTagline": zod.string(),
   "aboutText": zod.string(),
   "contactPhone": zod.string(),
@@ -344,6 +374,7 @@ export const UpdateSiteSettingsBody = zod.object({
   "heroCtaText": zod.string().optional(),
   "heroCtaSecondaryText": zod.string().optional(),
   "heroImageUrl": zod.string().optional(),
+  "heroSecondaryImageUrl": zod.string().optional(),
   "companyTagline": zod.string().optional(),
   "aboutText": zod.string().optional(),
   "contactPhone": zod.string().optional(),
@@ -360,6 +391,7 @@ export const UpdateSiteSettingsResponse = zod.object({
   "heroCtaText": zod.string(),
   "heroCtaSecondaryText": zod.string(),
   "heroImageUrl": zod.string(),
+  "heroSecondaryImageUrl": zod.string(),
   "companyTagline": zod.string(),
   "aboutText": zod.string(),
   "contactPhone": zod.string(),

@@ -5,7 +5,7 @@ import { Layout } from "@/components/layout";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import defaultBannerImg from "@assets/a19fa264-b1a2-4592-a852-d2e2934d4852_1780225496305.jpeg";
-import boxImg from "@assets/1bb59fff-c60a-495a-a645-92b6f7c19b0c_1780225496305.jpeg";
+import defaultBoxImg from "@assets/1bb59fff-c60a-495a-a645-92b6f7c19b0c_1780225496305.jpeg";
 import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
 
 const BENEFITS = [
@@ -28,6 +28,7 @@ export default function HomePage() {
   const settings = useSettings();
   const { data: featured = [], isLoading } = useGetFeaturedProducts();
   const heroImage = settings.heroImageUrl || defaultBannerImg;
+  const heroSecondaryImage = settings.heroSecondaryImageUrl || defaultBoxImg;
 
   return (
     <Layout>
@@ -85,7 +86,7 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a1500]/40 to-transparent" />
                 </div>
                 <div className="absolute -bottom-6 -left-8 rounded-xl overflow-hidden shadow-xl w-36 hidden md:block ring-1 ring-amber-700/30 animate-float-subtle">
-                  <img src={boxImg} alt="Honey Box" className="w-full h-auto object-cover" />
+                  <img src={heroSecondaryImage} alt="Honey Product" className="w-full h-auto object-cover" />
                 </div>
                 <div className="absolute -top-4 -right-4 bg-amber-500 text-[#0a1500] rounded-full w-16 h-16 flex flex-col items-center justify-center shadow-lg">
                   <span className="font-cormorant font-bold text-lg leading-none">100%</span>

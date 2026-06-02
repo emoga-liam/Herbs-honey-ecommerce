@@ -3,8 +3,9 @@ import { useCart } from "./cart-context";
 import { useAuth } from "@/contexts/auth-context";
 import { useSettings } from "@/contexts/settings-context";
 import { Button } from "./ui/button";
-import { ShoppingBag, Menu, X, User, ChevronDown } from "lucide-react";
+import { ShoppingBag, Menu, X, User, ChevronDown, Package, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
 
 export function AnnouncementBar() {
@@ -13,6 +14,40 @@ export function AnnouncementBar() {
   return (
     <div className="bg-amber-500 text-amber-950 text-center text-sm font-semibold py-2 px-4">
       {settings.announcementBanner}
+    </div>
+  );
+}
+
+export function VerificationBanner() {
+  const { user, isConfigured, resendVerification } = useAuth();
+  const { toast } = useToast();
+  const [sending, setSending] = useState(false);
+
+  if (!isConfigured || !user || user.emailVerified) return null;
+
+  const handleResend = async () => {
+    setSending(true);
+    try {
+      await resendVerification();
+      toast({ title: "Verification email sent!", description: "Check your inbox." });
+    } catch {
+      toast({ title: "Couldn't send email", description: "Please try again later.", variant: "destructive" });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="bg-amber-950/80 border-b border-amber-800/40 px-4 py-2 flex items-center justify-center gap-3 text-sm">
+      <AlertCircle className="h-4 w-4 text-amber-400 flex-shrink-0" />
+      <span className="text-amber-200/70">Please verify your email address to secure your account.</span>
+      <button
+        onClick={handleResend}
+        disabled={sending}
+        className="text-amber-400 hover:text-amber-300 font-semibold underline-offset-2 hover:underline text-xs flex-shrink-0"
+      >
+        {sending ? "Sending…" : "Resend email"}
+      </button>
     </div>
   );
 }
@@ -37,8 +72,7 @@ export function Navbar() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-3 group">
             <img
-              src={grich20Logo}
-              alt="Grich20"
+              src={grich20Logo} alt="Grich20"
               className="h-9 w-9 rounded-lg object-cover ring-1 ring-amber-600/30 group-hover:ring-amber-500/60 transition-all"
             />
             <div className="hidden sm:block">
@@ -48,15 +82,8 @@ export function Navbar() {
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`transition-colors ${
-                  location === link.href
-                    ? "text-amber-400 font-semibold"
-                    : "text-amber-200/60 hover:text-amber-300"
-                }`}
-              >
+              <Link key={link.href} href={link.href}
+                className={`transition-colors ${location === link.href ? "text-amber-400 font-semibold" : "text-amber-200/60 hover:text-amber-300"}`}>
                 {link.label}
               </Link>
             ))}
@@ -79,12 +106,9 @@ export function Navbar() {
           {isConfigured ? (
             user ? (
               <div className="relative hidden md:block">
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <Button variant="ghost" size="sm"
                   className="gap-2 text-amber-200 hover:text-amber-400 hover:bg-amber-900/30"
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                >
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}>
                   {user.photoURL ? (
                     <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full" />
                   ) : (
@@ -94,15 +118,20 @@ export function Navbar() {
                   <ChevronDown className="h-3 w-3" />
                 </Button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-10 bg-[#1a2e1e] border border-amber-900/40 rounded-xl shadow-2xl w-44 py-1 z-50">
+                  <div className="absolute right-0 top-10 bg-[#1a2e1e] border border-amber-900/40 rounded-xl shadow-2xl w-48 py-1 z-50">
                     <Link href="/account" onClick={() => setUserMenuOpen(false)}>
-                      <div className="px-4 py-2.5 text-sm text-amber-200 hover:bg-amber-900/30 cursor-pointer">My Account</div>
+                      <div className="px-4 py-2.5 text-sm text-amber-200 hover:bg-amber-900/30 cursor-pointer flex items-center gap-2">
+                        <User className="h-3.5 w-3.5" /> My Account
+                      </div>
+                    </Link>
+                    <Link href="/my-orders" onClick={() => setUserMenuOpen(false)}>
+                      <div className="px-4 py-2.5 text-sm text-amber-200 hover:bg-amber-900/30 cursor-pointer flex items-center gap-2">
+                        <Package className="h-3.5 w-3.5" /> My Orders
+                      </div>
                     </Link>
                     <div className="border-t border-amber-900/30 my-1" />
-                    <button
-                      onClick={() => { logout(); setUserMenuOpen(false); }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-900/20"
-                    >
+                    <button onClick={() => { logout(); setUserMenuOpen(false); }}
+                      className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-900/20">
                       Sign Out
                     </button>
                   </div>
@@ -120,12 +149,8 @@ export function Navbar() {
             )
           ) : null}
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden text-amber-200 hover:text-amber-400"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
+          <Button variant="ghost" size="icon" className="md:hidden text-amber-200 hover:text-amber-400"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
@@ -146,9 +171,14 @@ export function Navbar() {
             <div className="pt-3 border-t border-amber-900/30 flex flex-col gap-2">
               {user ? (
                 <>
-                  <Link href="/account" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/my-orders" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="outline" size="sm" className="w-full gap-2 border-amber-700 text-amber-300">
-                      <User className="h-4 w-4" /> {user.displayName ?? "My Account"}
+                      <Package className="h-4 w-4" /> My Orders
+                    </Button>
+                  </Link>
+                  <Link href="/account" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" size="sm" className="w-full gap-2 border-amber-700/50 text-amber-300/70">
+                      <User className="h-4 w-4" /> My Account
                     </Button>
                   </Link>
                   <Button variant="ghost" size="sm"
@@ -200,15 +230,20 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold text-amber-400 mb-4 text-sm tracking-wide uppercase">Contact</h4>
-            <div className="space-y-2 text-sm text-amber-200/50">
-              <p>{settings.contactPhone}</p>
-              <p>{settings.contactEmail}</p>
-              <p>{settings.contactAddress}</p>
-            </div>
-            <Link href="/contact" className="inline-block mt-3 text-xs text-amber-500 hover:text-amber-400 font-medium">
-              Send us a message →
-            </Link>
+            <h4 className="font-semibold text-amber-400 mb-4 text-sm tracking-wide uppercase">Info</h4>
+            <ul className="space-y-2 text-sm text-amber-200/50">
+              <li>{settings.contactPhone}</li>
+              <li>{settings.contactEmail}</li>
+              <li>
+                <Link href="/contact" className="hover:text-amber-400 transition-colors">Contact Us</Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-amber-400 transition-colors">Terms & Conditions</Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-amber-400 transition-colors">Privacy Policy</Link>
+              </li>
+            </ul>
           </div>
         </div>
         <div className="border-t border-amber-900/20 mt-12 pt-8 text-center text-xs text-amber-200/30">
@@ -223,6 +258,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-[100dvh] flex flex-col flex-1">
       <AnnouncementBar />
+      <VerificationBanner />
       <Navbar />
       <main className="flex-1 flex flex-col">{children}</main>
       <Footer />

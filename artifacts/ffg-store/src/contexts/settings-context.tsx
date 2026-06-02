@@ -9,6 +9,7 @@ const DEFAULTS: SiteSettings = {
   heroCtaText: "Shop All Products",
   heroCtaSecondaryText: "Buy in Bulk",
   heroImageUrl: "",
+  heroSecondaryImageUrl: "",
   companyTagline: "Grich20 · Abuja, Nigeria",
   aboutText:
     "Grich20 International General Services Limited is a proudly Nigerian company committed to delivering nature's best. Our herbs-infused honey sachets are crafted with premium natural ingredients and distributed fresh across Abuja.",

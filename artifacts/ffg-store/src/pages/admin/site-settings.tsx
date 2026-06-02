@@ -21,10 +21,11 @@ const SECTIONS = [
     ],
   },
   {
-    title: "🖼️ Hero Image",
-    desc: "The product photo displayed on the homepage hero. Paste a direct image URL (e.g. from Google Drive, Cloudinary, or any hosted image).",
+    title: "🖼️ Hero Images",
+    desc: "The product photos displayed on the homepage hero. Paste direct image URLs (e.g. from Google Drive, Cloudinary, or any hosted image).",
     fields: [
-      { key: "heroImageUrl", label: "Hero Image URL", multiline: false, placeholder: "https://example.com/your-product-photo.jpg", isImage: true },
+      { key: "heroImageUrl", label: "Main Hero Image URL (large photo, right side)", multiline: false, placeholder: "https://example.com/main-product.jpg", isImage: true },
+      { key: "heroSecondaryImageUrl", label: "Secondary Image URL (small photo, bottom-left — visible on larger screens)", multiline: false, placeholder: "https://example.com/secondary-product.jpg", isImage: true },
     ],
   },
   {

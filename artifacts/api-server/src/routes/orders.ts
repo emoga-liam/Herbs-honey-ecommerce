@@ -83,6 +83,20 @@ router.post("/orders", async (req, res): Promise<void> => {
   }
 });
 
+// GET /orders/by-email
+router.get("/orders/by-email", async (req, res): Promise<void> => {
+  try {
+    const email = req.query.email as string;
+    if (!email) { res.status(400).json({ error: "Email required" }); return; }
+    const orders = await db.select().from(ordersTable).where(eq(ordersTable.customerEmail, email));
+    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    res.json(orders.map((o) => ({ ...o, createdAt: o.createdAt.toISOString() })));
+  } catch (err) {
+    req.log.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // GET /orders/:id
 router.get("/orders/:id", async (req, res): Promise<void> => {
   try {

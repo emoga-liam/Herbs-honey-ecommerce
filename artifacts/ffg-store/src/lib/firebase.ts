@@ -5,9 +5,13 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   onAuthStateChanged,
   updateProfile,
+  sendPasswordResetEmail,
+  sendEmailVerification,
   type User,
 } from "firebase/auth";
 
@@ -29,14 +33,25 @@ if (isFirebaseConfigured) {
 }
 
 export const auth = isFirebaseConfigured ? getAuth(app) : null;
-export const googleProvider = isFirebaseConfigured ? new GoogleAuthProvider() : null;
+export const googleProvider = isFirebaseConfigured
+  ? (() => {
+      const p = new GoogleAuthProvider();
+      p.addScope("email");
+      p.addScope("profile");
+      return p;
+    })()
+  : null;
 
 export {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   onAuthStateChanged,
   updateProfile,
+  sendPasswordResetEmail,
+  sendEmailVerification,
 };
 export type { User };

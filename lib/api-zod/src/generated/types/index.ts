@@ -10,6 +10,7 @@ export * from './adminLogout200';
 export * from './adminStats';
 export * from './adminUser';
 export * from './contactFormInput';
+export * from './getOrdersByEmailParams';
 export * from './healthStatus';
 export * from './listOrdersParams';
 export * from './listProductsParams';

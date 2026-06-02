@@ -133,6 +133,7 @@ export interface SiteSettings {
   heroCtaText: string;
   heroCtaSecondaryText: string;
   heroImageUrl: string;
+  heroSecondaryImageUrl: string;
   companyTagline: string;
   aboutText: string;
   contactPhone: string;
@@ -149,6 +150,7 @@ export interface SiteSettingsUpdate {
   heroCtaText?: string;
   heroCtaSecondaryText?: string;
   heroImageUrl?: string;
+  heroSecondaryImageUrl?: string;
   companyTagline?: string;
   aboutText?: string;
   contactPhone?: string;
@@ -176,6 +178,10 @@ inStock?: boolean;
 export type ListOrdersParams = {
 status?: string;
 limit?: number;
+};
+
+export type GetOrdersByEmailParams = {
+email: string;
 };
 
 export type AdminLogout200 = {
