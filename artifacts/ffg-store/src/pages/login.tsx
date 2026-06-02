@@ -52,8 +52,9 @@ export default function LoginPage() {
     try {
       await signInWithGoogle();
       navigate(redirect);
-    } catch {
-      toast({ title: "Google sign in failed", description: "Please try again.", variant: "destructive" });
+    } catch (err: unknown) {
+      const msg = (err as Error)?.message ?? "Please try again.";
+      toast({ title: "Google sign in failed", description: msg, variant: "destructive" });
     }
   };
 

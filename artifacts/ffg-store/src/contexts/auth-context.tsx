@@ -68,11 +68,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await signInWithPopup(auth, googleProvider);
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;
+      if (code === "auth/unauthorized-domain") {
+        throw new Error(
+          "This domain is not authorized in Firebase. Go to Firebase Console → Authentication → Settings → Authorized domains and add your site's domain."
+        );
+      }
       if (
         code === "auth/popup-blocked" ||
         code === "auth/popup-closed-by-user" ||
-        code === "auth/cancelled-popup-request"
+        code === "auth/cancelled-popup-request" ||
+        code === "auth/operation-not-supported-in-this-environment"
       ) {
+        // Mobile browsers often block popups — fall back to redirect
         await signInWithRedirect(auth, googleProvider);
       } else {
         throw err;
