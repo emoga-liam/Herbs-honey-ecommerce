@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import { ShoppingBag, Menu, X, User, ChevronDown, Package, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
+import grich20Logo from "@assets/IMG_1201_JPG_1780421888804.jpg";
 
 export function AnnouncementBar() {
   const settings = useSettings();
