@@ -2,8 +2,12 @@ import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import session from "express-session";
+import path from "path";
+import { fileURLToPath } from "url";
 import router from "./routes";
 import { logger } from "./lib/logger";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 declare module "express-session" {
   interface SessionData {
@@ -55,6 +59,9 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded product images
+app.use("/api/uploads", express.static(path.resolve(__dirname, "..", "uploads")));
 
 app.use("/api", router);
 

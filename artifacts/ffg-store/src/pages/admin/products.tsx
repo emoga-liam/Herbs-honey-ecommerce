@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useListProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, getListProductsQueryKey } from "@workspace/api-client-react";
 import type { Product } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { formatNaira, getProductImage } from "@/lib/utils";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Upload, Link, ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const FLAVORS = ["original", "hibiscus", "ginger-lemon", "cinnamon-lemon"];
@@ -31,6 +31,141 @@ const defaultForm: ProductFormData = {
   name: "", description: "", priceKobo: 50000, flavor: "original",
   type: "sachet", inStock: true, stockCount: 100, featured: false, imageUrl: null,
 };
+
+function ImagePicker({
+  value,
+  onChange,
+}: {
+  value: string | null;
+  onChange: (url: string | null) => void;
+}) {
+  const { toast } = useToast();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [tab, setTab] = useState<"upload" | "url">("upload");
+  const [urlInput, setUrlInput] = useState(value ?? "");
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(value);
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("image", file);
+      const res = await fetch("/api/uploads/image", { method: "POST", credentials: "include", body: fd });
+      if (!res.ok) throw new Error("Upload failed");
+      const { imageUrl } = await res.json() as { imageUrl: string };
+      onChange(imageUrl);
+      setPreview(imageUrl);
+      toast({ title: "Image uploaded" });
+    } catch {
+      toast({ title: "Upload failed", description: "Try a different image or use a URL instead.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  const handleUrlApply = () => {
+    const trimmed = urlInput.trim();
+    if (!trimmed) { onChange(null); setPreview(null); return; }
+    onChange(trimmed);
+    setPreview(trimmed);
+  };
+
+  const handleClear = () => {
+    onChange(null);
+    setPreview(null);
+    setUrlInput("");
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  return (
+    <div className="space-y-3">
+      <Label>Product Image</Label>
+
+      {/* Preview */}
+      {preview ? (
+        <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border bg-muted flex items-center justify-center">
+          <img
+            src={preview}
+            alt="Product preview"
+            className="max-h-full max-w-full object-contain"
+            onError={() => setPreview(null)}
+          />
+          <button
+            type="button"
+            onClick={handleClear}
+            className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : (
+        <div className="w-full h-40 rounded-xl border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+          <ImageIcon className="h-8 w-8 opacity-40" />
+          <span className="text-xs">No image selected</span>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex rounded-lg border border-border overflow-hidden text-sm">
+        <button
+          type="button"
+          onClick={() => setTab("upload")}
+          className={`flex-1 py-2 flex items-center justify-center gap-1.5 transition-colors font-medium ${tab === "upload" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+        >
+          <Upload className="h-3.5 w-3.5" /> From Device
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("url")}
+          className={`flex-1 py-2 flex items-center justify-center gap-1.5 transition-colors font-medium ${tab === "url" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+        >
+          <Link className="h-3.5 w-3.5" /> From URL
+        </button>
+      </div>
+
+      {tab === "upload" && (
+        <div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={handleFile}
+            className="hidden"
+            id="product-image-file"
+          />
+          <label
+            htmlFor="product-image-file"
+            className={`flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary hover:bg-muted/40 transition-colors text-sm font-medium ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+          >
+            <Upload className="h-4 w-4" />
+            {uploading ? "Uploading…" : "Tap to choose a photo"}
+          </label>
+          <p className="text-xs text-muted-foreground mt-1.5">Supports JPG, PNG, WebP · Max 10 MB</p>
+        </div>
+      )}
+
+      {tab === "url" && (
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Input
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              placeholder="https://example.com/image.jpg"
+              className="text-sm"
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleUrlApply(); } }}
+            />
+            <Button type="button" variant="outline" onClick={handleUrlApply} className="shrink-0">Apply</Button>
+          </div>
+          <p className="text-xs text-muted-foreground">Paste a direct image link from Google Drive, Cloudinary, Imgur, etc.</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function ProductFormModal({
   initial,
@@ -95,6 +230,14 @@ function ProductFormModal({
               <input type="checkbox" id="featured" checked={form.featured} onChange={(e) => set("featured", e.target.checked)} className="w-4 h-4 accent-primary" />
               <Label htmlFor="featured">Featured</Label>
             </div>
+          </div>
+
+          {/* Image picker */}
+          <div className="pt-2 border-t border-border">
+            <ImagePicker
+              value={form.imageUrl}
+              onChange={(url) => set("imageUrl", url)}
+            />
           </div>
         </div>
         <div className="flex gap-3 p-5 border-t border-border">
