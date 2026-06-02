@@ -112,8 +112,8 @@ export function PhoneAuthModal({
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      {/* Invisible reCAPTCHA anchor */}
-      <div ref={recaptchaContainerRef} className="hidden" />
+      {/* Invisible reCAPTCHA anchor — must NOT be display:none */}
+      <div ref={recaptchaContainerRef} style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }} />
 
       <div
         className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 max-w-sm w-full shadow-2xl relative"
