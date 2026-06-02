@@ -4,7 +4,6 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithPhoneNumber,
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
@@ -13,8 +12,6 @@ import {
   updateProfile,
   sendPasswordResetEmail,
   sendEmailVerification,
-  RecaptchaVerifier,
-  type ConfirmationResult,
   type User,
 } from "firebase/auth";
 
@@ -48,7 +45,6 @@ export const googleProvider = isFirebaseConfigured
 export {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithPhoneNumber,
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
@@ -57,6 +53,5 @@ export {
   updateProfile,
   sendPasswordResetEmail,
   sendEmailVerification,
-  RecaptchaVerifier,
 };
-export type { User, ConfirmationResult };
+export type { User };
