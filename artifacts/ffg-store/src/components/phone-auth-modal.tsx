@@ -64,14 +64,17 @@ export function PhoneAuthModal({
       startResendTimer();
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;
+      console.error("[PhoneAuth] sendOTP error code:", code, err);
       if (code === "auth/invalid-phone-number") {
         setError("Invalid phone number. Please check and try again.");
       } else if (code === "auth/too-many-requests") {
         setError("Too many attempts. Please wait a few minutes and try again.");
       } else if (code === "auth/unauthorized-domain") {
-        setError("This domain is not authorised in Firebase Console.");
+        setError("This domain is not authorised in Firebase. Add it under Authentication → Settings → Authorized domains.");
+      } else if (code === "auth/operation-not-allowed") {
+        setError("Phone sign-in is not enabled. The site owner must enable it in Firebase Console → Authentication → Sign-in providers → Phone.");
       } else {
-        setError("Failed to send OTP. Please try again.");
+        setError(`Failed to send OTP (${code ?? "unknown"}). Please try again.`);
       }
       verifierRef.current?.clear();
       verifierRef.current = null;
