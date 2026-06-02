@@ -38,15 +38,17 @@ export function VerificationBanner() {
   };
 
   return (
-    <div className="bg-amber-950/80 border-b border-amber-800/40 px-4 py-2 flex items-center justify-center gap-3 text-sm">
+    <div className="bg-amber-950/80 border-b border-amber-800/40 px-4 py-2.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm">
       <AlertCircle className="h-4 w-4 text-amber-400 flex-shrink-0" />
-      <span className="text-amber-200/70">Please verify your email address to secure your account.</span>
+      <span className="text-amber-200/70">
+        Please verify your email — check your <span className="text-amber-300 font-semibold">inbox and spam/junk folder</span>.
+      </span>
       <button
         onClick={handleResend}
         disabled={sending}
         className="text-amber-400 hover:text-amber-300 font-semibold underline-offset-2 hover:underline text-xs flex-shrink-0"
       >
-        {sending ? "Sending…" : "Resend email"}
+        {sending ? "Sending…" : "Resend link"}
       </button>
     </div>
   );

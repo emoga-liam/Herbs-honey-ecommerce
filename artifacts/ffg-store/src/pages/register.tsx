@@ -45,18 +45,27 @@ export default function RegisterPage() {
               <Mail className="h-10 w-10 text-amber-400" />
             </div>
           </div>
-          <h2 className="font-cormorant font-bold text-3xl text-amber-200 mb-3">Verify Your Email</h2>
-          <p className="text-amber-200/60 text-sm leading-relaxed mb-2">
+          <h2 className="font-cormorant font-bold text-3xl text-amber-200 mb-3">Check Your Email</h2>
+          <p className="text-amber-200/60 text-sm leading-relaxed mb-3">
             We've sent a verification link to <span className="text-amber-300 font-medium">{email}</span>.
           </p>
-          <p className="text-amber-200/40 text-xs mb-6">Check your inbox and click the link to verify your account. You can still shop while unverified.</p>
+
+          {/* Spam warning box */}
+          <div className="bg-amber-900/30 border border-amber-700/40 rounded-xl px-4 py-3 mb-6 text-left space-y-1">
+            <p className="text-amber-300 text-xs font-bold uppercase tracking-wide">📬 Can't find the email?</p>
+            <p className="text-amber-200/60 text-xs leading-relaxed">
+              The email may have landed in your <span className="text-amber-200 font-semibold">Spam or Junk folder</span>.
+              Look for a message from <span className="text-amber-200 font-semibold">noreply@herbs-honey.firebaseapp.com</span> and mark it as "Not Spam".
+            </p>
+          </div>
+
           <Button
             onClick={() => navigate(redirect)}
             className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl"
           >
             Continue to Shop
           </Button>
-          <p className="text-center text-xs text-amber-200/30 mt-4">Didn't get it? Check spam or sign in to resend.</p>
+          <p className="text-center text-xs text-amber-200/30 mt-4">Didn't receive it? Sign in to resend the verification link.</p>
         </div>
       </div>
     );
