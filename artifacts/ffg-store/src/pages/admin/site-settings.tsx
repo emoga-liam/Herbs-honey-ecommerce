@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Save, RotateCcw, ImageIcon, AlertCircle } from "lucide-react";
+import { Save, RotateCcw, ImageIcon, AlertCircle, ChevronDown } from "lucide-react";
 
 const SECTIONS = [
   {
@@ -52,6 +52,58 @@ const SECTIONS = [
       { key: "contactEmail", label: "Email Address", multiline: false, placeholder: "info@grich20.com" },
       { key: "contactAddress", label: "Physical Address", multiline: false, placeholder: "68 Trade More Avenue, Lugbe, Abuja" },
       { key: "whatsappNumber", label: "WhatsApp Number (with country code)", multiline: false, placeholder: "+2349061602332" },
+    ],
+  },
+];
+
+const PAGE_SECTIONS = [
+  {
+    id: "contact",
+    title: "📞 Contact Page Content",
+    desc: "Text shown on the public contact page",
+    fields: [
+      { key: "contactHeroSubtitle", label: "Hero Subtitle", multiline: true, rows: 2, placeholder: "Questions about our products? Want to place a bulk order? We'd love to hear from you." },
+      { key: "contactInfoDesc", label: "Contact Info Description", multiline: false, placeholder: "Reach us through any of these channels. We respond quickly!" },
+      { key: "contactBusinessHours", label: "Business Hours", multiline: true, rows: 4, placeholder: "Monday – Friday: 8am – 6pm\nSaturday: 9am – 4pm\nSunday: Closed", hint: "One entry per line, e.g. 'Monday – Friday: 8am – 6pm'" },
+    ],
+  },
+  {
+    id: "terms",
+    title: "📜 Terms & Conditions",
+    desc: "All 12 sections of the Terms & Conditions page. Titles are fixed; edit the body text for each section.",
+    fields: [
+      { key: "termsLastUpdated", label: "Last Updated Date", multiline: false, placeholder: "e.g. 1 June 2025" },
+      { key: "termsS1", label: "Section 1 — Acceptance of Terms", multiline: true, rows: 5, placeholder: "" },
+      { key: "termsS2", label: "Section 2 — Products", multiline: true, rows: 5, placeholder: "" },
+      { key: "termsS3", label: "Section 3 — Pricing", multiline: true, rows: 5, placeholder: "" },
+      { key: "termsS4", label: "Section 4 — Orders and Payment", multiline: true, rows: 5, placeholder: "" },
+      { key: "termsS5", label: "Section 5 — Delivery", multiline: true, rows: 5, placeholder: "" },
+      { key: "termsS6", label: "Section 6 — Returns and Refunds", multiline: true, rows: 5, placeholder: "" },
+      { key: "termsS7", label: "Section 7 — User Accounts", multiline: true, rows: 4, placeholder: "" },
+      { key: "termsS8", label: "Section 8 — Intellectual Property", multiline: true, rows: 4, placeholder: "" },
+      { key: "termsS9", label: "Section 9 — Limitation of Liability", multiline: true, rows: 4, placeholder: "" },
+      { key: "termsS10", label: "Section 10 — Changes to These Terms", multiline: true, rows: 3, placeholder: "" },
+      { key: "termsS11", label: "Section 11 — Governing Law", multiline: true, rows: 3, placeholder: "" },
+      { key: "termsS12", label: "Section 12 — Contact Us", multiline: true, rows: 5, placeholder: "" },
+    ],
+  },
+  {
+    id: "privacy",
+    title: "🔒 Privacy Policy",
+    desc: "All 11 sections of the Privacy Policy page. Titles are fixed; edit the body text for each section.",
+    fields: [
+      { key: "privacyLastUpdated", label: "Last Updated Date", multiline: false, placeholder: "e.g. 1 June 2025" },
+      { key: "privacyS1", label: "Section 1 — Introduction", multiline: true, rows: 4, placeholder: "" },
+      { key: "privacyS2", label: "Section 2 — Information We Collect", multiline: true, rows: 6, placeholder: "" },
+      { key: "privacyS3", label: "Section 3 — How We Use Your Information", multiline: true, rows: 6, placeholder: "" },
+      { key: "privacyS4", label: "Section 4 — Information Sharing", multiline: true, rows: 6, placeholder: "" },
+      { key: "privacyS5", label: "Section 5 — Data Security", multiline: true, rows: 4, placeholder: "" },
+      { key: "privacyS6", label: "Section 6 — Cookies", multiline: true, rows: 4, placeholder: "" },
+      { key: "privacyS7", label: "Section 7 — Your Rights", multiline: true, rows: 6, placeholder: "" },
+      { key: "privacyS8", label: "Section 8 — Data Retention", multiline: true, rows: 4, placeholder: "" },
+      { key: "privacyS9", label: "Section 9 — Children's Privacy", multiline: true, rows: 3, placeholder: "" },
+      { key: "privacyS10", label: "Section 10 — Changes to This Policy", multiline: true, rows: 3, placeholder: "" },
+      { key: "privacyS11", label: "Section 11 — Contact Us", multiline: true, rows: 5, placeholder: "" },
     ],
   },
 ];
@@ -104,6 +156,7 @@ export default function AdminSiteSettingsPage() {
 
   const [form, setForm] = useState<Record<string, string>>({});
   const [dirty, setDirty] = useState(false);
+  const [openPages, setOpenPages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (settings) setForm(settings as unknown as Record<string, string>);
@@ -183,6 +236,69 @@ export default function AdminSiteSettingsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Page Content Sections — collapsible */}
+      <div className="mt-4 space-y-3">
+        <div className="mb-2">
+          <h3 className="font-cormorant font-bold text-xl text-amber-200">Page Content</h3>
+          <p className="text-sm text-muted-foreground">Click a page to expand and edit its content.</p>
+        </div>
+        {PAGE_SECTIONS.map((section) => {
+          const isOpen = openPages.has(section.id);
+          const toggle = () =>
+            setOpenPages((prev) => {
+              const next = new Set(prev);
+              if (next.has(section.id)) next.delete(section.id);
+              else next.add(section.id);
+              return next;
+            });
+          return (
+            <div key={section.id} className="rounded-xl bg-card border border-border overflow-hidden">
+              <button
+                type="button"
+                onClick={toggle}
+                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-amber-900/10 transition-colors"
+              >
+                <div>
+                  <span className="font-cormorant font-bold text-lg text-amber-300">{section.title}</span>
+                  <p className="text-sm text-muted-foreground mt-0.5">{section.desc}</p>
+                </div>
+                <ChevronDown
+                  className={`h-5 w-5 text-amber-400 flex-shrink-0 ml-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {isOpen && (
+                <div className="px-6 pb-6 border-t border-border pt-5 space-y-4">
+                  {section.fields.map((fieldDef) => (
+                    <div key={fieldDef.key} className="space-y-2">
+                      <Label className="font-medium text-amber-200/70">{fieldDef.label}</Label>
+                      {fieldDef.multiline ? (
+                        <Textarea
+                          value={form[fieldDef.key] ?? ""}
+                          onChange={(e) => set(fieldDef.key, e.target.value)}
+                          placeholder={fieldDef.placeholder}
+                          rows={fieldDef.rows ?? 4}
+                          className="resize-y font-mono text-sm"
+                        />
+                      ) : (
+                        <Input
+                          value={form[fieldDef.key] ?? ""}
+                          onChange={(e) => set(fieldDef.key, e.target.value)}
+                          placeholder={fieldDef.placeholder}
+                        />
+                      )}
+                      {"hint" in fieldDef && fieldDef.hint && (
+                        <p className="text-xs text-muted-foreground">{fieldDef.hint}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Floating save button */}

@@ -706,6 +706,62 @@ components:
           type: string
         announcementBanner:
           type: string
+        contactHeroSubtitle:
+          type: string
+        contactInfoDesc:
+          type: string
+        contactBusinessHours:
+          type: string
+        termsLastUpdated:
+          type: string
+        termsS1:
+          type: string
+        termsS2:
+          type: string
+        termsS3:
+          type: string
+        termsS4:
+          type: string
+        termsS5:
+          type: string
+        termsS6:
+          type: string
+        termsS7:
+          type: string
+        termsS8:
+          type: string
+        termsS9:
+          type: string
+        termsS10:
+          type: string
+        termsS11:
+          type: string
+        termsS12:
+          type: string
+        privacyLastUpdated:
+          type: string
+        privacyS1:
+          type: string
+        privacyS2:
+          type: string
+        privacyS3:
+          type: string
+        privacyS4:
+          type: string
+        privacyS5:
+          type: string
+        privacyS6:
+          type: string
+        privacyS7:
+          type: string
+        privacyS8:
+          type: string
+        privacyS9:
+          type: string
+        privacyS10:
+          type: string
+        privacyS11:
+          type: string
       required:
         - heroTitle
         - heroSubtitle
@@ -721,6 +777,34 @@ components:
         - whatsappNumber
         - footerText
         - announcementBanner
+        - contactHeroSubtitle
+        - contactInfoDesc
+        - contactBusinessHours
+        - termsLastUpdated
+        - termsS1
+        - termsS2
+        - termsS3
+        - termsS4
+        - termsS5
+        - termsS6
+        - termsS7
+        - termsS8
+        - termsS9
+        - termsS10
+        - termsS11
+        - termsS12
+        - privacyLastUpdated
+        - privacyS1
+        - privacyS2
+        - privacyS3
+        - privacyS4
+        - privacyS5
+        - privacyS6
+        - privacyS7
+        - privacyS8
+        - privacyS9
+        - privacyS10
+        - privacyS11
 
     SiteSettingsUpdate:
       type: object
@@ -752,6 +836,62 @@ components:
         footerText:
           type: string
         announcementBanner:
+          type: string
+        contactHeroSubtitle:
+          type: string
+        contactInfoDesc:
+          type: string
+        contactBusinessHours:
+          type: string
+        termsLastUpdated:
+          type: string
+        termsS1:
+          type: string
+        termsS2:
+          type: string
+        termsS3:
+          type: string
+        termsS4:
+          type: string
+        termsS5:
+          type: string
+        termsS6:
+          type: string
+        termsS7:
+          type: string
+        termsS8:
+          type: string
+        termsS9:
+          type: string
+        termsS10:
+          type: string
+        termsS11:
+          type: string
+        termsS12:
+          type: string
+        privacyLastUpdated:
+          type: string
+        privacyS1:
+          type: string
+        privacyS2:
+          type: string
+        privacyS3:
+          type: string
+        privacyS4:
+          type: string
+        privacyS5:
+          type: string
+        privacyS6:
+          type: string
+        privacyS7:
+          type: string
+        privacyS8:
+          type: string
+        privacyS9:
+          type: string
+        privacyS10:
+          type: string
+        privacyS11:
           type: string
 
     ContactFormInput:

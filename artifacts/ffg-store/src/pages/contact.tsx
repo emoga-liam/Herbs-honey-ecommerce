@@ -42,7 +42,7 @@ export default function ContactPage() {
         <div className="container max-w-screen-xl mx-auto px-4 text-center">
           <h1 className="font-serif font-bold text-5xl mb-4 text-amber-300">Get In Touch</h1>
           <p className="text-amber-200/70 max-w-xl mx-auto text-lg">
-            Questions about our products? Want to place a bulk order? We'd love to hear from you.
+            {settings.contactHeroSubtitle || "Questions about our products? Want to place a bulk order? We'd love to hear from you."}
           </p>
         </div>
       </div>
@@ -54,7 +54,7 @@ export default function ContactPage() {
             <div>
               <h2 className="font-serif font-bold text-2xl mb-2">Contact Information</h2>
               <p className="text-muted-foreground text-sm">
-                Reach us through any of these channels. We respond quickly!
+                {settings.contactInfoDesc || "Reach us through any of these channels. We respond quickly!"}
               </p>
             </div>
 
@@ -81,11 +81,9 @@ export default function ContactPage() {
                 <Clock className="h-4 w-4 text-amber-600" />
                 <h3 className="font-semibold text-sm">Business Hours</h3>
               </div>
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <div className="flex justify-between"><span>Monday – Friday</span><span>8am – 6pm</span></div>
-                <div className="flex justify-between"><span>Saturday</span><span>9am – 4pm</span></div>
-                <div className="flex justify-between"><span>Sunday</span><span>Closed</span></div>
-              </div>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {settings.contactBusinessHours || "Monday – Friday: 8am – 6pm\nSaturday: 9am – 4pm\nSunday: Closed"}
+              </p>
             </div>
           </div>
 

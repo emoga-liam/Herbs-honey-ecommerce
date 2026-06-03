@@ -17,9 +17,19 @@ const DEFAULTS: SiteSettings = {
   contactEmail: "info@grich20.com",
   contactAddress: "68 Trade More Avenue, Lugbe, Abuja",
   whatsappNumber: "+2349061602332",
-  footerText:
-    "Grich20 International General Services Limited. All rights reserved.",
+  footerText: "Grich20 International General Services Limited. All rights reserved.",
   announcementBanner: "",
+  contactHeroSubtitle: "Questions about our products? Want to place a bulk order? We'd love to hear from you.",
+  contactInfoDesc: "Reach us through any of these channels. We respond quickly!",
+  contactBusinessHours: "Monday – Friday: 8am – 6pm\nSaturday: 9am – 4pm\nSunday: Closed",
+  termsLastUpdated: "1 June 2025",
+  termsS1: "", termsS2: "", termsS3: "", termsS4: "",
+  termsS5: "", termsS6: "", termsS7: "", termsS8: "",
+  termsS9: "", termsS10: "", termsS11: "", termsS12: "",
+  privacyLastUpdated: "1 June 2025",
+  privacyS1: "", privacyS2: "", privacyS3: "", privacyS4: "",
+  privacyS5: "", privacyS6: "", privacyS7: "", privacyS8: "",
+  privacyS9: "", privacyS10: "", privacyS11: "",
 };
 
 const SettingsContext = createContext<SiteSettings>(DEFAULTS);
