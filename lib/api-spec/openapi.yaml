@@ -333,6 +333,34 @@ paths:
         "401":
           description: Not authenticated
 
+  /auth/change-password:
+    post:
+      operationId: changeAdminPassword
+      tags: [auth]
+      summary: Change admin password (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordBody"
+      responses:
+        "200":
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized or wrong current password
+
   /admin/stats:
     get:
       operationId: getAdminStats
@@ -636,6 +664,17 @@ components:
         - id
         - email
         - name
+
+    ChangePasswordBody:
+      type: object
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+      required:
+        - currentPassword
+        - newPassword
 
     AdminStats:
       type: object

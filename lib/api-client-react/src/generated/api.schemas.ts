@@ -113,6 +113,11 @@ export interface AdminUser {
   name: string;
 }
 
+export interface ChangePasswordBody {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface StatusCount {
   status: string;
   count: number;
@@ -241,6 +246,10 @@ email: string;
 };
 
 export type AdminLogout200 = {
+  message: string;
+};
+
+export type ChangeAdminPassword200 = {
   message: string;
 };
 

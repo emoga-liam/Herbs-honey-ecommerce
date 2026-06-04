@@ -311,6 +311,19 @@ export const GetAdminMeResponse = zod.object({
 
 
 /**
+ * @summary Change admin password (admin)
+ */
+export const ChangeAdminPasswordBody = zod.object({
+  "currentPassword": zod.string(),
+  "newPassword": zod.string()
+})
+
+export const ChangeAdminPasswordResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
  * @summary Admin dashboard statistics
  */
 export const GetAdminStatsResponse = zod.object({
