@@ -17,6 +17,10 @@ declare module "express-session" {
 
 const app: Express = express();
 
+// Trust the reverse proxy (Replit's shared proxy sets X-Forwarded-For)
+// so rate limiters and session cookies see the real client IP/host.
+app.set("trust proxy", 1);
+
 app.use(
   pinoHttp({
     logger,
