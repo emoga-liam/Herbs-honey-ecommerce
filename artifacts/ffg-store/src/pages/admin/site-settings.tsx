@@ -197,9 +197,9 @@ export default function AdminSiteSettingsPage() {
 
   return (
     <AdminLayout title="Site Settings">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <p className="text-muted-foreground text-sm">Customize all text and images on your website. Changes go live immediately when saved.</p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-shrink-0">
           {dirty && (
             <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5 border-amber-800/60 text-amber-400">
               <RotateCcw className="h-3.5 w-3.5" /> Reset

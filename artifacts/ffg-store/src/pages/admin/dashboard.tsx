@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useGetAdminStats, useAdminLogout } from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
 import { formatNaira } from "@/lib/utils";
@@ -5,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Package, ShoppingCart, TrendingUp, Clock,
-  LogOut, LayoutDashboard, Archive, Settings2, Globe, KeyRound,
+  LogOut, LayoutDashboard, Archive, Settings2, Globe, KeyRound, Menu, X,
 } from "lucide-react";
 import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
 
@@ -18,6 +19,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
   const [location] = useLocation();
   const [, navigate] = useLocation();
   const logout = useAdminLogout();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const nav = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -27,57 +29,103 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
     { href: "/admin/change-password", label: "Change Password", icon: KeyRound },
   ];
 
-  return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="w-56 flex-shrink-0 bg-sidebar text-sidebar-foreground flex flex-col border-r border-sidebar-border">
-        <div className="p-5 border-b border-sidebar-border">
-          <div className="flex items-center gap-2.5">
-            <img src={grich20Logo} alt="Grich20" className="h-8 w-8 rounded-lg object-cover ring-1 ring-amber-700/30" />
-            <div>
-              <h1 className="font-cormorant font-bold text-base text-amber-400 leading-tight">Grich20</h1>
-              <p className="text-[9px] text-sidebar-foreground/40 uppercase tracking-widest">Admin Panel</p>
-            </div>
+  const SidebarContent = () => (
+    <>
+      <div className="p-5 border-b border-sidebar-border flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <img src={grich20Logo} alt="Grich20" className="h-8 w-8 rounded-lg object-cover ring-1 ring-amber-700/30" />
+          <div>
+            <h1 className="font-cormorant font-bold text-base text-amber-400 leading-tight">Grich20</h1>
+            <p className="text-[9px] text-sidebar-foreground/40 uppercase tracking-widest">Admin Panel</p>
           </div>
         </div>
-        <nav className="flex-1 p-3 space-y-0.5">
-          {nav.map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href}>
-              <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+        <button
+          className="lg:hidden p-1 text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors"
+          onClick={() => setSidebarOpen(false)}
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        {nav.map(({ href, label, icon: Icon }) => (
+          <Link key={href} href={href}>
+            <div
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 location === href
                   ? "bg-amber-900/30 text-amber-400"
                   : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              }`}>
-                <Icon className="h-4 w-4" />
-                {label}
-              </div>
-            </Link>
-          ))}
-          <div className="pt-2 border-t border-sidebar-border/50 mt-2">
-            <Link href="/">
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/40 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors cursor-pointer">
-                <Globe className="h-4 w-4" />
-                View Store
-              </div>
-            </Link>
-          </div>
-        </nav>
-        <div className="p-3 border-t border-sidebar-border">
-          <button
-            onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/admin/login") })}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/50 hover:bg-red-900/30 hover:text-red-400 transition-colors w-full"
-          >
-            <LogOut className="h-4 w-4" /> Sign Out
-          </button>
+              }`}
+            >
+              <Icon className="h-4 w-4 flex-shrink-0" />
+              {label}
+            </div>
+          </Link>
+        ))}
+        <div className="pt-2 border-t border-sidebar-border/50 mt-2">
+          <Link href="/">
+            <div
+              onClick={() => setSidebarOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/40 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors cursor-pointer"
+            >
+              <Globe className="h-4 w-4 flex-shrink-0" />
+              View Store
+            </div>
+          </Link>
         </div>
+      </nav>
+
+      <div className="p-3 border-t border-sidebar-border">
+        <button
+          onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/admin/login") })}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/50 hover:bg-red-900/30 hover:text-red-400 transition-colors w-full"
+        >
+          <LogOut className="h-4 w-4 flex-shrink-0" /> Sign Out
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-background flex">
+      {/* Mobile overlay backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar — slide-over on mobile, permanent on desktop */}
+      <aside
+        className={`
+          fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
+          w-64 lg:w-56 flex-shrink-0
+          bg-sidebar text-sidebar-foreground flex flex-col border-r border-sidebar-border
+          transition-transform duration-250 ease-in-out
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
+      >
+        <SidebarContent />
       </aside>
 
-      {/* Main */}
+      {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-border flex items-center px-6 bg-card">
-          <h2 className="font-cormorant font-bold text-xl text-amber-300">{title}</h2>
+        {/* Top header */}
+        <header className="h-14 border-b border-border flex items-center px-4 lg:px-6 bg-card gap-3 sticky top-0 z-30">
+          <button
+            className="lg:hidden p-2 -ml-1 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <h2 className="font-cormorant font-bold text-xl text-amber-300 truncate">{title}</h2>
         </header>
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
+
+        {/* Page content */}
+        <main className="flex-1 p-4 lg:p-6 overflow-auto">{children}</main>
       </div>
     </div>
   );
