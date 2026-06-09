@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { useListCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, getListCategoriesQueryKey } from "@workspace/api-client-react";
+import { useListCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, useListProducts, getListCategoriesQueryKey } from "@workspace/api-client-react";
 import type { Category } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { AdminLayout } from "./dashboard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, X, Tag } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Pencil, Trash2, X, Tag, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CategoryForm { name: string; description: string; }
@@ -68,6 +70,7 @@ export default function AdminCategoriesPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { data: categories = [], isLoading } = useListCategories();
+  const { data: products = [] } = useListProducts();
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
   const deleteCategory = useDeleteCategory();
@@ -128,36 +131,38 @@ export default function AdminCategoriesPage() {
           </Button>
         </div>
       ) : (
-        <div className="rounded-xl border border-border overflow-hidden bg-card">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/30">
-                <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Name</th>
-                <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden sm:table-cell">Description</th>
-                <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((cat) => (
-                <tr key={cat.id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
-                  <td className="px-4 py-3 font-semibold">{cat.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
-                    {cat.description || <span className="italic opacity-40">No description</span>}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditCat(cat)}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-destructive" onClick={() => handleDelete(cat.id, cat.name)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-2">
+          {categories.map((cat) => {
+            const count = products.filter((p) => p.categoryId === cat.id).length;
+            return (
+              <div key={cat.id} className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:border-primary/30 transition-colors group">
+                {/* Clickable main area */}
+                <Link href={`/admin/categories/${cat.id}`} className="flex-1 flex items-center gap-3 min-w-0">
+                  <Tag className="h-4 w-4 text-primary shrink-0" />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm">{cat.name}</p>
+                    {cat.description && (
+                      <p className="text-xs text-muted-foreground truncate">{cat.description}</p>
+                    )}
+                  </div>
+                  <Badge variant="outline" className="ml-2 shrink-0 text-xs">
+                    {count} {count === 1 ? "product" : "products"}
+                  </Badge>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0 group-hover:text-foreground transition-colors" />
+                </Link>
+
+                {/* Edit / Delete — stop propagation so clicking these doesn't navigate */}
+                <div className="flex items-center gap-1 shrink-0 border-l border-border pl-3 ml-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.preventDefault(); setEditCat(cat); }}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-destructive" onClick={(e) => { e.preventDefault(); handleDelete(cat.id, cat.name); }}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
