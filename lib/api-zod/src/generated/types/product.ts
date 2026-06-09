@@ -21,5 +21,9 @@ export interface Product {
   inStock: boolean;
   stockCount: number;
   featured: boolean;
+  /** @nullable */
+  categoryId?: number | null;
+  /** @nullable */
+  categoryName?: string | null;
   createdAt: string;
 }

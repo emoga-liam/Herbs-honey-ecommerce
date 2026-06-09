@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: products
     description: Product catalog
+  - name: categories
+    description: Product categories
   - name: orders
     description: Customer orders
   - name: auth
@@ -20,6 +22,8 @@ tags:
     description: Admin dashboard
   - name: settings
     description: Site settings (CMS)
+  - name: delivery-fees
+    description: Delivery fees by Nigerian state
 paths:
   /healthz:
     get:
@@ -56,6 +60,16 @@ paths:
           required: false
           schema:
             type: boolean
+        - name: categoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: List of products
@@ -151,6 +165,86 @@ paths:
       operationId: deleteProduct
       tags: [products]
       summary: Delete product (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: createCategory
+      tags: [categories]
+      summary: Create category (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "401":
+          description: Unauthorized
+
+  /categories/{id}:
+    patch:
+      operationId: updateCategory
+      tags: [categories]
+      summary: Update category (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteCategory
+      tags: [categories]
+      summary: Delete category (admin)
       parameters:
         - name: id
           in: path
@@ -278,6 +372,44 @@ paths:
           description: Unauthorized
         "404":
           description: Not found
+
+  /delivery-fees:
+    get:
+      operationId: listDeliveryFees
+      tags: [delivery-fees]
+      summary: List delivery fees for all Nigerian states (public)
+      responses:
+        "200":
+          description: Delivery fees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeliveryFee"
+    put:
+      operationId: upsertDeliveryFees
+      tags: [delivery-fees]
+      summary: Bulk-update delivery fees (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/DeliveryFeeInput"
+      responses:
+        "200":
+          description: Updated fees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeliveryFee"
+        "401":
+          description: Unauthorized
 
   /auth/login:
     post:
@@ -468,6 +600,10 @@ components:
           type: integer
         featured:
           type: boolean
+        categoryId:
+          type: ["integer", "null"]
+        categoryName:
+          type: ["string", "null"]
         createdAt:
           type: string
       required:
@@ -503,6 +639,8 @@ components:
           type: integer
         featured:
           type: boolean
+        categoryId:
+          type: ["integer", "null"]
       required:
         - name
         - description
@@ -534,6 +672,8 @@ components:
           type: integer
         featured:
           type: boolean
+        categoryId:
+          type: ["integer", "null"]
 
     Order:
       type: object
@@ -548,10 +688,16 @@ components:
           type: string
         deliveryAddress:
           type: string
+        deliveryState:
+          type: ["string", "null"]
         items:
           type: array
           items:
             $ref: "#/components/schemas/OrderItem"
+        subtotalKobo:
+          type: integer
+        deliveryFeeKobo:
+          type: integer
         totalKobo:
           type: integer
         status:
@@ -571,6 +717,8 @@ components:
         - customerPhone
         - deliveryAddress
         - items
+        - subtotalKobo
+        - deliveryFeeKobo
         - totalKobo
         - status
         - createdAt
@@ -606,6 +754,9 @@ components:
           type: string
         deliveryAddress:
           type: string
+        deliveryState:
+          type: string
+          description: Nigerian state for delivery fee calculation
         notes:
           type: ["string", "null"]
         paymentReference:
@@ -619,6 +770,7 @@ components:
         - customerEmail
         - customerPhone
         - deliveryAddress
+        - deliveryState
         - items
 
     OrderItemInput:
@@ -932,6 +1084,58 @@ components:
           type: string
         privacyS11:
           type: string
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - createdAt
+
+    CategoryInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+
+    DeliveryFee:
+      type: object
+      properties:
+        id:
+          type: integer
+        state:
+          type: string
+        feeKobo:
+          type: integer
+      required:
+        - id
+        - state
+        - feeKobo
+
+    DeliveryFeeInput:
+      type: object
+      properties:
+        state:
+          type: string
+        feeKobo:
+          type: integer
+      required:
+        - state
+        - feeKobo
 
     ContactFormInput:
       type: object

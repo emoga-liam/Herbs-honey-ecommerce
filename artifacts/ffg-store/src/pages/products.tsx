@@ -5,6 +5,8 @@ import { Layout } from "@/components/layout";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Search, X } from "lucide-react";
 
 const FLAVORS = [
   { value: "", label: "All Flavors" },
@@ -21,15 +23,23 @@ const TYPES = [
 ];
 
 export default function ProductsPage() {
-  const search = useSearch();
-  const params = new URLSearchParams(search);
+  const queryString = useSearch();
+  const params = new URLSearchParams(queryString);
   const [flavor, setFlavor] = useState(params.get("flavor") ?? "");
   const [type, setType] = useState(params.get("type") ?? "");
+  const [search, setSearch] = useState("");
 
-  const { data: products = [], isLoading } = useListProducts(
+  const { data: allProducts = [], isLoading } = useListProducts(
     { flavor: flavor || undefined, type: type || undefined },
     { query: { queryKey: ["products", flavor, type] } }
   );
+
+  const products = search.trim()
+    ? allProducts.filter((p) => {
+        const q = search.toLowerCase();
+        return p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
+      })
+    : allProducts;
 
   return (
     <Layout>
@@ -37,6 +47,25 @@ export default function ProductsPage() {
         <div className="mb-8">
           <h1 className="font-serif font-bold text-4xl text-foreground mb-2">Shop All Products</h1>
           <p className="text-muted-foreground">Premium herbs-infused honey — crafted naturally, delivered fresh.</p>
+        </div>
+
+        {/* Search bar */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 pr-9 max-w-sm"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         {/* Filters */}
@@ -79,8 +108,8 @@ export default function ProductsPage() {
         {!isLoading && (
           <div className="mb-6 flex items-center gap-2">
             <span className="text-muted-foreground text-sm">{products.length} product{products.length !== 1 ? "s" : ""} found</span>
-            {(flavor || type) && (
-              <Button variant="ghost" size="sm" onClick={() => { setFlavor(""); setType(""); }} className="text-xs">
+            {(flavor || type || search) && (
+              <Button variant="ghost" size="sm" onClick={() => { setFlavor(""); setType(""); setSearch(""); }} className="text-xs">
                 Clear filters
               </Button>
             )}

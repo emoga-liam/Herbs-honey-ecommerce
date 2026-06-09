@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
-import { useCreateOrder } from "@workspace/api-client-react";
+import { useCreateOrder, useListDeliveryFees } from "@workspace/api-client-react";
 import { Layout } from "@/components/layout";
 import { useCart } from "@/components/cart-context";
 import { useAuth } from "@/contexts/auth-context";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatNaira } from "@/lib/utils";
 import { Link } from "wouter";
-import { ArrowLeft, ShoppingBag, Lock, CreditCard, Smartphone, Building2, CheckCircle } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Lock, CreditCard, Smartphone, Building2, CheckCircle, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 declare global {
@@ -29,6 +29,14 @@ declare global {
   }
 }
 
+export const NIGERIAN_STATES = [
+  "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno",
+  "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT (Abuja)", "Gombe",
+  "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos",
+  "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto",
+  "Taraba", "Yobe", "Zamfara",
+];
+
 const PAYSTACK_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
 const isPaystackConfigured = !!PAYSTACK_KEY;
 
@@ -38,6 +46,7 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const createOrder = useCreateOrder();
+  const { data: deliveryFees = [] } = useListDeliveryFees();
   const [paying, setPaying] = useState(false);
 
   const [form, setForm] = useState({
@@ -45,10 +54,19 @@ export default function CheckoutPage() {
     customerEmail: user?.email ?? "",
     customerPhone: "",
     deliveryAddress: "",
+    deliveryState: "",
     notes: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const deliveryFeeKobo = useMemo(() => {
+    if (!form.deliveryState) return 0;
+    const entry = deliveryFees.find((f) => f.state === form.deliveryState);
+    return entry?.feeKobo ?? 0;
+  }, [form.deliveryState, deliveryFees]);
+
+  const grandTotalKobo = totalPriceKobo + deliveryFeeKobo;
 
   if (items.length === 0) {
     return (
@@ -70,6 +88,7 @@ export default function CheckoutPage() {
     if (!form.customerEmail.trim() || !form.customerEmail.includes("@")) errs.customerEmail = "Valid email is required";
     if (!form.customerPhone.trim()) errs.customerPhone = "Phone number is required";
     if (!form.deliveryAddress.trim()) errs.deliveryAddress = "Delivery address is required";
+    if (!form.deliveryState) errs.deliveryState = "Please select your state";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -82,6 +101,7 @@ export default function CheckoutPage() {
           customerEmail: form.customerEmail,
           customerPhone: form.customerPhone,
           deliveryAddress: form.deliveryAddress,
+          deliveryState: form.deliveryState,
           notes: form.notes || null,
           paymentReference,
           items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
@@ -109,7 +129,7 @@ export default function CheckoutPage() {
     paystack.newTransaction({
       key: PAYSTACK_KEY!,
       email: form.customerEmail,
-      amount: totalPriceKobo,
+      amount: grandTotalKobo,
       currency: "NGN",
       ref: `grich20_${Date.now()}`,
       onSuccess: (transaction) => {
@@ -169,6 +189,43 @@ export default function CheckoutPage() {
               <div className="mt-4">
                 {field("deliveryAddress", "Delivery Address", "text", "Street, Estate, City")}
               </div>
+
+              {/* State selector */}
+              <div className="mt-4 space-y-1.5">
+                <Label htmlFor="deliveryState" className="text-amber-200/70 text-sm font-medium flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5" /> State / Location
+                </Label>
+                <select
+                  id="deliveryState"
+                  value={form.deliveryState}
+                  onChange={(e) => setForm((f) => ({ ...f, deliveryState: e.target.value }))}
+                  className={`w-full rounded-xl px-3 py-2.5 text-sm bg-[#060d07] border text-amber-100 focus:outline-none focus:border-amber-600 ${
+                    errors.deliveryState ? "border-red-500" : "border-amber-900/40"
+                  }`}
+                >
+                  <option value="" className="text-amber-200/40">— Select your state —</option>
+                  {NIGERIAN_STATES.map((state) => {
+                    const fee = deliveryFees.find((f) => f.state === state)?.feeKobo ?? 0;
+                    return (
+                      <option key={state} value={state}>
+                        {state}{fee > 0 ? ` — ${formatNaira(fee)}` : " — Free delivery"}
+                      </option>
+                    );
+                  })}
+                </select>
+                {errors.deliveryState && <p className="text-xs text-red-400">{errors.deliveryState}</p>}
+                {form.deliveryState && (
+                  <p className="text-xs text-amber-200/50 mt-1">
+                    Delivery fee to <span className="text-amber-300">{form.deliveryState}</span>:{" "}
+                    {deliveryFeeKobo > 0 ? (
+                      <span className="text-amber-400 font-semibold">{formatNaira(deliveryFeeKobo)}</span>
+                    ) : (
+                      <span className="text-green-400 font-semibold">Free</span>
+                    )}
+                  </p>
+                )}
+              </div>
+
               <div className="mt-4">
                 {field("notes", "Order Notes (optional)", "text", "Special instructions for your order...")}
               </div>
@@ -183,7 +240,6 @@ export default function CheckoutPage() {
 
               {isPaystackConfigured ? (
                 <div className="space-y-4">
-                  {/* Paystack payment methods */}
                   <div className="grid grid-cols-3 gap-3 mb-5">
                     {[
                       { icon: CreditCard, label: "Card" },
@@ -207,7 +263,7 @@ export default function CheckoutPage() {
                   >
                     {paying || createOrder.isPending
                       ? "Processing..."
-                      : `Pay ${formatNaira(totalPriceKobo)} with Paystack`}
+                      : `Pay ${formatNaira(grandTotalKobo)} with Paystack`}
                   </Button>
                   <div className="text-center">
                     <button
@@ -233,7 +289,7 @@ export default function CheckoutPage() {
                     className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold text-base rounded-xl"
                     disabled={createOrder.isPending}
                   >
-                    {createOrder.isPending ? "Placing Order..." : `Place Order — ${formatNaira(totalPriceKobo)}`}
+                    {createOrder.isPending ? "Placing Order..." : `Place Order — ${formatNaira(grandTotalKobo)}`}
                   </Button>
                 </div>
               )}
@@ -258,18 +314,26 @@ export default function CheckoutPage() {
                   <span className="text-amber-300">{formatNaira(totalPriceKobo)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-200/60 text-sm">Delivery</span>
-                  <span className="text-green-400 text-sm font-medium">Free</span>
+                  <span className="text-amber-200/60 text-sm">
+                    Delivery {form.deliveryState ? `(${form.deliveryState})` : ""}
+                  </span>
+                  {deliveryFeeKobo > 0 ? (
+                    <span className="text-amber-300 text-sm font-medium">{formatNaira(deliveryFeeKobo)}</span>
+                  ) : (
+                    <span className="text-green-400 text-sm font-medium">
+                      {form.deliveryState ? "Free" : "Select state"}
+                    </span>
+                  )}
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t border-amber-900/20">
                   <span className="font-bold text-amber-100">Total</span>
-                  <span className="font-cormorant font-bold text-3xl text-amber-400">{formatNaira(totalPriceKobo)}</span>
+                  <span className="font-cormorant font-bold text-3xl text-amber-400">{formatNaira(grandTotalKobo)}</span>
                 </div>
               </div>
 
               <div className="mt-5 rounded-xl bg-green-900/20 border border-green-800/30 p-3 flex items-start gap-2">
                 <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-green-300/80">Our team will confirm your order and arrange delivery within Abuja.</p>
+                <p className="text-xs text-green-300/80">Our team will confirm your order and arrange delivery to your selected state.</p>
               </div>
             </div>
           </div>

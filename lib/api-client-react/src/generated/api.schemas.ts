@@ -24,6 +24,10 @@ export interface Product {
   inStock: boolean;
   stockCount: number;
   featured: boolean;
+  /** @nullable */
+  categoryId?: number | null;
+  /** @nullable */
+  categoryName?: string | null;
   createdAt: string;
 }
 
@@ -38,6 +42,8 @@ export interface ProductInput {
   inStock: boolean;
   stockCount: number;
   featured: boolean;
+  /** @nullable */
+  categoryId?: number | null;
 }
 
 export interface ProductUpdate {
@@ -51,6 +57,8 @@ export interface ProductUpdate {
   inStock?: boolean;
   stockCount?: number;
   featured?: boolean;
+  /** @nullable */
+  categoryId?: number | null;
 }
 
 export interface OrderItem {
@@ -67,7 +75,11 @@ export interface Order {
   customerEmail: string;
   customerPhone: string;
   deliveryAddress: string;
+  /** @nullable */
+  deliveryState?: string | null;
   items: OrderItem[];
+  subtotalKobo: number;
+  deliveryFeeKobo: number;
   totalKobo: number;
   /** pending | processing | shipped | delivered | cancelled */
   status: string;
@@ -91,6 +103,8 @@ export interface OrderInput {
   customerEmail: string;
   customerPhone: string;
   deliveryAddress: string;
+  /** Nigerian state for delivery fee calculation */
+  deliveryState: string;
   /** @nullable */
   notes?: string | null;
   /** @nullable */
@@ -222,6 +236,29 @@ export interface SiteSettingsUpdate {
   privacyS11?: string;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  createdAt: string;
+}
+
+export interface CategoryInput {
+  name: string;
+  description?: string;
+}
+
+export interface DeliveryFee {
+  id: number;
+  state: string;
+  feeKobo: number;
+}
+
+export interface DeliveryFeeInput {
+  state: string;
+  feeKobo: number;
+}
+
 export interface ContactFormInput {
   name: string;
   email: string;
@@ -234,6 +271,8 @@ export type ListProductsParams = {
 flavor?: string;
 type?: string;
 inStock?: boolean;
+categoryId?: number;
+search?: string;
 };
 
 export type ListOrdersParams = {

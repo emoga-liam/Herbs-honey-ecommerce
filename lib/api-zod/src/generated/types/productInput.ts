@@ -17,4 +17,6 @@ export interface ProductInput {
   inStock: boolean;
   stockCount: number;
   featured: boolean;
+  /** @nullable */
+  categoryId?: number | null;
 }

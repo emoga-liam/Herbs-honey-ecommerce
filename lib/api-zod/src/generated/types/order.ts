@@ -13,7 +13,11 @@ export interface Order {
   customerEmail: string;
   customerPhone: string;
   deliveryAddress: string;
+  /** @nullable */
+  deliveryState?: string | null;
   items: OrderItem[];
+  subtotalKobo: number;
+  deliveryFeeKobo: number;
   totalKobo: number;
   /** pending | processing | shipped | delivered | cancelled */
   status: string;

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useListProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, getListProductsQueryKey } from "@workspace/api-client-react";
+import { useListProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, getListProductsQueryKey, useListCategories } from "@workspace/api-client-react";
 import type { Product } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "./dashboard";
@@ -25,11 +25,12 @@ interface ProductFormData {
   stockCount: number;
   featured: boolean;
   imageUrl: string | null;
+  categoryId: number | null;
 }
 
 const defaultForm: ProductFormData = {
   name: "", description: "", priceKobo: 50000, flavor: "original",
-  type: "sachet", inStock: true, stockCount: 100, featured: false, imageUrl: null,
+  type: "sachet", inStock: true, stockCount: 100, featured: false, imageUrl: null, categoryId: null,
 };
 
 function ImagePicker({
@@ -179,6 +180,7 @@ function ProductFormModal({
   saving: boolean;
 }) {
   const [form, setForm] = useState(initial);
+  const { data: categories = [] } = useListCategories();
 
   const set = (key: keyof ProductFormData, val: string | boolean | number | null) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -230,6 +232,19 @@ function ProductFormModal({
               <input type="checkbox" id="featured" checked={form.featured} onChange={(e) => set("featured", e.target.checked)} className="w-4 h-4 accent-primary" />
               <Label htmlFor="featured">Featured</Label>
             </div>
+            <div className="col-span-2 space-y-1.5">
+              <Label>Category <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <select
+                value={form.categoryId ?? ""}
+                onChange={(e) => set("categoryId", e.target.value ? Number(e.target.value) : null)}
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background"
+              >
+                <option value="">— No category —</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Image picker */}
@@ -268,7 +283,7 @@ export default function AdminProductsPage() {
     if (editProduct) {
       updateProduct.mutate(
         { id: editProduct.id, data: form },
-        { onSuccess: () => { refresh(); setEditProduct(null); toast({ title: "Product updated" }); }, onError: () => toast({ title: "Error", variant: "destructive" }) }
+        { onSuccess: () => { refresh(); setEditProduct(null); toast({ title: "Product updated" }); }, onError: (e) => { console.error(e); toast({ title: "Error", variant: "destructive" }); } }
       );
     } else {
       createProduct.mutate(
@@ -319,6 +334,7 @@ export default function AdminProductsPage() {
                     <Badge variant="outline" className="text-xs">{product.type}</Badge>
                     {!product.inStock && <Badge variant="destructive" className="text-xs">Out of stock</Badge>}
                     {product.featured && <Badge className="text-xs bg-amber-100 text-amber-800 border-amber-200">Featured</Badge>}
+                    {product.categoryName && <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">{product.categoryName}</Badge>}
                   </div>
                 </div>
               </div>
@@ -339,6 +355,7 @@ export default function AdminProductsPage() {
             stockCount: editProduct.stockCount,
             featured: editProduct.featured,
             imageUrl: editProduct.imageUrl ?? null,
+            categoryId: editProduct.categoryId ?? null,
           } : defaultForm}
           onSave={handleSave}
           onClose={() => { setShowForm(false); setEditProduct(null); }}

@@ -12,6 +12,8 @@ export interface OrderInput {
   customerEmail: string;
   customerPhone: string;
   deliveryAddress: string;
+  /** Nigerian state for delivery fee calculation */
+  deliveryState: string;
   /** @nullable */
   notes?: string | null;
   /** @nullable */

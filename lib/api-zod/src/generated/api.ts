@@ -23,7 +23,9 @@ export const HealthCheckResponse = zod.object({
 export const ListProductsQueryParams = zod.object({
   "flavor": zod.coerce.string().optional(),
   "type": zod.coerce.string().optional(),
-  "inStock": zod.coerce.boolean().optional()
+  "inStock": zod.coerce.boolean().optional(),
+  "categoryId": zod.coerce.number().optional(),
+  "search": zod.coerce.string().optional()
 })
 
 export const ListProductsResponseItem = zod.object({
@@ -37,6 +39,8 @@ export const ListProductsResponseItem = zod.object({
   "inStock": zod.boolean(),
   "stockCount": zod.number(),
   "featured": zod.boolean(),
+  "categoryId": zod.number().nullish(),
+  "categoryName": zod.string().nullish(),
   "createdAt": zod.string()
 })
 export const ListProductsResponse = zod.array(ListProductsResponseItem)
@@ -54,7 +58,8 @@ export const CreateProductBody = zod.object({
   "imageUrl": zod.string().nullish(),
   "inStock": zod.boolean(),
   "stockCount": zod.number(),
-  "featured": zod.boolean()
+  "featured": zod.boolean(),
+  "categoryId": zod.number().nullish()
 })
 
 
@@ -72,6 +77,8 @@ export const GetFeaturedProductsResponseItem = zod.object({
   "inStock": zod.boolean(),
   "stockCount": zod.number(),
   "featured": zod.boolean(),
+  "categoryId": zod.number().nullish(),
+  "categoryName": zod.string().nullish(),
   "createdAt": zod.string()
 })
 export const GetFeaturedProductsResponse = zod.array(GetFeaturedProductsResponseItem)
@@ -95,6 +102,8 @@ export const GetProductResponse = zod.object({
   "inStock": zod.boolean(),
   "stockCount": zod.number(),
   "featured": zod.boolean(),
+  "categoryId": zod.number().nullish(),
+  "categoryName": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -115,7 +124,8 @@ export const UpdateProductBody = zod.object({
   "imageUrl": zod.string().nullish(),
   "inStock": zod.boolean().optional(),
   "stockCount": zod.number().optional(),
-  "featured": zod.boolean().optional()
+  "featured": zod.boolean().optional(),
+  "categoryId": zod.number().nullish()
 })
 
 export const UpdateProductResponse = zod.object({
@@ -129,6 +139,8 @@ export const UpdateProductResponse = zod.object({
   "inStock": zod.boolean(),
   "stockCount": zod.number(),
   "featured": zod.boolean(),
+  "categoryId": zod.number().nullish(),
+  "categoryName": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -137,6 +149,55 @@ export const UpdateProductResponse = zod.object({
  * @summary Delete product (admin)
  */
 export const DeleteProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all categories
+ */
+export const ListCategoriesResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListCategoriesResponse = zod.array(ListCategoriesResponseItem)
+
+
+/**
+ * @summary Create category (admin)
+ */
+export const CreateCategoryBody = zod.object({
+  "name": zod.string(),
+  "description": zod.string().optional()
+})
+
+
+/**
+ * @summary Update category (admin)
+ */
+export const UpdateCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateCategoryBody = zod.object({
+  "name": zod.string(),
+  "description": zod.string().optional()
+})
+
+export const UpdateCategoryResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete category (admin)
+ */
+export const DeleteCategoryParams = zod.object({
   "id": zod.coerce.number()
 })
 
@@ -155,6 +216,7 @@ export const ListOrdersResponseItem = zod.object({
   "customerEmail": zod.string(),
   "customerPhone": zod.string(),
   "deliveryAddress": zod.string(),
+  "deliveryState": zod.string().nullish(),
   "items": zod.array(zod.object({
   "productId": zod.number(),
   "productName": zod.string(),
@@ -162,6 +224,8 @@ export const ListOrdersResponseItem = zod.object({
   "quantity": zod.number(),
   "priceKobo": zod.number()
 })),
+  "subtotalKobo": zod.number(),
+  "deliveryFeeKobo": zod.number(),
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),
@@ -179,6 +243,7 @@ export const CreateOrderBody = zod.object({
   "customerEmail": zod.string(),
   "customerPhone": zod.string(),
   "deliveryAddress": zod.string(),
+  "deliveryState": zod.string().describe('Nigerian state for delivery fee calculation'),
   "notes": zod.string().nullish(),
   "paymentReference": zod.string().nullish(),
   "items": zod.array(zod.object({
@@ -201,6 +266,7 @@ export const GetOrdersByEmailResponseItem = zod.object({
   "customerEmail": zod.string(),
   "customerPhone": zod.string(),
   "deliveryAddress": zod.string(),
+  "deliveryState": zod.string().nullish(),
   "items": zod.array(zod.object({
   "productId": zod.number(),
   "productName": zod.string(),
@@ -208,6 +274,8 @@ export const GetOrdersByEmailResponseItem = zod.object({
   "quantity": zod.number(),
   "priceKobo": zod.number()
 })),
+  "subtotalKobo": zod.number(),
+  "deliveryFeeKobo": zod.number(),
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),
@@ -230,6 +298,7 @@ export const GetOrderResponse = zod.object({
   "customerEmail": zod.string(),
   "customerPhone": zod.string(),
   "deliveryAddress": zod.string(),
+  "deliveryState": zod.string().nullish(),
   "items": zod.array(zod.object({
   "productId": zod.number(),
   "productName": zod.string(),
@@ -237,6 +306,8 @@ export const GetOrderResponse = zod.object({
   "quantity": zod.number(),
   "priceKobo": zod.number()
 })),
+  "subtotalKobo": zod.number(),
+  "deliveryFeeKobo": zod.number(),
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),
@@ -262,6 +333,7 @@ export const UpdateOrderStatusResponse = zod.object({
   "customerEmail": zod.string(),
   "customerPhone": zod.string(),
   "deliveryAddress": zod.string(),
+  "deliveryState": zod.string().nullish(),
   "items": zod.array(zod.object({
   "productId": zod.number(),
   "productName": zod.string(),
@@ -269,12 +341,42 @@ export const UpdateOrderStatusResponse = zod.object({
   "quantity": zod.number(),
   "priceKobo": zod.number()
 })),
+  "subtotalKobo": zod.number(),
+  "deliveryFeeKobo": zod.number(),
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),
   "paymentReference": zod.string().nullish().describe('Paystack payment reference'),
   "createdAt": zod.string()
 })
+
+
+/**
+ * @summary List delivery fees for all Nigerian states (public)
+ */
+export const ListDeliveryFeesResponseItem = zod.object({
+  "id": zod.number(),
+  "state": zod.string(),
+  "feeKobo": zod.number()
+})
+export const ListDeliveryFeesResponse = zod.array(ListDeliveryFeesResponseItem)
+
+
+/**
+ * @summary Bulk-update delivery fees (admin)
+ */
+export const UpsertDeliveryFeesBodyItem = zod.object({
+  "state": zod.string(),
+  "feeKobo": zod.number()
+})
+export const UpsertDeliveryFeesBody = zod.array(UpsertDeliveryFeesBodyItem)
+
+export const UpsertDeliveryFeesResponseItem = zod.object({
+  "id": zod.number(),
+  "state": zod.string(),
+  "feeKobo": zod.number()
+})
+export const UpsertDeliveryFeesResponse = zod.array(UpsertDeliveryFeesResponseItem)
 
 
 /**
@@ -337,6 +439,7 @@ export const GetAdminStatsResponse = zod.object({
   "customerEmail": zod.string(),
   "customerPhone": zod.string(),
   "deliveryAddress": zod.string(),
+  "deliveryState": zod.string().nullish(),
   "items": zod.array(zod.object({
   "productId": zod.number(),
   "productName": zod.string(),
@@ -344,6 +447,8 @@ export const GetAdminStatsResponse = zod.object({
   "quantity": zod.number(),
   "priceKobo": zod.number()
 })),
+  "subtotalKobo": zod.number(),
+  "deliveryFeeKobo": zod.number(),
   "totalKobo": zod.number(),
   "status": zod.string().describe('pending | processing | shipped | delivered | cancelled'),
   "notes": zod.string().nullish(),

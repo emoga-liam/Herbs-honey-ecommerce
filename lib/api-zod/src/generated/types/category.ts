@@ -6,10 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ListProductsParams = {
-flavor?: string;
-type?: string;
-inStock?: boolean;
-categoryId?: number;
-search?: string;
-};
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  createdAt: string;
+}

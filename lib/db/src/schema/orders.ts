@@ -8,6 +8,7 @@ export const ordersTable = pgTable("orders", {
   customerEmail: text("customer_email").notNull(),
   customerPhone: text("customer_phone").notNull(),
   deliveryAddress: text("delivery_address").notNull(),
+  deliveryState: text("delivery_state"),
   items: jsonb("items").notNull().$type<Array<{
     productId: number;
     productName: string;
@@ -15,6 +16,8 @@ export const ordersTable = pgTable("orders", {
     quantity: number;
     priceKobo: number;
   }>>(),
+  subtotalKobo: integer("subtotal_kobo").notNull().default(0),
+  deliveryFeeKobo: integer("delivery_fee_kobo").notNull().default(0),
   totalKobo: integer("total_kobo").notNull(),
   status: text("status").notNull().default("pending"),
   notes: text("notes"),
@@ -22,6 +25,6 @@ export const ordersTable = pgTable("orders", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const insertOrderSchema = createInsertSchema(ordersTable).omit({ id: true, createdAt: true, totalKobo: true, status: true });
+export const insertOrderSchema = createInsertSchema(ordersTable).omit({ id: true, createdAt: true, totalKobo: true, subtotalKobo: true, deliveryFeeKobo: true, status: true });
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof ordersTable.$inferSelect;

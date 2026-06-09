@@ -28,6 +28,8 @@ import AdminProductsPage from "@/pages/admin/products";
 import AdminOrdersPage from "@/pages/admin/orders";
 import AdminSiteSettingsPage from "@/pages/admin/site-settings";
 import AdminChangePasswordPage from "@/pages/admin/change-password";
+import AdminCategoriesPage from "@/pages/admin/categories";
+import AdminDeliveryFeesPage from "@/pages/admin/delivery-fees";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -84,6 +86,12 @@ function Router() {
       </Route>
       <Route path="/admin/change-password">
         {() => <AdminGuard><AdminChangePasswordPage /></AdminGuard>}
+      </Route>
+      <Route path="/admin/categories">
+        {() => <AdminGuard><AdminCategoriesPage /></AdminGuard>}
+      </Route>
+      <Route path="/admin/delivery-fees">
+        {() => <AdminGuard><AdminDeliveryFeesPage /></AdminGuard>}
       </Route>
       <Route component={NotFound} />
     </Switch>

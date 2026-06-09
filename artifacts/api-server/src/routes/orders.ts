@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, ordersTable, productsTable } from "@workspace/db";
+import { db, ordersTable, productsTable, deliveryFeesTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import {
   ListOrdersQueryParams,
@@ -20,12 +20,8 @@ router.get("/orders", async (req, res): Promise<void> => {
 
     let orders = await db.select().from(ordersTable).orderBy(desc(ordersTable.createdAt));
 
-    if (params.status) {
-      orders = orders.filter((o) => o.status === params.status);
-    }
-    if (params.limit) {
-      orders = orders.slice(0, params.limit);
-    }
+    if (params.status) orders = orders.filter((o) => o.status === params.status);
+    if (params.limit) orders = orders.slice(0, params.limit);
 
     res.json(orders.map((o) => ({ ...o, createdAt: o.createdAt.toISOString() })));
   } catch (err) {
@@ -40,10 +36,9 @@ router.post("/orders", async (req, res): Promise<void> => {
     const body = CreateOrderBody.safeParse(req.body);
     if (!body.success) { res.status(400).json({ error: "Invalid body" }); return; }
 
-    const { customerName, customerEmail, customerPhone, deliveryAddress, notes, paymentReference, items } = body.data;
+    const { customerName, customerEmail, customerPhone, deliveryAddress, deliveryState, notes, paymentReference, items } = body.data;
 
     // Fetch products to compute total and get names
-    const productIds = items.map((i) => i.productId);
     const products = await db.select().from(productsTable);
     const productMap = new Map(products.map((p) => [p.id, p]));
 
@@ -59,7 +54,16 @@ router.post("/orders", async (req, res): Promise<void> => {
       };
     });
 
-    const totalKobo = orderItems.reduce((sum, item) => sum + item.priceKobo * item.quantity, 0);
+    const subtotalKobo = orderItems.reduce((sum, item) => sum + item.priceKobo * item.quantity, 0);
+
+    // Look up delivery fee for the selected state
+    let deliveryFeeKobo = 0;
+    if (deliveryState) {
+      const [feeRow] = await db.select().from(deliveryFeesTable).where(eq(deliveryFeesTable.state, deliveryState));
+      deliveryFeeKobo = feeRow?.feeKobo ?? 0;
+    }
+
+    const totalKobo = subtotalKobo + deliveryFeeKobo;
 
     const [order] = await db
       .insert(ordersTable)
@@ -68,9 +72,12 @@ router.post("/orders", async (req, res): Promise<void> => {
         customerEmail,
         customerPhone,
         deliveryAddress,
+        deliveryState: deliveryState ?? null,
         notes: notes ?? null,
         paymentReference: paymentReference ?? null,
         items: orderItems,
+        subtotalKobo,
+        deliveryFeeKobo,
         totalKobo,
         status: "pending",
       })

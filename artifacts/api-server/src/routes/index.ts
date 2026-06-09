@@ -6,6 +6,8 @@ import authRouter from "./auth";
 import adminRouter from "./admin";
 import settingsRouter from "./settings";
 import uploadsRouter from "./uploads";
+import categoriesRouter from "./categories";
+import deliveryFeesRouter from "./delivery-fees";
 
 const router: IRouter = Router();
 
@@ -16,5 +18,7 @@ router.use(authRouter);
 router.use(adminRouter);
 router.use(settingsRouter);
 router.use(uploadsRouter);
+router.use(categoriesRouter);
+router.use(deliveryFeesRouter);
 
 export default router;

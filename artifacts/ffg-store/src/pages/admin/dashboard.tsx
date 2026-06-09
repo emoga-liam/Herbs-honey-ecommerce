@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Package, ShoppingCart, TrendingUp, Clock,
-  LogOut, LayoutDashboard, Archive, Settings2, Globe, KeyRound, Menu, X,
+  LogOut, LayoutDashboard, Archive, Settings2, Globe, KeyRound, Menu, X, Tag, Truck,
 } from "lucide-react";
 import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
 
@@ -24,7 +24,9 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
   const nav = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/products", label: "Products", icon: Package },
+    { href: "/admin/categories", label: "Categories", icon: Tag },
     { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+    { href: "/admin/delivery-fees", label: "Delivery Fees", icon: Truck },
     { href: "/admin/site-settings", label: "Site Settings", icon: Settings2 },
     { href: "/admin/change-password", label: "Change Password", icon: KeyRound },
   ];
