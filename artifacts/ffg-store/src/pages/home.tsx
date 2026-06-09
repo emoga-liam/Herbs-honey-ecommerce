@@ -20,7 +20,7 @@ const USES = ["Morning Tea", "Yoghurt Topping", "Bread & Cereals", "Cocktail Mix
 const STATS = [
   { val: "4", label: "Flavors" },
   { val: "15ml", label: "Per Sachet" },
-  { val: "30pcs", label: "Per Box" },
+  { val: "10 sachets", label: "in a pack" },
   { val: "100%", label: "Natural" },
 ];
 
