@@ -198,6 +198,27 @@ function ProductFormModal({
               <Label>Product Name</Label>
               <Input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Hibiscus Honey" />
             </div>
+
+            {/* Category — prominent at top */}
+            <div className="col-span-2 space-y-1.5">
+              <Label className="flex items-center gap-1.5">
+                Category
+                {categories.length === 0 && (
+                  <span className="text-xs text-amber-500">(create one in the Categories page first)</span>
+                )}
+              </Label>
+              <select
+                value={form.categoryId ?? ""}
+                onChange={(e) => set("categoryId", e.target.value ? Number(e.target.value) : null)}
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background"
+              >
+                <option value="">— No category —</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="col-span-2 space-y-1.5">
               <Label>Description</Label>
               <Textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="resize-none" />
@@ -232,19 +253,6 @@ function ProductFormModal({
               <input type="checkbox" id="featured" checked={form.featured} onChange={(e) => set("featured", e.target.checked)} className="w-4 h-4 accent-primary" />
               <Label htmlFor="featured">Featured</Label>
             </div>
-            <div className="col-span-2 space-y-1.5">
-              <Label>Category <span className="text-muted-foreground text-xs">(optional)</span></Label>
-              <select
-                value={form.categoryId ?? ""}
-                onChange={(e) => set("categoryId", e.target.value ? Number(e.target.value) : null)}
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background"
-              >
-                <option value="">— No category —</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
           </div>
 
           {/* Image picker */}
@@ -270,25 +278,29 @@ export default function AdminProductsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { data: products = [], isLoading } = useListProducts();
+  const { data: categories = [] } = useListCategories();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteProduct = useDeleteProduct();
 
   const [showForm, setShowForm] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<number | null | "uncategorised">(null);
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
+  };
 
   const handleSave = (form: ProductFormData) => {
     if (editProduct) {
       updateProduct.mutate(
         { id: editProduct.id, data: form },
-        { onSuccess: () => { refresh(); setEditProduct(null); toast({ title: "Product updated" }); }, onError: (e) => { console.error(e); toast({ title: "Error", variant: "destructive" }); } }
+        { onSuccess: () => { refresh(); setEditProduct(null); toast({ title: "Product updated" }); }, onError: (e) => { console.error(e); toast({ title: "Error updating product", variant: "destructive" }); } }
       );
     } else {
       createProduct.mutate(
         { data: form },
-        { onSuccess: () => { refresh(); setShowForm(false); toast({ title: "Product created" }); }, onError: () => toast({ title: "Error", variant: "destructive" }) }
+        { onSuccess: () => { refresh(); setShowForm(false); toast({ title: "Product created" }); }, onError: () => toast({ title: "Error creating product", variant: "destructive" }) }
       );
     }
   };
@@ -300,14 +312,53 @@ export default function AdminProductsPage() {
 
   const saving = createProduct.isPending || updateProduct.isPending;
 
+  const filteredProducts = categoryFilter === null
+    ? products
+    : categoryFilter === "uncategorised"
+      ? products.filter((p) => !p.categoryId)
+      : products.filter((p) => p.categoryId === categoryFilter);
+
   return (
     <AdminLayout title="Products">
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-muted-foreground text-sm">{products.length} products</p>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-muted-foreground text-sm">{filteredProducts.length} of {products.length} products</p>
         <Button onClick={() => setShowForm(true)} className="gap-2">
           <Plus className="h-4 w-4" /> Add Product
         </Button>
       </div>
+
+      {/* Category filter tabs */}
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-6 pb-5 border-b border-border">
+          <button
+            onClick={() => setCategoryFilter(null)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilter === null ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+          >
+            All ({products.length})
+          </button>
+          {categories.map((cat) => {
+            const count = products.filter((p) => p.categoryId === cat.id).length;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setCategoryFilter(cat.id)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilter === cat.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+              >
+                {cat.name} ({count})
+              </button>
+            );
+          })}
+          {products.some((p) => !p.categoryId) && (
+            <button
+              onClick={() => setCategoryFilter("uncategorised")}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilter === "uncategorised" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+            >
+              Uncategorised ({products.filter((p) => !p.categoryId).length})
+            </button>
+          )}
+        </div>
+      )}
+
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -315,7 +366,7 @@ export default function AdminProductsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.map((product) => {
+          {filteredProducts.map((product) => {
             const image = getProductImage(product.flavor, product.type, product.imageUrl);
             return (
               <div key={product.id} className="rounded-xl bg-card border border-border p-4 flex gap-3 hover:border-primary/20 transition-colors">
