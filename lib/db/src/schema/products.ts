@@ -14,6 +14,7 @@ export const productsTable = pgTable("products", {
   stockCount: integer("stock_count").notNull().default(0),
   featured: boolean("featured").notNull().default(false),
   categoryId: integer("category_id"),
+  minOrderQty: integer("min_order_qty").notNull().default(1),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

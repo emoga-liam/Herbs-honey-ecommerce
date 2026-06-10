@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useParams, Link } from "wouter";
 import { useGetProduct, getGetProductQueryKey } from "@workspace/api-client-react";
 import { Layout } from "@/components/layout";
@@ -31,8 +31,14 @@ export default function ProductDetailPage() {
     query: { enabled: !!numId, queryKey: getGetProductQueryKey(numId) },
   });
   const { addToCart, items } = useCart();
-  const [quantity, setQuantity] = useState(1);
+  const minQty = product?.minOrderQty ?? 1;
+  const [quantity, setQuantity] = useState(minQty);
   const [added, setAdded] = useState(false);
+
+  // keep quantity in sync when product loads and has a min > 1
+  React.useEffect(() => {
+    setQuantity((q) => Math.max(q, minQty));
+  }, [minQty]);
 
   if (isLoading) {
     return (
@@ -153,7 +159,8 @@ export default function ProductDetailPage() {
                   <div className="flex items-center gap-2 rounded-lg border border-border bg-card">
                     <Button
                       variant="ghost" size="icon"
-                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                      onClick={() => setQuantity(q => Math.max(minQty, q - 1))}
+                      disabled={quantity <= minQty}
                       className="h-10 w-10"
                     >
                       <Minus className="h-4 w-4" />
@@ -169,6 +176,12 @@ export default function ProductDetailPage() {
                   </div>
                   <span className="text-sm text-muted-foreground">{formatNaira(product.priceKobo * quantity)} total</span>
                 </div>
+
+                {minQty > 1 && (
+                  <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
+                    Minimum order: <strong>{minQty} units</strong>
+                  </p>
+                )}
 
                 <div className="flex gap-3">
                   <Button size="lg" className="flex-1 font-semibold gap-2" onClick={handleAddToCart} disabled={added}>

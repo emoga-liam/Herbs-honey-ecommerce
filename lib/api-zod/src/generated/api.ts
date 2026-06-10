@@ -41,6 +41,7 @@ export const ListProductsResponseItem = zod.object({
   "featured": zod.boolean(),
   "categoryId": zod.number().nullish(),
   "categoryName": zod.string().nullish(),
+  "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
   "createdAt": zod.string()
 })
 export const ListProductsResponse = zod.array(ListProductsResponseItem)
@@ -59,7 +60,8 @@ export const CreateProductBody = zod.object({
   "inStock": zod.boolean(),
   "stockCount": zod.number(),
   "featured": zod.boolean(),
-  "categoryId": zod.number().nullish()
+  "categoryId": zod.number().nullish(),
+  "minOrderQty": zod.number().describe('Minimum number of units a customer must order')
 })
 
 
@@ -79,6 +81,7 @@ export const GetFeaturedProductsResponseItem = zod.object({
   "featured": zod.boolean(),
   "categoryId": zod.number().nullish(),
   "categoryName": zod.string().nullish(),
+  "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
   "createdAt": zod.string()
 })
 export const GetFeaturedProductsResponse = zod.array(GetFeaturedProductsResponseItem)
@@ -104,6 +107,7 @@ export const GetProductResponse = zod.object({
   "featured": zod.boolean(),
   "categoryId": zod.number().nullish(),
   "categoryName": zod.string().nullish(),
+  "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
   "createdAt": zod.string()
 })
 
@@ -125,7 +129,8 @@ export const UpdateProductBody = zod.object({
   "inStock": zod.boolean().optional(),
   "stockCount": zod.number().optional(),
   "featured": zod.boolean().optional(),
-  "categoryId": zod.number().nullish()
+  "categoryId": zod.number().nullish(),
+  "minOrderQty": zod.number().optional().describe('Minimum number of units a customer must order')
 })
 
 export const UpdateProductResponse = zod.object({
@@ -141,6 +146,7 @@ export const UpdateProductResponse = zod.object({
   "featured": zod.boolean(),
   "categoryId": zod.number().nullish(),
   "categoryName": zod.string().nullish(),
+  "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
   "createdAt": zod.string()
 })
 

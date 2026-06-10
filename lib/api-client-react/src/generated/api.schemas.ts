@@ -28,6 +28,8 @@ export interface Product {
   categoryId?: number | null;
   /** @nullable */
   categoryName?: string | null;
+  /** Minimum number of units a customer must order */
+  minOrderQty: number;
   createdAt: string;
 }
 
@@ -44,6 +46,8 @@ export interface ProductInput {
   featured: boolean;
   /** @nullable */
   categoryId?: number | null;
+  /** Minimum number of units a customer must order */
+  minOrderQty: number;
 }
 
 export interface ProductUpdate {
@@ -59,6 +63,8 @@ export interface ProductUpdate {
   featured?: boolean;
   /** @nullable */
   categoryId?: number | null;
+  /** Minimum number of units a customer must order */
+  minOrderQty?: number;
 }
 
 export interface OrderItem {

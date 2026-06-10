@@ -26,11 +26,12 @@ interface ProductFormData {
   featured: boolean;
   imageUrl: string | null;
   categoryId: number | null;
+  minOrderQty: number;
 }
 
 const defaultForm: ProductFormData = {
   name: "", description: "", priceKobo: 50000, flavor: "original",
-  type: "sachet", inStock: true, stockCount: 100, featured: false, imageUrl: null, categoryId: null,
+  type: "sachet", inStock: true, stockCount: 100, featured: false, imageUrl: null, categoryId: null, minOrderQty: 1,
 };
 
 function ImagePicker({
@@ -245,6 +246,11 @@ function ProductFormModal({
               <Label>Stock Count</Label>
               <Input type="number" value={form.stockCount} onChange={(e) => set("stockCount", Number(e.target.value))} />
             </div>
+            <div className="space-y-1.5">
+              <Label>Minimum Order Quantity</Label>
+              <Input type="number" min={1} value={form.minOrderQty} onChange={(e) => set("minOrderQty", Math.max(1, Number(e.target.value)))} />
+              <p className="text-xs text-muted-foreground">Customers must order at least this many units.</p>
+            </div>
             <div className="flex items-center gap-3">
               <input type="checkbox" id="inStock" checked={form.inStock} onChange={(e) => set("inStock", e.target.checked)} className="w-4 h-4 accent-primary" />
               <Label htmlFor="inStock">In Stock</Label>
@@ -407,6 +413,7 @@ export default function AdminProductsPage() {
             featured: editProduct.featured,
             imageUrl: editProduct.imageUrl ?? null,
             categoryId: editProduct.categoryId ?? null,
+            minOrderQty: editProduct.minOrderQty ?? 1,
           } : defaultForm}
           onSave={handleSave}
           onClose={() => { setShowForm(false); setEditProduct(null); }}

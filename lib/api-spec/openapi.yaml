@@ -604,6 +604,9 @@ components:
           type: ["integer", "null"]
         categoryName:
           type: ["string", "null"]
+        minOrderQty:
+          type: integer
+          description: Minimum number of units a customer must order
         createdAt:
           type: string
       required:
@@ -616,6 +619,7 @@ components:
         - inStock
         - stockCount
         - featured
+        - minOrderQty
         - createdAt
 
     ProductInput:
@@ -641,6 +645,9 @@ components:
           type: boolean
         categoryId:
           type: ["integer", "null"]
+        minOrderQty:
+          type: integer
+          description: Minimum number of units a customer must order
       required:
         - name
         - description
@@ -650,6 +657,7 @@ components:
         - inStock
         - stockCount
         - featured
+        - minOrderQty
 
     ProductUpdate:
       type: object
@@ -674,6 +682,9 @@ components:
           type: boolean
         categoryId:
           type: ["integer", "null"]
+        minOrderQty:
+          type: integer
+          description: Minimum number of units a customer must order
 
     Order:
       type: object

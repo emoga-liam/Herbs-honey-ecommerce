@@ -25,5 +25,7 @@ export interface Product {
   categoryId?: number | null;
   /** @nullable */
   categoryName?: string | null;
+  /** Minimum number of units a customer must order */
+  minOrderQty: number;
   createdAt: string;
 }

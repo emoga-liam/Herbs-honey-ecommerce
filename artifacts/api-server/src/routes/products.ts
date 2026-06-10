@@ -16,7 +16,7 @@ function toProduct(p: {
   id: number; name: string; description: string; priceKobo: number;
   flavor: string; type: string; imageUrl: string | null;
   inStock: boolean; stockCount: number; featured: boolean;
-  categoryId: number | null; createdAt: Date; categoryName?: string | null;
+  categoryId: number | null; minOrderQty: number; createdAt: Date; categoryName?: string | null;
 }) {
   return {
     ...p,
@@ -41,6 +41,7 @@ async function selectAllProducts() {
       stockCount: productsTable.stockCount,
       featured: productsTable.featured,
       categoryId: productsTable.categoryId,
+      minOrderQty: productsTable.minOrderQty,
       createdAt: productsTable.createdAt,
       categoryName: categoriesTable.name,
     })
@@ -105,6 +106,7 @@ router.get("/products/:id", async (req, res): Promise<void> => {
         stockCount: productsTable.stockCount,
         featured: productsTable.featured,
         categoryId: productsTable.categoryId,
+        minOrderQty: productsTable.minOrderQty,
         createdAt: productsTable.createdAt,
         categoryName: categoriesTable.name,
       })

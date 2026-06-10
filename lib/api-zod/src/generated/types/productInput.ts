@@ -19,4 +19,6 @@ export interface ProductInput {
   featured: boolean;
   /** @nullable */
   categoryId?: number | null;
+  /** Minimum number of units a customer must order */
+  minOrderQty: number;
 }
