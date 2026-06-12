@@ -42,6 +42,7 @@ export const ListProductsResponseItem = zod.object({
   "categoryId": zod.number().nullish(),
   "categoryName": zod.string().nullish(),
   "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
+  "benefits": zod.array(zod.string()).describe('List of product benefit bullet points'),
   "images": zod.array(zod.object({
   "id": zod.number(),
   "imageUrl": zod.string(),
@@ -67,6 +68,7 @@ export const CreateProductBody = zod.object({
   "featured": zod.boolean(),
   "categoryId": zod.number().nullish(),
   "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
+  "benefits": zod.array(zod.string()).describe('List of product benefit bullet points'),
   "images": zod.array(zod.object({
   "imageUrl": zod.string(),
   "sortOrder": zod.number()
@@ -91,6 +93,7 @@ export const GetFeaturedProductsResponseItem = zod.object({
   "categoryId": zod.number().nullish(),
   "categoryName": zod.string().nullish(),
   "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
+  "benefits": zod.array(zod.string()).describe('List of product benefit bullet points'),
   "images": zod.array(zod.object({
   "id": zod.number(),
   "imageUrl": zod.string(),
@@ -122,6 +125,7 @@ export const GetProductResponse = zod.object({
   "categoryId": zod.number().nullish(),
   "categoryName": zod.string().nullish(),
   "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
+  "benefits": zod.array(zod.string()).describe('List of product benefit bullet points'),
   "images": zod.array(zod.object({
   "id": zod.number(),
   "imageUrl": zod.string(),
@@ -150,6 +154,7 @@ export const UpdateProductBody = zod.object({
   "featured": zod.boolean().optional(),
   "categoryId": zod.number().nullish(),
   "minOrderQty": zod.number().optional().describe('Minimum number of units a customer must order'),
+  "benefits": zod.array(zod.string()).optional().describe('List of product benefit bullet points'),
   "images": zod.array(zod.object({
   "imageUrl": zod.string(),
   "sortOrder": zod.number()
@@ -170,6 +175,7 @@ export const UpdateProductResponse = zod.object({
   "categoryId": zod.number().nullish(),
   "categoryName": zod.string().nullish(),
   "minOrderQty": zod.number().describe('Minimum number of units a customer must order'),
+  "benefits": zod.array(zod.string()).describe('List of product benefit bullet points'),
   "images": zod.array(zod.object({
   "id": zod.number(),
   "imageUrl": zod.string(),

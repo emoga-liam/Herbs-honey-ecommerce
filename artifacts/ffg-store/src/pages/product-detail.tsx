@@ -79,7 +79,10 @@ export default function ProductDetailPage() {
     : [fallbackImage];
 
   const flavorLabel = product.flavor.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-  const benefits = FLAVOR_BENEFITS[product.flavor] ?? [];
+  // Use product-level benefits if set, otherwise fall back to flavor defaults
+  const benefits = (product.benefits && product.benefits.length > 0)
+    ? product.benefits
+    : (FLAVOR_BENEFITS[product.flavor] ?? []);
   const inCart = items.find(i => i.productId === product.id);
 
   const handleAddToCart = () => {

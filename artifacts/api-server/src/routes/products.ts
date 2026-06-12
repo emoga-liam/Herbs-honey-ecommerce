@@ -16,7 +16,7 @@ type ProductRow = {
   id: number; name: string; description: string; priceKobo: number;
   flavor: string; type: string; imageUrl: string | null;
   inStock: boolean; stockCount: number; featured: boolean;
-  categoryId: number | null; minOrderQty: number; createdAt: Date;
+  categoryId: number | null; minOrderQty: number; benefits: string[]; createdAt: Date;
   categoryName?: string | null;
 };
 
@@ -37,6 +37,7 @@ function toProduct(p: ProductRow, images: ImageRow[]) {
     categoryId: p.categoryId ?? null,
     categoryName: p.categoryName ?? null,
     minOrderQty: p.minOrderQty,
+    benefits: p.benefits ?? [],
     images: images
       .filter((i) => i.productId === p.id)
       .sort((a, b) => a.sortOrder - b.sortOrder)
@@ -60,6 +61,7 @@ async function selectAllProducts(): Promise<ProductRow[]> {
       featured: productsTable.featured,
       categoryId: productsTable.categoryId,
       minOrderQty: productsTable.minOrderQty,
+      benefits: productsTable.benefits,
       createdAt: productsTable.createdAt,
       categoryName: categoriesTable.name,
     })
@@ -145,6 +147,7 @@ router.get("/products/:id", async (req, res): Promise<void> => {
         featured: productsTable.featured,
         categoryId: productsTable.categoryId,
         minOrderQty: productsTable.minOrderQty,
+        benefits: productsTable.benefits,
         createdAt: productsTable.createdAt,
         categoryName: categoriesTable.name,
       })

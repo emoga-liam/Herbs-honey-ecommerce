@@ -33,13 +33,14 @@ interface ProductFormData {
   imageUrl: string | null;
   categoryId: number | null;
   minOrderQty: number;
+  benefits: string[];
   images: ProductImageInput[];
 }
 
 const defaultForm: ProductFormData = {
   name: "", description: "", priceKobo: 50000, flavor: "original",
   type: "sachet", inStock: true, stockCount: 100, featured: false,
-  imageUrl: null, categoryId: null, minOrderQty: 1, images: [],
+  imageUrl: null, categoryId: null, minOrderQty: 1, benefits: [], images: [],
 };
 
 // ─── Multi-image manager ──────────────────────────────────────────────────────
@@ -395,6 +396,41 @@ function ProductFormModal({
             </div>
           </div>
 
+          {/* Benefits editor */}
+          <div className="pt-2 border-t border-border space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Benefits</Label>
+              <span className="text-xs text-muted-foreground">Shown as bullet points on the product page</span>
+            </div>
+            {form.benefits.map((b, i) => (
+              <div key={i} className="flex gap-2">
+                <Input
+                  value={b}
+                  onChange={(e) => {
+                    const next = [...form.benefits];
+                    next[i] = e.target.value;
+                    set("benefits", next);
+                  }}
+                  placeholder={`Benefit ${i + 1}`}
+                  className="text-sm"
+                />
+                <Button
+                  type="button" variant="ghost" size="icon"
+                  className="shrink-0 hover:text-destructive"
+                  onClick={() => set("benefits", form.benefits.filter((_, j) => j !== i))}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button" variant="outline" size="sm" className="gap-1.5 w-full"
+              onClick={() => set("benefits", [...form.benefits, ""])}
+            >
+              <Plus className="h-3.5 w-3.5" /> Add Benefit
+            </Button>
+          </div>
+
           {/* Multi-image manager */}
           <div className="pt-2 border-t border-border">
             <MultiImageManager
@@ -447,6 +483,7 @@ export default function AdminProductsPage() {
       imageUrl: form.images.length > 0 ? form.images[0].imageUrl : form.imageUrl,
       categoryId: form.categoryId,
       minOrderQty: form.minOrderQty,
+      benefits: form.benefits.filter((b) => b.trim() !== ""),
       images: form.images,
     };
 
@@ -605,6 +642,7 @@ export default function AdminProductsPage() {
             imageUrl: editProduct.imageUrl ?? null,
             categoryId: editProduct.categoryId ?? null,
             minOrderQty: editProduct.minOrderQty ?? 1,
+            benefits: editProduct.benefits ?? [],
             images: editProduct.images.map((img) => ({ imageUrl: img.imageUrl, sortOrder: img.sortOrder })),
           } : defaultForm}
           onSave={handleSave}

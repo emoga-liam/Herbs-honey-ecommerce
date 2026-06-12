@@ -632,6 +632,11 @@ components:
         minOrderQty:
           type: integer
           description: Minimum number of units a customer must order
+        benefits:
+          type: array
+          items:
+            type: string
+          description: List of product benefit bullet points
         images:
           type: array
           items:
@@ -649,6 +654,7 @@ components:
         - stockCount
         - featured
         - minOrderQty
+        - benefits
         - images
         - createdAt
 
@@ -678,6 +684,11 @@ components:
         minOrderQty:
           type: integer
           description: Minimum number of units a customer must order
+        benefits:
+          type: array
+          items:
+            type: string
+          description: List of product benefit bullet points
         images:
           type: array
           items:
@@ -692,6 +703,7 @@ components:
         - stockCount
         - featured
         - minOrderQty
+        - benefits
         - images
 
     ProductUpdate:
@@ -720,6 +732,11 @@ components:
         minOrderQty:
           type: integer
           description: Minimum number of units a customer must order
+        benefits:
+          type: array
+          items:
+            type: string
+          description: List of product benefit bullet points
         images:
           type: array
           items:

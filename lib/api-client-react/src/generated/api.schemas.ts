@@ -41,6 +41,8 @@ export interface Product {
   categoryName?: string | null;
   /** Minimum number of units a customer must order */
   minOrderQty: number;
+  /** List of product benefit bullet points */
+  benefits: string[];
   images: ProductImage[];
   createdAt: string;
 }
@@ -60,6 +62,8 @@ export interface ProductInput {
   categoryId?: number | null;
   /** Minimum number of units a customer must order */
   minOrderQty: number;
+  /** List of product benefit bullet points */
+  benefits: string[];
   images: ProductImageInput[];
 }
 
@@ -78,6 +82,8 @@ export interface ProductUpdate {
   categoryId?: number | null;
   /** Minimum number of units a customer must order */
   minOrderQty?: number;
+  /** List of product benefit bullet points */
+  benefits?: string[];
   images?: ProductImageInput[];
 }
 

@@ -22,5 +22,7 @@ export interface ProductInput {
   categoryId?: number | null;
   /** Minimum number of units a customer must order */
   minOrderQty: number;
+  /** List of product benefit bullet points */
+  benefits: string[];
   images: ProductImageInput[];
 }
