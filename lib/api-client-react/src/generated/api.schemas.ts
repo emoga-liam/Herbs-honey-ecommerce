@@ -9,6 +9,17 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface ProductImage {
+  id: number;
+  imageUrl: string;
+  sortOrder: number;
+}
+
+export interface ProductImageInput {
+  imageUrl: string;
+  sortOrder: number;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -30,6 +41,7 @@ export interface Product {
   categoryName?: string | null;
   /** Minimum number of units a customer must order */
   minOrderQty: number;
+  images: ProductImage[];
   createdAt: string;
 }
 
@@ -48,6 +60,7 @@ export interface ProductInput {
   categoryId?: number | null;
   /** Minimum number of units a customer must order */
   minOrderQty: number;
+  images: ProductImageInput[];
 }
 
 export interface ProductUpdate {
@@ -65,6 +78,7 @@ export interface ProductUpdate {
   categoryId?: number | null;
   /** Minimum number of units a customer must order */
   minOrderQty?: number;
+  images?: ProductImageInput[];
 }
 
 export interface OrderItem {

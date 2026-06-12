@@ -5,6 +5,7 @@
  * FFG Foods e-commerce API
  * OpenAPI spec version: 0.1.0
  */
+import type { ProductImage } from './productImage';
 
 export interface Product {
   id: number;
@@ -27,5 +28,6 @@ export interface Product {
   categoryName?: string | null;
   /** Minimum number of units a customer must order */
   minOrderQty: number;
+  images: ProductImage[];
   createdAt: string;
 }

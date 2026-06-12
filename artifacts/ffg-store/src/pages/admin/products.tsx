@@ -1,6 +1,9 @@
-import { useState, useRef } from "react";
-import { useListProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, getListProductsQueryKey, useListCategories } from "@workspace/api-client-react";
-import type { Product } from "@workspace/api-client-react";
+import { useState, useRef, useId } from "react";
+import {
+  useListProducts, useCreateProduct, useUpdateProduct, useDeleteProduct,
+  getListProductsQueryKey, useListCategories,
+} from "@workspace/api-client-react";
+import type { Product, ProductImageInput } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "./dashboard";
 import { Button } from "@/components/ui/button";
@@ -9,7 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { formatNaira, getProductImage } from "@/lib/utils";
-import { Plus, Pencil, Trash2, X, Upload, Link, ImageIcon } from "lucide-react";
+import {
+  Plus, Pencil, Trash2, X, Upload, Link as LinkIcon,
+  ImageIcon, ChevronLeft, ChevronRight, Star,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const FLAVORS = ["original", "hibiscus", "ginger-lemon", "cinnamon-lemon"];
@@ -27,147 +33,262 @@ interface ProductFormData {
   imageUrl: string | null;
   categoryId: number | null;
   minOrderQty: number;
+  images: ProductImageInput[];
 }
 
 const defaultForm: ProductFormData = {
   name: "", description: "", priceKobo: 50000, flavor: "original",
-  type: "sachet", inStock: true, stockCount: 100, featured: false, imageUrl: null, categoryId: null, minOrderQty: 1,
+  type: "sachet", inStock: true, stockCount: 100, featured: false,
+  imageUrl: null, categoryId: null, minOrderQty: 1, images: [],
 };
 
-function ImagePicker({
-  value,
+// ─── Multi-image manager ──────────────────────────────────────────────────────
+
+function MultiImageManager({
+  images,
   onChange,
 }: {
-  value: string | null;
-  onChange: (url: string | null) => void;
+  images: ProductImageInput[];
+  onChange: (imgs: ProductImageInput[]) => void;
 }) {
   const { toast } = useToast();
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [tab, setTab] = useState<"upload" | "url">("upload");
-  const [urlInput, setUrlInput] = useState(value ?? "");
+  const uploadRef = useRef<HTMLInputElement>(null);
+  const addUploadRef = useRef<HTMLInputElement>(null);
+  const [urlInput, setUrlInput] = useState("");
+  const [addTab, setAddTab] = useState<"upload" | "url">("upload");
   const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState<string | null>(value);
+  const uid = useId();
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const uploadFile = async (file: File): Promise<string | null> => {
+    const fd = new FormData();
+    fd.append("image", file);
+    const res = await fetch("/api/uploads/image", { method: "POST", credentials: "include", body: fd });
+    if (!res.ok) return null;
+    const { imageUrl } = await res.json() as { imageUrl: string };
+    return imageUrl;
+  };
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("image", file);
-      const res = await fetch("/api/uploads/image", { method: "POST", credentials: "include", body: fd });
-      if (!res.ok) throw new Error("Upload failed");
-      const { imageUrl } = await res.json() as { imageUrl: string };
-      onChange(imageUrl);
-      setPreview(imageUrl);
-      toast({ title: "Image uploaded" });
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        const url = await uploadFile(file);
+        if (url) urls.push(url);
+      }
+      if (urls.length > 0) {
+        onChange([
+          ...images,
+          ...urls.map((imageUrl, i) => ({ imageUrl, sortOrder: images.length + i })),
+        ]);
+        toast({ title: `${urls.length} image${urls.length > 1 ? "s" : ""} added` });
+      } else {
+        toast({ title: "Upload failed", variant: "destructive" });
+      }
     } catch {
-      toast({ title: "Upload failed", description: "Try a different image or use a URL instead.", variant: "destructive" });
+      toast({ title: "Upload failed", variant: "destructive" });
     } finally {
       setUploading(false);
-      if (fileRef.current) fileRef.current.value = "";
+      if (uploadRef.current) uploadRef.current.value = "";
+      if (addUploadRef.current) addUploadRef.current.value = "";
     }
   };
 
-  const handleUrlApply = () => {
-    const trimmed = urlInput.trim();
-    if (!trimmed) { onChange(null); setPreview(null); return; }
-    onChange(trimmed);
-    setPreview(trimmed);
+  const handleUrlAdd = () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    onChange([...images, { imageUrl: url, sortOrder: images.length }]);
+    setUrlInput("");
   };
 
-  const handleClear = () => {
-    onChange(null);
-    setPreview(null);
-    setUrlInput("");
-    if (fileRef.current) fileRef.current.value = "";
+  const remove = (idx: number) => {
+    const next = images.filter((_, i) => i !== idx).map((img, i) => ({ ...img, sortOrder: i }));
+    onChange(next);
+  };
+
+  const move = (idx: number, dir: -1 | 1) => {
+    const next = [...images];
+    const target = idx + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[idx], next[target]] = [next[target], next[idx]];
+    onChange(next.map((img, i) => ({ ...img, sortOrder: i })));
+  };
+
+  const setMain = (idx: number) => {
+    if (idx === 0) return;
+    const next = [...images];
+    const [item] = next.splice(idx, 1);
+    next.unshift(item);
+    onChange(next.map((img, i) => ({ ...img, sortOrder: i })));
   };
 
   return (
     <div className="space-y-3">
-      <Label>Product Image</Label>
-
-      {/* Preview */}
-      {preview ? (
-        <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border bg-muted flex items-center justify-center">
-          <img
-            src={preview}
-            alt="Product preview"
-            className="max-h-full max-w-full object-contain"
-            onError={() => setPreview(null)}
-          />
-          <button
-            type="button"
-            onClick={handleClear}
-            className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-destructive hover:text-destructive-foreground transition-colors"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      ) : (
-        <div className="w-full h-40 rounded-xl border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-          <ImageIcon className="h-8 w-8 opacity-40" />
-          <span className="text-xs">No image selected</span>
-        </div>
-      )}
-
-      {/* Tabs */}
-      <div className="flex rounded-lg border border-border overflow-hidden text-sm">
-        <button
-          type="button"
-          onClick={() => setTab("upload")}
-          className={`flex-1 py-2 flex items-center justify-center gap-1.5 transition-colors font-medium ${tab === "upload" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-        >
-          <Upload className="h-3.5 w-3.5" /> From Device
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("url")}
-          className={`flex-1 py-2 flex items-center justify-center gap-1.5 transition-colors font-medium ${tab === "url" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-        >
-          <Link className="h-3.5 w-3.5" /> From URL
-        </button>
+      <div className="flex items-center justify-between">
+        <Label>Product Images</Label>
+        {images.length > 0 && (
+          <span className="text-xs text-muted-foreground">
+            {images.length} image{images.length !== 1 ? "s" : ""} · first is the cover
+          </span>
+        )}
       </div>
 
-      {tab === "upload" && (
-        <div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            onChange={handleFile}
-            className="hidden"
-            id="product-image-file"
-          />
+      {/* Image grid */}
+      {images.length > 0 ? (
+        <div className="grid grid-cols-3 gap-2">
+          {images.map((img, idx) => (
+            <div key={idx} className={`relative group rounded-xl overflow-hidden border-2 ${idx === 0 ? "border-primary" : "border-border"} bg-muted aspect-square`}>
+              <img
+                src={img.imageUrl}
+                alt={`Image ${idx + 1}`}
+                className="w-full h-full object-contain p-1"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = ""; }}
+              />
+              {/* Cover badge */}
+              {idx === 0 && (
+                <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                  <Star className="h-2.5 w-2.5" /> Cover
+                </div>
+              )}
+              {/* Controls (visible on hover) */}
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => move(idx, -1)}
+                    disabled={idx === 0}
+                    className="p-1 rounded-full bg-background/80 hover:bg-background disabled:opacity-30"
+                    title="Move left"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => move(idx, 1)}
+                    disabled={idx === images.length - 1}
+                    className="p-1 rounded-full bg-background/80 hover:bg-background disabled:opacity-30"
+                    title="Move right"
+                  >
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                {idx !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setMain(idx)}
+                    className="text-[10px] bg-primary text-primary-foreground rounded-full px-2 py-0.5 font-semibold"
+                  >
+                    Set as Cover
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => remove(idx)}
+                  className="p-1 rounded-full bg-destructive text-destructive-foreground hover:opacity-80"
+                  title="Remove"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {/* Add more tile */}
           <label
-            htmlFor="product-image-file"
-            className={`flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary hover:bg-muted/40 transition-colors text-sm font-medium ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+            htmlFor={`${uid}-more`}
+            className="aspect-square rounded-xl border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center gap-1 text-muted-foreground cursor-pointer hover:border-primary hover:bg-muted/50 transition-colors"
           >
-            <Upload className="h-4 w-4" />
-            {uploading ? "Uploading…" : "Tap to choose a photo"}
+            <Plus className="h-5 w-5 opacity-50" />
+            <span className="text-[10px] font-medium">Add more</span>
+            <input
+              id={`${uid}-more`}
+              ref={addUploadRef}
+              type="file"
+              multiple
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={(e) => handleFiles(e.target.files)}
+            />
           </label>
-          <p className="text-xs text-muted-foreground mt-1.5">Supports JPG, PNG, WebP · Max 10 MB</p>
+        </div>
+      ) : (
+        /* Empty state */
+        <div className="rounded-xl border-2 border-dashed border-border bg-muted/20 p-6 text-center">
+          <ImageIcon className="h-10 w-10 text-muted-foreground mx-auto mb-2 opacity-30" />
+          <p className="text-sm text-muted-foreground mb-3">No images yet</p>
+
+          {/* Add-image tabs */}
+          <div className="flex rounded-lg border border-border overflow-hidden text-xs mb-3 max-w-xs mx-auto">
+            <button
+              type="button"
+              onClick={() => setAddTab("upload")}
+              className={`flex-1 py-1.5 flex items-center justify-center gap-1 font-medium transition-colors ${addTab === "upload" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+            >
+              <Upload className="h-3 w-3" /> Device
+            </button>
+            <button
+              type="button"
+              onClick={() => setAddTab("url")}
+              className={`flex-1 py-1.5 flex items-center justify-center gap-1 font-medium transition-colors ${addTab === "url" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+            >
+              <LinkIcon className="h-3 w-3" /> URL
+            </button>
+          </div>
+
+          {addTab === "upload" ? (
+            <>
+              <input
+                ref={uploadRef}
+                id={`${uid}-upload`}
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+              <label
+                htmlFor={`${uid}-upload`}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+              >
+                <Upload className="h-3.5 w-3.5" />
+                {uploading ? "Uploading…" : "Choose Photos"}
+              </label>
+              <p className="text-xs text-muted-foreground mt-1.5">JPG, PNG, WebP · Max 10 MB each</p>
+            </>
+          ) : (
+            <div className="flex gap-2 max-w-xs mx-auto">
+              <Input
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder="https://…/image.jpg"
+                className="text-xs h-8"
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleUrlAdd(); } }}
+              />
+              <Button type="button" size="sm" onClick={handleUrlAdd} className="shrink-0">Add</Button>
+            </div>
+          )}
         </div>
       )}
 
-      {tab === "url" && (
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <Input
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className="text-sm"
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleUrlApply(); } }}
-            />
-            <Button type="button" variant="outline" onClick={handleUrlApply} className="shrink-0">Apply</Button>
-          </div>
-          <p className="text-xs text-muted-foreground">Paste a direct image link from Google Drive, Cloudinary, Imgur, etc.</p>
+      {/* When images exist, also show URL add option below */}
+      {images.length > 0 && (
+        <div className="flex gap-2">
+          <Input
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="Or paste an image URL and press Add"
+            className="text-xs h-8"
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleUrlAdd(); } }}
+          />
+          <Button type="button" variant="outline" size="sm" onClick={handleUrlAdd} className="shrink-0">Add URL</Button>
         </div>
       )}
     </div>
   );
 }
+
+// ─── Product form modal ───────────────────────────────────────────────────────
 
 function ProductFormModal({
   initial,
@@ -183,16 +304,22 @@ function ProductFormModal({
   const [form, setForm] = useState(initial);
   const { data: categories = [] } = useListCategories();
 
-  const set = (key: keyof ProductFormData, val: string | boolean | number | null) =>
+  const set = <K extends keyof ProductFormData>(key: K, val: ProductFormData[K]) =>
     setForm((f) => ({ ...f, [key]: val }));
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between p-5 border-b border-border">
           <h3 className="font-serif font-bold text-xl">{initial.name ? "Edit Product" : "Add Product"}</h3>
-          <button onClick={onClose} className="p-1 hover:text-destructive transition-colors"><X className="h-5 w-5" /></button>
+          <button onClick={onClose} className="p-1 hover:text-destructive transition-colors">
+            <X className="h-5 w-5" />
+          </button>
         </div>
+
         <div className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2 space-y-1.5">
@@ -200,7 +327,6 @@ function ProductFormModal({
               <Input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Hibiscus Honey" />
             </div>
 
-            {/* Category — prominent at top */}
             <div className="col-span-2 space-y-1.5">
               <Label className="flex items-center gap-1.5">
                 Category
@@ -224,6 +350,7 @@ function ProductFormModal({
               <Label>Description</Label>
               <Textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="resize-none" />
             </div>
+
             <div className="space-y-1.5">
               <Label>Flavor</Label>
               <select value={form.flavor} onChange={(e) => set("flavor", e.target.value)}
@@ -240,35 +367,43 @@ function ProductFormModal({
             </div>
             <div className="space-y-1.5">
               <Label>Price (Naira)</Label>
-              <Input type="number" value={form.priceKobo / 100} onChange={(e) => set("priceKobo", Math.round(Number(e.target.value) * 100))} />
+              <Input type="number" value={form.priceKobo / 100}
+                onChange={(e) => set("priceKobo", Math.round(Number(e.target.value) * 100))} />
             </div>
             <div className="space-y-1.5">
               <Label>Stock Count</Label>
-              <Input type="number" value={form.stockCount} onChange={(e) => set("stockCount", Number(e.target.value))} />
+              <Input type="number" value={form.stockCount}
+                onChange={(e) => set("stockCount", Number(e.target.value))} />
             </div>
             <div className="space-y-1.5">
               <Label>Minimum Order Quantity</Label>
-              <Input type="number" min={1} value={form.minOrderQty} onChange={(e) => set("minOrderQty", Math.max(1, Number(e.target.value)))} />
+              <Input type="number" min={1} value={form.minOrderQty}
+                onChange={(e) => set("minOrderQty", Math.max(1, Number(e.target.value)))} />
               <p className="text-xs text-muted-foreground">Customers must order at least this many units.</p>
             </div>
-            <div className="flex items-center gap-3">
-              <input type="checkbox" id="inStock" checked={form.inStock} onChange={(e) => set("inStock", e.target.checked)} className="w-4 h-4 accent-primary" />
-              <Label htmlFor="inStock">In Stock</Label>
-            </div>
-            <div className="flex items-center gap-3">
-              <input type="checkbox" id="featured" checked={form.featured} onChange={(e) => set("featured", e.target.checked)} className="w-4 h-4 accent-primary" />
-              <Label htmlFor="featured">Featured</Label>
+            <div className="space-y-2.5 pt-1">
+              <div className="flex items-center gap-3">
+                <input type="checkbox" id="inStock" checked={form.inStock}
+                  onChange={(e) => set("inStock", e.target.checked)} className="w-4 h-4 accent-primary" />
+                <Label htmlFor="inStock">In Stock</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <input type="checkbox" id="featured" checked={form.featured}
+                  onChange={(e) => set("featured", e.target.checked)} className="w-4 h-4 accent-primary" />
+                <Label htmlFor="featured">Featured</Label>
+              </div>
             </div>
           </div>
 
-          {/* Image picker */}
+          {/* Multi-image manager */}
           <div className="pt-2 border-t border-border">
-            <ImagePicker
-              value={form.imageUrl}
-              onChange={(url) => set("imageUrl", url)}
+            <MultiImageManager
+              images={form.images}
+              onChange={(imgs) => set("images", imgs)}
             />
           </div>
         </div>
+
         <div className="flex gap-3 p-5 border-t border-border">
           <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
           <Button onClick={() => onSave(form)} disabled={saving || !form.name} className="flex-1">
@@ -279,6 +414,8 @@ function ProductFormModal({
     </div>
   );
 }
+
+// ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function AdminProductsPage() {
   const queryClient = useQueryClient();
@@ -298,22 +435,46 @@ export default function AdminProductsPage() {
   };
 
   const handleSave = (form: ProductFormData) => {
+    const payload = {
+      name: form.name,
+      description: form.description,
+      priceKobo: form.priceKobo,
+      flavor: form.flavor,
+      type: form.type,
+      inStock: form.inStock,
+      stockCount: form.stockCount,
+      featured: form.featured,
+      imageUrl: form.images.length > 0 ? form.images[0].imageUrl : form.imageUrl,
+      categoryId: form.categoryId,
+      minOrderQty: form.minOrderQty,
+      images: form.images,
+    };
+
     if (editProduct) {
       updateProduct.mutate(
-        { id: editProduct.id, data: form },
-        { onSuccess: () => { refresh(); setEditProduct(null); toast({ title: "Product updated" }); }, onError: (e) => { console.error(e); toast({ title: "Error updating product", variant: "destructive" }); } }
+        { id: editProduct.id, data: payload },
+        {
+          onSuccess: () => { refresh(); setEditProduct(null); toast({ title: "Product updated" }); },
+          onError: (e) => { console.error(e); toast({ title: "Error updating product", variant: "destructive" }); },
+        }
       );
     } else {
       createProduct.mutate(
-        { data: form },
-        { onSuccess: () => { refresh(); setShowForm(false); toast({ title: "Product created" }); }, onError: () => toast({ title: "Error creating product", variant: "destructive" }) }
+        { data: payload },
+        {
+          onSuccess: () => { refresh(); setShowForm(false); toast({ title: "Product created" }); },
+          onError: () => toast({ title: "Error creating product", variant: "destructive" }),
+        }
       );
     }
   };
 
   const handleDelete = (id: number, name: string) => {
     if (!confirm(`Delete "${name}"?`)) return;
-    deleteProduct.mutate({ id }, { onSuccess: () => { refresh(); toast({ title: "Deleted" }); }, onError: () => toast({ title: "Error", variant: "destructive" }) });
+    deleteProduct.mutate(
+      { id },
+      { onSuccess: () => { refresh(); toast({ title: "Deleted" }); }, onError: () => toast({ title: "Error", variant: "destructive" }) }
+    );
   };
 
   const saving = createProduct.isPending || updateProduct.isPending;
@@ -326,19 +487,12 @@ export default function AdminProductsPage() {
 
   return (
     <AdminLayout title="Products">
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-muted-foreground text-sm">{filteredProducts.length} of {products.length} products</p>
-        <Button onClick={() => setShowForm(true)} className="gap-2">
-          <Plus className="h-4 w-4" /> Add Product
-        </Button>
-      </div>
-
       {/* Category filter tabs */}
       {categories.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6 pb-5 border-b border-border">
+        <div className="flex flex-wrap gap-2 mb-4">
           <button
             onClick={() => setCategoryFilter(null)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilter === null ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+            className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${categoryFilter === null ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted"}`}
           >
             All ({products.length})
           </button>
@@ -348,7 +502,7 @@ export default function AdminProductsPage() {
               <button
                 key={cat.id}
                 onClick={() => setCategoryFilter(cat.id)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilter === cat.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+                className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${categoryFilter === cat.id ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted"}`}
               >
                 {cat.name} ({count})
               </button>
@@ -357,7 +511,7 @@ export default function AdminProductsPage() {
           {products.some((p) => !p.categoryId) && (
             <button
               onClick={() => setCategoryFilter("uncategorised")}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${categoryFilter === "uncategorised" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+              className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${categoryFilter === "uncategorised" ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted"}`}
             >
               Uncategorised ({products.filter((p) => !p.categoryId).length})
             </button>
@@ -365,34 +519,71 @@ export default function AdminProductsPage() {
         </div>
       )}
 
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-muted-foreground text-sm">
+          {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
+        </p>
+        <Button onClick={() => setShowForm(true)} className="gap-2">
+          <Plus className="h-4 w-4" /> Add Product
+        </Button>
+      </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => <div key={i} className="h-40 bg-card border rounded-xl animate-pulse" />)}
+          {[...Array(6)].map((_, i) => <div key={i} className="h-60 bg-card border rounded-2xl animate-pulse" />)}
+        </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="text-center py-20 rounded-xl bg-card border border-border">
+          <p className="text-muted-foreground">No products found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProducts.map((product) => {
-            const image = getProductImage(product.flavor, product.type, product.imageUrl);
+            const coverImage = product.images.length > 0
+              ? product.images[0].imageUrl
+              : getProductImage(product.flavor, product.type, product.imageUrl);
             return (
-              <div key={product.id} className="rounded-xl bg-card border border-border p-4 flex gap-3 hover:border-primary/20 transition-colors">
-                <img src={image} alt={product.name} className="w-16 h-16 object-contain flex-shrink-0 rounded-lg bg-amber-50 p-1" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-1 mb-1">
-                    <h3 className="font-semibold text-sm leading-tight line-clamp-2">{product.name}</h3>
-                    <div className="flex gap-1 flex-shrink-0">
-                      <button onClick={() => setEditProduct(product)} className="p-1 hover:text-primary transition-colors"><Pencil className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => handleDelete(product.id, product.name)} className="p-1 hover:text-destructive transition-colors"><Trash2 className="h-3.5 w-3.5" /></button>
-                    </div>
+              <div key={product.id} className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
+                {/* Image strip */}
+                <div className="relative h-40 bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center">
+                  <img src={coverImage} alt={product.name} className="max-h-full max-w-full object-contain p-3" />
+                  {product.images.length > 1 && (
+                    <Badge variant="secondary" className="absolute bottom-2 right-2 text-xs">
+                      +{product.images.length - 1} more
+                    </Badge>
+                  )}
+                  {!product.inStock && (
+                    <Badge variant="destructive" className="absolute top-2 left-2 text-xs">Out of stock</Badge>
+                  )}
+                  {product.featured && (
+                    <Badge className="absolute top-2 right-2 text-xs bg-amber-500 hover:bg-amber-500">Featured</Badge>
+                  )}
+                </div>
+                {/* Info */}
+                <div className="p-3 flex flex-col gap-1 flex-1">
+                  <p className="font-semibold text-sm line-clamp-1">{product.name}</p>
+                  <div className="text-sm font-bold text-primary">{formatNaira(product.priceKobo)}</div>
+                  <p className="text-xs text-muted-foreground line-clamp-2 flex-1">{product.description}</p>
+                  <div className="flex items-center gap-1 flex-wrap mt-1">
+                    <Badge variant="outline" className="text-xs capitalize">{product.flavor}</Badge>
+                    <Badge variant="outline" className="text-xs capitalize">{product.type}</Badge>
+                    {product.categoryName && <Badge variant="secondary" className="text-xs">{product.categoryName}</Badge>}
                   </div>
-                  <div className="text-sm font-bold text-primary mb-1">{formatNaira(product.priceKobo)}</div>
-                  <div className="flex flex-wrap gap-1">
-                    <Badge variant="outline" className="text-xs">{product.flavor}</Badge>
-                    <Badge variant="outline" className="text-xs">{product.type}</Badge>
-                    {!product.inStock && <Badge variant="destructive" className="text-xs">Out of stock</Badge>}
-                    {product.featured && <Badge className="text-xs bg-amber-100 text-amber-800 border-amber-200">Featured</Badge>}
-                    {product.categoryName && <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">{product.categoryName}</Badge>}
-                  </div>
+                </div>
+                {/* Actions */}
+                <div className="flex gap-2 p-3 pt-0">
+                  <Button
+                    variant="outline" size="sm" className="flex-1 gap-1"
+                    onClick={() => setEditProduct(product)}
+                  >
+                    <Pencil className="h-3.5 w-3.5" /> Edit
+                  </Button>
+                  <Button
+                    variant="outline" size="sm" className="hover:text-destructive hover:border-destructive"
+                    onClick={() => handleDelete(product.id, product.name)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
               </div>
             );
@@ -414,6 +605,7 @@ export default function AdminProductsPage() {
             imageUrl: editProduct.imageUrl ?? null,
             categoryId: editProduct.categoryId ?? null,
             minOrderQty: editProduct.minOrderQty ?? 1,
+            images: editProduct.images.map((img) => ({ imageUrl: img.imageUrl, sortOrder: img.sortOrder })),
           } : defaultForm}
           onSave={handleSave}
           onClose={() => { setShowForm(false); setEditProduct(null); }}

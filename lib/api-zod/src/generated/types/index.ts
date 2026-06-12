@@ -27,6 +27,8 @@ export * from './orderItem';
 export * from './orderItemInput';
 export * from './orderStatusUpdate';
 export * from './product';
+export * from './productImage';
+export * from './productImageInput';
 export * from './productInput';
 export * from './productUpdate';
 export * from './siteSettings';

@@ -574,6 +574,31 @@ components:
       required:
         - status
 
+    ProductImage:
+      type: object
+      properties:
+        id:
+          type: integer
+        imageUrl:
+          type: string
+        sortOrder:
+          type: integer
+      required:
+        - id
+        - imageUrl
+        - sortOrder
+
+    ProductImageInput:
+      type: object
+      properties:
+        imageUrl:
+          type: string
+        sortOrder:
+          type: integer
+      required:
+        - imageUrl
+        - sortOrder
+
     Product:
       type: object
       properties:
@@ -607,6 +632,10 @@ components:
         minOrderQty:
           type: integer
           description: Minimum number of units a customer must order
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductImage"
         createdAt:
           type: string
       required:
@@ -620,6 +649,7 @@ components:
         - stockCount
         - featured
         - minOrderQty
+        - images
         - createdAt
 
     ProductInput:
@@ -648,6 +678,10 @@ components:
         minOrderQty:
           type: integer
           description: Minimum number of units a customer must order
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductImageInput"
       required:
         - name
         - description
@@ -658,6 +692,7 @@ components:
         - stockCount
         - featured
         - minOrderQty
+        - images
 
     ProductUpdate:
       type: object
@@ -685,6 +720,10 @@ components:
         minOrderQty:
           type: integer
           description: Minimum number of units a customer must order
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductImageInput"
 
     Order:
       type: object

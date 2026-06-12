@@ -6,7 +6,7 @@ import { useCart } from "@/components/cart-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatNaira, getProductImage } from "@/lib/utils";
-import { Minus, Plus, ShoppingBag, ArrowLeft, CheckCircle } from "lucide-react";
+import { Minus, Plus, ShoppingBag, ArrowLeft, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
 const FLAVOR_COLORS: Record<string, string> = {
   hibiscus: "bg-red-100 text-red-800 border-red-200",
@@ -34,11 +34,16 @@ export default function ProductDetailPage() {
   const minQty = product?.minOrderQty ?? 1;
   const [quantity, setQuantity] = useState(minQty);
   const [added, setAdded] = useState(false);
+  const [activeImg, setActiveImg] = useState(0);
 
-  // keep quantity in sync when product loads and has a min > 1
   React.useEffect(() => {
     setQuantity((q) => Math.max(q, minQty));
   }, [minQty]);
+
+  // Reset gallery index when product changes
+  React.useEffect(() => {
+    setActiveImg(0);
+  }, [numId]);
 
   if (isLoading) {
     return (
@@ -68,7 +73,11 @@ export default function ProductDetailPage() {
     );
   }
 
-  const image = getProductImage(product.flavor, product.type, product.imageUrl);
+  const fallbackImage = getProductImage(product.flavor, product.type, product.imageUrl);
+  const galleryImages = product.images.length > 0
+    ? product.images.map((i) => i.imageUrl)
+    : [fallbackImage];
+
   const flavorLabel = product.flavor.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   const benefits = FLAVOR_BENEFITS[product.flavor] ?? [];
   const inCart = items.find(i => i.productId === product.id);
@@ -80,12 +89,15 @@ export default function ProductDetailPage() {
       productType: product.type,
       priceKobo: product.priceKobo,
       quantity,
-      imageUrl: image,
+      imageUrl: galleryImages[0],
       flavor: product.flavor,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
+
+  const prevImg = () => setActiveImg((i) => (i - 1 + galleryImages.length) % galleryImages.length);
+  const nextImg = () => setActiveImg((i) => (i + 1) % galleryImages.length);
 
   return (
     <Layout>
@@ -100,14 +112,61 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          {/* Image */}
-          <div className="relative">
-            <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 flex items-center justify-center p-10">
-              <img src={image} alt={product.name} className="max-h-full max-w-full object-contain drop-shadow-2xl" />
+          {/* Image gallery */}
+          <div className="space-y-3">
+            {/* Main image */}
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 flex items-center justify-center p-10">
+              <img
+                key={activeImg}
+                src={galleryImages[activeImg]}
+                alt={product.name}
+                className="max-h-full max-w-full object-contain drop-shadow-2xl transition-opacity duration-200"
+              />
+              {!product.inStock && (
+                <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                  <Badge className="text-base px-6 py-2 bg-destructive text-destructive-foreground">Out of Stock</Badge>
+                </div>
+              )}
+              {/* Prev/Next arrows — only if multiple images */}
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImg}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1.5 shadow transition-colors"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={nextImg}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1.5 shadow transition-colors"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {galleryImages.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveImg(i)}
+                        className={`w-2 h-2 rounded-full transition-colors ${i === activeImg ? "bg-primary" : "bg-primary/30"}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
-            {!product.inStock && (
-              <div className="absolute inset-0 bg-white/60 rounded-2xl flex items-center justify-center">
-                <Badge className="text-base px-6 py-2 bg-destructive text-destructive-foreground">Out of Stock</Badge>
+
+            {/* Thumbnail strip — only if multiple images */}
+            {galleryImages.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {galleryImages.map((src, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImg(i)}
+                    className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden bg-amber-50 flex items-center justify-center p-1 transition-colors ${i === activeImg ? "border-primary" : "border-border hover:border-primary/50"}`}
+                  >
+                    <img src={src} alt={`View ${i + 1}`} className="max-w-full max-h-full object-contain" />
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -120,7 +179,7 @@ export default function ProductDetailPage() {
                   {flavorLabel}
                 </Badge>
                 <Badge variant="outline" className="text-muted-foreground">
-                  {product.type === "box" ? "30 Pieces" : "15ml Sachet"}
+                  {product.type === "box" ? "10 sachets in a pack" : "15ml Sachet"}
                 </Badge>
               </div>
               <h1 className="font-serif font-bold text-4xl text-foreground mb-2">{product.name}</h1>
