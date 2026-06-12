@@ -1,9 +1,15 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import { useGetFeaturedProducts } from "@workspace/api-client-react";
+import type { Product } from "@workspace/api-client-react";
 import { useSettings } from "@/contexts/settings-context";
 import { Layout } from "@/components/layout";
 import { ProductCard } from "@/components/product-card";
+import { useCart } from "@/components/cart-context";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { formatNaira, getProductImage } from "@/lib/utils";
+import { CheckCircle, ShoppingBag } from "lucide-react";
 import defaultBannerImg from "@assets/a19fa264-b1a2-4592-a852-d2e2934d4852_1780225496305.jpeg";
 import defaultBoxImg from "@assets/1bb59fff-c60a-495a-a645-92b6f7c19b0c_1780225496305.jpeg";
 import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
@@ -23,6 +29,119 @@ const STATS = [
   { val: "10 sachets", label: "in a pack" },
   { val: "100%", label: "Natural" },
 ];
+
+const FLAVOR_COLORS: Record<string, string> = {
+  hibiscus: "bg-red-900/40 text-red-300 border-red-700/50",
+  "ginger-lemon": "bg-green-900/40 text-green-300 border-green-700/50",
+  "cinnamon-lemon": "bg-purple-900/40 text-purple-300 border-purple-700/50",
+  original: "bg-amber-900/40 text-amber-300 border-amber-700/50",
+};
+
+// ─── Single-product hero shown when exactly 1 product is featured ─────────────
+
+function FeaturedSoloHero({ product }: { product: Product }) {
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const imgSrc = product.images.length > 0
+    ? product.images[0].imageUrl
+    : getProductImage(product.flavor, product.type, product.imageUrl);
+
+  const flavorLabel = product.flavor.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  const minQty = product.minOrderQty ?? 1;
+
+  const handleAdd = () => {
+    addToCart({
+      productId: product.id,
+      productName: product.name,
+      productType: product.type,
+      priceKobo: product.priceKobo,
+      quantity: minQty,
+      imageUrl: imgSrc,
+      flavor: product.flavor,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  return (
+    <div className="glass-card rounded-3xl overflow-hidden ring-1 ring-amber-700/30">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+        {/* Image */}
+        <div className="relative bg-gradient-to-br from-amber-950/60 to-[#060d07] flex items-center justify-center p-10 md:p-14 min-h-72">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(180,83,9,0.12),transparent_70%)]" />
+          <div className="relative">
+            <div className="absolute -inset-8 rounded-full bg-amber-600/10 blur-2xl" />
+            <img
+              src={imgSrc}
+              alt={product.name}
+              className="relative max-h-72 md:max-h-96 w-auto object-contain drop-shadow-2xl animate-float"
+            />
+          </div>
+          {!product.inStock && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <Badge className="text-base px-6 py-2 bg-destructive text-destructive-foreground">Out of Stock</Badge>
+            </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="p-8 md:p-12 flex flex-col justify-center space-y-6">
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <Badge variant="outline" className={FLAVOR_COLORS[product.flavor] ?? "border-amber-700/40 text-amber-300"}>
+                {flavorLabel}
+              </Badge>
+              <Badge variant="outline" className="border-amber-800/40 text-amber-400/70">
+                {product.type === "box" ? "10 sachets in a pack" : "15ml Sachet"}
+              </Badge>
+            </div>
+            <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-amber-50 leading-tight">{product.name}</h3>
+            <div className="text-2xl font-bold text-amber-400 mt-1">{formatNaira(product.priceKobo)}</div>
+          </div>
+
+          <p className="text-amber-200/60 leading-relaxed text-sm md:text-base line-clamp-3">{product.description}</p>
+
+          {product.benefits && product.benefits.length > 0 && (
+            <ul className="space-y-1.5">
+              {product.benefits.slice(0, 4).map((b) => (
+                <li key={b} className="flex items-center gap-2 text-sm text-amber-100/80">
+                  <CheckCircle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {minQty > 1 && (
+            <p className="text-xs text-amber-700/80 bg-amber-900/20 border border-amber-800/30 rounded-lg px-3 py-1.5">
+              Minimum order: <strong>{minQty} units</strong>
+            </p>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-1">
+            {product.inStock ? (
+              <Button
+                size="lg"
+                className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-full gap-2 shadow-lg shadow-amber-900/40"
+                onClick={handleAdd}
+                disabled={added}
+              >
+                <ShoppingBag className="h-4 w-4" />
+                {added ? "Added to Cart!" : "Add to Cart"}
+              </Button>
+            ) : null}
+            <Button asChild size="lg" variant="outline" className="border-amber-700/60 text-amber-400 hover:bg-amber-900/20 rounded-full">
+              <Link href={`/products/${product.id}`}>View Details →</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
   const settings = useSettings();
@@ -133,15 +252,18 @@ export default function HomePage() {
               <Link href="/products">View All →</Link>
             </Button>
           </div>
+
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => <div key={i} className="rounded-xl bg-card border border-amber-900/20 animate-pulse h-80" />)}
             </div>
-          ) : (
+          ) : featured.length === 1 ? (
+            <FeaturedSoloHero product={featured[0]} />
+          ) : featured.length > 1 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featured.map((product) => <ProductCard key={product.id} product={product} />)}
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 
