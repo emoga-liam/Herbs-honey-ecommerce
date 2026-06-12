@@ -3,9 +3,11 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { randomUUID } from "crypto";
+import fs from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const UPLOADS_DIR = path.resolve(__dirname, "..", "..", "uploads");
+const UPLOADS_DIR = path.resolve(__dirname, "..", "uploads");
+fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
