@@ -1,55 +1,34 @@
 import { Router } from "express";
-import bcrypt from "bcryptjs";
-import { rateLimit } from "express-rate-limit";
 import { db, adminsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
-import { AdminLoginBody } from "@workspace/api-zod";
+import { adminGuard } from "../middleware/auth";
 
 const router = Router();
 
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  standardHeaders: "draft-8",
-  legacyHeaders: false,
-  message: { error: "Too many login attempts. Please try again in 15 minutes." },
-  skipSuccessfulRequests: true,
-});
-
-// POST /auth/login
-router.post("/auth/login", loginLimiter, async (req, res): Promise<void> => {
-  try {
-    const body = AdminLoginBody.safeParse(req.body);
-    if (!body.success) { res.status(400).json({ error: "Invalid body" }); return; }
-
-    const { email, password } = body.data;
-    const [admin] = await db.select().from(adminsTable).where(eq(adminsTable.email, email));
-    if (!admin) { res.status(401).json({ error: "Invalid credentials" }); return; }
-
-    const valid = await bcrypt.compare(password, admin.passwordHash);
-    if (!valid) { res.status(401).json({ error: "Invalid credentials" }); return; }
-
-    req.session!.adminId = admin.id;
-    res.json({ id: admin.id, email: admin.email, name: admin.name });
-  } catch (err) {
-    req.log.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
+// POST /auth/login (Deprecated for stateless direct Firebase login)
+router.post("/auth/login", async (req, res): Promise<void> => {
+  res.status(400).json({
+    error: "Deprecated. Please authenticate directly on the client side using the Firebase SDK.",
+  });
 });
 
 // POST /auth/logout
 router.post("/auth/logout", async (req, res) => {
-  req.session?.destroy(() => {});
   res.json({ message: "Logged out" });
 });
 
 // GET /auth/me
-router.get("/auth/me", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Not authenticated" }); return; }
+router.get("/auth/me", adminGuard, async (req, res): Promise<void> => {
   try {
-    const [admin] = await db.select().from(adminsTable).where(eq(adminsTable.id, req.session.adminId));
-    if (!admin) { res.status(401).json({ error: "Not authenticated" }); return; }
-    res.json({ id: admin.id, email: admin.email, name: admin.name });
+    if (!req.admin) {
+      res.status(401).json({ error: "Not authenticated" });
+      return;
+    }
+    res.json({
+      id: req.admin.id,
+      email: req.admin.email,
+      name: req.admin.name,
+    });
   } catch (err) {
     req.log.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -57,24 +36,70 @@ router.get("/auth/me", async (req, res): Promise<void> => {
 });
 
 // POST /auth/change-password
-router.post("/auth/change-password", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Not authenticated" }); return; }
+router.post("/auth/change-password", adminGuard, async (req, res): Promise<void> => {
   try {
+    if (!req.admin) {
+      res.status(401).json({ error: "Not authenticated" });
+      return;
+    }
+
     const { currentPassword, newPassword } = req.body as Record<string, unknown>;
     if (!currentPassword || typeof currentPassword !== "string") {
-      res.status(400).json({ error: "Current password is required" }); return;
+      res.status(400).json({ error: "Current password is required" });
+      return;
     }
     if (!newPassword || typeof newPassword !== "string" || newPassword.length < 8) {
-      res.status(400).json({ error: "New password must be at least 8 characters" }); return;
+      res.status(400).json({ error: "New password must be at least 8 characters" });
+      return;
     }
-    const [admin] = await db.select().from(adminsTable).where(eq(adminsTable.id, req.session.adminId));
-    if (!admin) { res.status(401).json({ error: "Not authenticated" }); return; }
 
-    const valid = await bcrypt.compare(currentPassword, admin.passwordHash);
-    if (!valid) { res.status(401).json({ error: "Current password is incorrect" }); return; }
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.VITE_FIREBASE_API_KEY;
+    if (!apiKey) {
+      req.log.error("Missing GOOGLE_API_KEY / VITE_FIREBASE_API_KEY env variable");
+      res.status(500).json({ error: "Internal server error: auth configuration missing" });
+      return;
+    }
 
-    const newHash = await bcrypt.hash(newPassword, 12);
-    await db.update(adminsTable).set({ passwordHash: newHash }).where(eq(adminsTable.id, admin.id));
+    // 1. Verify current password by attempting to sign in with Firebase
+    const signInRes = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: req.admin.email,
+          password: currentPassword,
+          returnSecureToken: true,
+        }),
+      }
+    );
+
+    if (!signInRes.ok) {
+      res.status(401).json({ error: "Current password is incorrect" });
+      return;
+    }
+
+    const signInData = (await signInRes.json()) as { idToken: string };
+
+    // 2. Change the password in Firebase using the user's new token
+    const updateRes = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idToken: signInData.idToken,
+          password: newPassword,
+          returnSecureToken: true,
+        }),
+      }
+    );
+
+    if (!updateRes.ok) {
+      res.status(500).json({ error: "Failed to update password in Firebase" });
+      return;
+    }
+
     res.json({ message: "Password changed successfully" });
   } catch (err) {
     req.log.error(err);

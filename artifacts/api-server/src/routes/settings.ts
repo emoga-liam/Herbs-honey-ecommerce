@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { db, siteSettings } from "@workspace/db";
+import { adminGuard } from "../middleware/auth";
 
 const router = Router();
 
@@ -73,11 +74,7 @@ router.get("/settings", async (req, res) => {
   }
 });
 
-router.patch("/settings", async (req, res) => {
-  if (!req.session?.adminId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
+router.patch("/settings", adminGuard, async (req, res) => {
   try {
     const updates = req.body as Record<string, string>;
     for (const [key, value] of Object.entries(updates)) {

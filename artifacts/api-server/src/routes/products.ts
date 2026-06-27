@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { adminGuard } from "../middleware/auth";
 import { db, productsTable, categoriesTable, productImagesTable } from "@workspace/db";
 import { eq, desc, inArray } from "drizzle-orm";
 import {
@@ -165,8 +166,7 @@ router.get("/products/:id", async (req, res): Promise<void> => {
 });
 
 // POST /products (admin)
-router.post("/products", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.post("/products", adminGuard, async (req, res): Promise<void> => {
   try {
     const body = CreateProductBody.safeParse(req.body);
     if (!body.success) { res.status(400).json({ error: "Invalid body" }); return; }
@@ -190,8 +190,7 @@ router.post("/products", async (req, res): Promise<void> => {
 });
 
 // PATCH /products/:id (admin)
-router.patch("/products/:id", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.patch("/products/:id", adminGuard, async (req, res): Promise<void> => {
   try {
     const params = UpdateProductParams.safeParse({ id: Number(req.params.id) });
     if (!params.success) { res.status(400).json({ error: "Invalid id" }); return; }
@@ -233,8 +232,7 @@ router.patch("/products/:id", async (req, res): Promise<void> => {
 });
 
 // DELETE /products/:id (admin)
-router.delete("/products/:id", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.delete("/products/:id", adminGuard, async (req, res): Promise<void> => {
   try {
     const params = DeleteProductParams.safeParse({ id: Number(req.params.id) });
     if (!params.success) { res.status(400).json({ error: "Invalid id" }); return; }

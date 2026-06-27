@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { adminGuard } from "../middleware/auth";
 import { db, ordersTable, productsTable, deliveryFeesTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import {
@@ -12,8 +13,7 @@ import {
 const router = Router();
 
 // GET /orders (admin)
-router.get("/orders", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.get("/orders", adminGuard, async (req, res): Promise<void> => {
   try {
     const query = ListOrdersQueryParams.safeParse(req.query);
     const params = query.success ? query.data : {};
@@ -121,8 +121,7 @@ router.get("/orders/:id", async (req, res): Promise<void> => {
 });
 
 // PATCH /orders/:id/status (admin)
-router.patch("/orders/:id/status", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.patch("/orders/:id/status", adminGuard, async (req, res): Promise<void> => {
   try {
     const params = UpdateOrderStatusParams.safeParse({ id: Number(req.params.id) });
     if (!params.success) { res.status(400).json({ error: "Invalid id" }); return; }

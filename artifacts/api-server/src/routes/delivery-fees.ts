@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, deliveryFeesTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { adminGuard } from "../middleware/auth";
 
 const NIGERIAN_STATES = [
   "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno",
@@ -31,8 +32,7 @@ router.get("/delivery-fees", async (req, res) => {
 });
 
 // PUT /delivery-fees — bulk upsert (admin)
-router.put("/delivery-fees", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.put("/delivery-fees", adminGuard, async (req, res): Promise<void> => {
   try {
     const entries = req.body as Array<{ state: string; feeKobo: number }>;
     if (!Array.isArray(entries)) { res.status(400).json({ error: "Expected array" }); return; }

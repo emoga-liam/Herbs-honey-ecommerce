@@ -41,6 +41,9 @@ channel = "stable-25_05"
 [userenv]
 
 [userenv.shared]
+DATABASE_URL = "postgresql://postgres.hdedblyzfaemsmdujbkn:%2A7ntX2DrB%2CgVWE4@aws-1-eu-central-1.pooler.supabase.com:6543/postgres"
+GOOGLE_API_KEY = "AIzaSyDN6rMot6ApIS1YN4QNycm_PvDjUe4JxOw"
+SESSION_SECRET = "7AnFRnpbNGgufMJGvqzr8Nj17DxPP38pZwhnLfXkCyWHZZslf0NeA4BgJ1xa3U7ukTseyXLCMl/v0E6fTifidQ=="
 VITE_FIREBASE_API_KEY = "AIzaSyDN6rMot6ApIS1YN4QNycm_PvDjUe4JxOw"
 VITE_FIREBASE_AUTH_DOMAIN = "herbs-honey.firebaseapp.com"
 VITE_FIREBASE_PROJECT_ID = "herbs-honey"

@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { db, ordersTable, productsTable } from "@workspace/db";
 import { eq, desc, count, sum } from "drizzle-orm";
+import { adminGuard } from "../middleware/auth";
 
 const router = Router();
 
 // GET /admin/stats
-router.get("/admin/stats", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.get("/admin/stats", adminGuard, async (req, res): Promise<void> => {
   try {
     const [{ totalOrders }] = await db.select({ totalOrders: count() }).from(ordersTable);
     const [{ totalProducts }] = await db.select({ totalProducts: count() }).from(productsTable);

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { adminGuard } from "../middleware/auth";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -30,11 +31,7 @@ const upload = multer({
 const router = Router();
 
 // POST /api/uploads/image  (admin only)
-router.post("/uploads/image", upload.single("image"), (req, res): void => {
-  if (!req.session?.adminId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
+router.post("/uploads/image", adminGuard, upload.single("image"), (req, res): void => {
   if (!req.file) {
     res.status(400).json({ error: "No file uploaded" });
     return;

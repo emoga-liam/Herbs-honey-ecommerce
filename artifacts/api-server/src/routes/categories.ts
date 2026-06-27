@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { adminGuard } from "../middleware/auth";
 import { db, categoriesTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 
@@ -16,8 +17,7 @@ router.get("/categories", async (req, res) => {
 });
 
 // POST /categories (admin)
-router.post("/categories", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.post("/categories", adminGuard, async (req, res): Promise<void> => {
   try {
     const { name, description } = req.body as { name?: string; description?: string };
     if (!name?.trim()) { res.status(400).json({ error: "Name is required" }); return; }
@@ -33,8 +33,7 @@ router.post("/categories", async (req, res): Promise<void> => {
 });
 
 // PATCH /categories/:id (admin)
-router.patch("/categories/:id", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.patch("/categories/:id", adminGuard, async (req, res): Promise<void> => {
   try {
     const id = Number(req.params.id);
     if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
@@ -54,8 +53,7 @@ router.patch("/categories/:id", async (req, res): Promise<void> => {
 });
 
 // DELETE /categories/:id (admin)
-router.delete("/categories/:id", async (req, res): Promise<void> => {
-  if (!req.session?.adminId) { res.status(401).json({ error: "Unauthorized" }); return; }
+router.delete("/categories/:id", adminGuard, async (req, res): Promise<void> => {
   try {
     const id = Number(req.params.id);
     if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
