@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGetAdminStats, useAdminLogout } from "@workspace/api-client-react";
+import { auth, signOut as firebaseSignOut } from "@/lib/firebase";
 import { Link, useLocation } from "wouter";
 import { formatNaira } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -80,7 +81,15 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
 
       <div className="p-3 border-t border-sidebar-border">
         <button
-          onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/admin/login") })}
+          onClick={() =>
+            logout.mutate(undefined, {
+              onSuccess: () => {
+                // Sign out of Firebase so the ID token is cleared
+                if (auth) firebaseSignOut(auth).catch(() => null);
+                navigate("/admin/login");
+              },
+            })
+          }
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/50 hover:bg-red-900/30 hover:text-red-400 transition-colors w-full"
         >
           <LogOut className="h-4 w-4 flex-shrink-0" /> Sign Out

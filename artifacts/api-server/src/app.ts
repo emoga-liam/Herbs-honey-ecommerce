@@ -8,12 +8,6 @@ import { logger } from "./lib/logger";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-declare module "express-session" {
-  interface SessionData {
-    adminId: number;
-  }
-}
-
 const app: Express = express();
 
 // Trust the reverse proxy (Replit's shared proxy sets X-Forwarded-For)

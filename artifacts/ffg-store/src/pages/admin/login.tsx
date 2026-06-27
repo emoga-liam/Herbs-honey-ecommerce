@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useAdminLogin } from "@workspace/api-client-react";
+import { auth, signInWithEmailAndPassword } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,20 +10,34 @@ import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804
 export default function AdminLoginPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const login = useAdminLogin();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login.mutate(
-      { data: { email, password } },
-      {
-        onSuccess: () => navigate("/admin"),
-        onError: () => toast({ title: "Invalid credentials", description: "Check your email and password.", variant: "destructive" }),
+    if (!auth) {
+      toast({ title: "Firebase not configured", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/admin");
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      let description = "Check your email and password.";
+      if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        description = "Invalid email or password.";
+      } else if (code === "auth/too-many-requests") {
+        description = "Too many failed attempts. Please try again later.";
       }
-    );
+      toast({ title: "Sign in failed", description, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,7 +67,7 @@ export default function AdminLoginPage() {
             <div className="space-y-1.5">
               <Label className="text-amber-200/70 text-sm">Email Address</Label>
               <Input
-                id="email"
+                id="admin-email"
                 type="email"
                 placeholder="admin@grich20.com"
                 value={email}
@@ -65,7 +79,7 @@ export default function AdminLoginPage() {
             <div className="space-y-1.5">
               <Label className="text-amber-200/70 text-sm">Password</Label>
               <Input
-                id="password"
+                id="admin-password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
@@ -77,10 +91,11 @@ export default function AdminLoginPage() {
             <Button
               type="submit"
               size="lg"
+              id="admin-login-btn"
               className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold mt-2 rounded-xl"
-              disabled={login.isPending}
+              disabled={loading}
             >
-              {login.isPending ? "Signing in..." : "Sign In"}
+              {loading ? "Signing in…" : "Sign In"}
             </Button>
           </form>
         </div>
