@@ -4,8 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-// 💡 Fallback to 3000 if no PORT variable is provided locally
-const rawPort = process.env.PORT || "3000";
+const rawPort = process.env.PORT || "22825";
 
 const port = Number(rawPort);
 
@@ -13,7 +12,6 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-// 💡 Fallback to "/" (root directory) if no BASE_PATH variable is provided locally
 const basePath = process.env.BASE_PATH || "/";
 
 export default defineConfig({
@@ -55,6 +53,12 @@ export default defineConfig({
     allowedHosts: true,
     fs: {
       strict: true,
+    },
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
     },
   },
   preview: {

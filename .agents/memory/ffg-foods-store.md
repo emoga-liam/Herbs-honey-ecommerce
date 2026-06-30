@@ -55,6 +55,22 @@ Express-session with `SESSION_SECRET` env var. `useGetAdminMe` hook is used by `
 
 The mockup-sandbox `vite.config.ts` threw if `PORT`/`BASE_PATH` were missing, breaking `pnpm run build`. Fixed by only throwing at runtime (not when `NODE_ENV=production` or `argv` contains `build`).
 
-## Dev servers run on port 5173 (frontend) and 5000 (API)
+## Dev server ports — 22825 (frontend) and 8080 (API)
 
-Workflow: "Start application" → `PORT=5173 pnpm --filter @workspace/ffg-store run dev`, "API Server" → builds then starts on PORT=5000. Both confirmed running via logs even when Replit workflow badge shows "failed" (port detection timing quirk with pnpm workspace commands).
+The artifact.toml files are the source of truth for port allocation:
+- `artifacts/ffg-store/.replit-artifact/artifact.toml` → `localPort = 22825`, dev command `pnpm --filter @workspace/ffg-store run dev`
+- `artifacts/api-server/.replit-artifact/artifact.toml` → `localPort = 8080`
+
+**Why:** Replit's proxy routes `/` → port 22825 and `/api` → port 8080 based on these artifact.toml entries. The `.replit` [[ports]] section maps `localPort=22825` → `externalPort=3000`.
+
+**How to apply:** "Start application" workflow = `PORT=22825 pnpm --filter @workspace/ffg-store run dev`, waitForPort=22825; "API Server" = `PORT=8080 pnpm --filter @workspace/api-server run dev`, waitForPort=8080.
+
+## Vite dev server must proxy /api to API server
+
+`vite.config.ts` needs `server.proxy: { "/api": { target: "http://localhost:8080", changeOrigin: true } }` so the frontend dev server (port 22825) forwards API calls to the API server (port 8080).
+
+**Why:** Without the proxy, the browser makes `/api/...` requests to port 22825 which has no API handlers, returning 404.
+
+## createArtifact() fails for existing slug directories
+
+`createArtifact({ slug: "ffg-store", ... })` fails if `artifacts/ffg-store/` already exists. The artifact.toml files already exist at `artifacts/<slug>/.replit-artifact/artifact.toml` — Replit's proxy reads them directly without requiring `listArtifacts()` to return them.
