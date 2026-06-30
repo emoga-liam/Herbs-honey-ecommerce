@@ -43,11 +43,14 @@ function FeaturedSoloHero({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
 
-  const imgSrc = product.images.length > 0
+  const imgSrc = product.images && product.images.length > 0
     ? product.images[0].imageUrl
-    : getProductImage(product.flavor, product.type, product.imageUrl);
+    : getProductImage(product.flavor || "original", product.type || "sachet", product.imageUrl);
 
-  const flavorLabel = product.flavor.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  const flavorLabel = product.flavor
+    ? product.flavor.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+    : "Honey";
+
   const minQty = product.minOrderQty ?? 1;
 
   const handleAdd = () => {
@@ -58,7 +61,7 @@ function FeaturedSoloHero({ product }: { product: Product }) {
       priceKobo: product.priceKobo,
       quantity: minQty,
       imageUrl: imgSrc,
-      flavor: product.flavor,
+      flavor: product.flavor || "original",
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -89,7 +92,7 @@ function FeaturedSoloHero({ product }: { product: Product }) {
         <div className="p-8 md:p-12 flex flex-col justify-center space-y-6">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <Badge variant="outline" className={FLAVOR_COLORS[product.flavor] ?? "border-amber-700/40 text-amber-300"}>
+              <Badge variant="outline" className={FLAVOR_COLORS[product.flavor || "original"] ?? "border-amber-700/40 text-amber-300"}>
                 {flavorLabel}
               </Badge>
               <Badge variant="outline" className="border-amber-800/40 text-amber-400/70">
@@ -145,9 +148,22 @@ function FeaturedSoloHero({ product }: { product: Product }) {
 
 export default function HomePage() {
   const settings = useSettings();
-  const { data: featured = [], isLoading } = useGetFeaturedProducts();
-  const heroImage = settings.heroImageUrl || defaultBannerImg;
-  const heroSecondaryImage = settings.heroSecondaryImageUrl || defaultBoxImg;
+  const { data: rawFeatured, isLoading } = useGetFeaturedProducts();
+
+  // 💡 Safeguard: Ensure 'featured' is absolutely guaranteed to be an array structure
+  const featured: Product[] = Array.isArray(rawFeatured) ? rawFeatured : [];
+
+  const heroImage = settings?.heroImageUrl || defaultBannerImg;
+  const heroSecondaryImage = settings?.heroSecondaryImageUrl || defaultBoxImg;
+
+  // 💡 Safeguard: Split headers cleanly with zero risk of parsing crash
+  const heroTitleFirst = settings?.heroTitle && settings.heroTitle.includes(",")
+    ? settings.heroTitle.split(",")[0]?.trim()
+    : (settings?.heroTitle || "Premium Honey");
+
+  const heroTitleSecond = settings?.heroTitle && settings.heroTitle.includes(",")
+    ? settings.heroTitle.split(",")[1]?.trim()
+    : "Herb-Infused";
 
   return (
     <Layout>
@@ -165,25 +181,25 @@ export default function HomePage() {
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 rounded-full border border-amber-700/40 bg-amber-900/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-amber-400">
                 <img src={grich20Logo} alt="Grich20" className="h-4 w-4 rounded-sm object-cover" />
-                {settings.companyTagline}
+                {settings?.companyTagline || "Pure Nature"}
               </div>
 
               <h1 className="font-cormorant font-bold leading-[1.1] text-5xl md:text-6xl lg:text-7xl">
-                <span className="text-amber-50">{settings.heroTitle.split(",")[0]?.trim()},</span>
+                <span className="text-amber-50">{heroTitleFirst},</span>
                 <br />
-                <span className="gold-gradient">{settings.heroTitle.split(",")[1]?.trim() ?? "Herb-Infused"}</span>
+                <span className="gold-gradient">{heroTitleSecond}</span>
               </h1>
 
-              <p className="text-amber-200/60 text-lg leading-relaxed max-w-lg">{settings.heroSubtitle}</p>
+              <p className="text-amber-200/60 text-lg leading-relaxed max-w-lg">{settings?.heroSubtitle}</p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Button asChild size="lg"
                   className="bg-amber-500 hover:bg-amber-400 text-[#0a1500] font-bold text-base px-8 rounded-full shadow-lg shadow-amber-900/40 animate-glow-pulse">
-                  <Link href="/products">{settings.heroCtaText}</Link>
+                  <Link href="/products">{settings?.heroCtaText || "Shop Now"}</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg"
                   className="border-amber-700/60 text-amber-300 hover:bg-amber-900/30 hover:border-amber-500 text-base px-8 rounded-full">
-                  <Link href="/products?type=box">{settings.heroCtaSecondaryText}</Link>
+                  <Link href="/products?type=box">{settings?.heroCtaSecondaryText || "View Packs"}</Link>
                 </Button>
               </div>
 
@@ -263,7 +279,11 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featured.map((product) => <ProductCard key={product.id} product={product} />)}
             </div>
-          ) : null}
+          ) : (
+            <div className="text-center py-10 border border-dashed border-amber-900/30 rounded-2xl text-amber-200/40">
+              No featured products found.
+            </div>
+          )}
         </div>
       </section>
 
@@ -300,7 +320,7 @@ export default function HomePage() {
               <div className="text-center md:text-left space-y-4">
                 <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold">About Us</p>
                 <h2 className="font-cormorant font-bold text-4xl text-amber-50">Grich20 International</h2>
-                <p className="text-amber-200/60 leading-relaxed">{settings.aboutText}</p>
+                <p className="text-amber-200/60 leading-relaxed">{settings?.aboutText || "Loading about details..."}</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start pt-2">
                   <Button asChild className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-full">
                     <Link href="/products">Shop Now</Link>

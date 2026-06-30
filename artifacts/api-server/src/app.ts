@@ -49,4 +49,18 @@ app.use("/api/uploads", express.static(path.resolve(__dirname, "..", "uploads"))
 
 app.use("/api", router);
 
+// Resolve built frontend static directory
+const frontendPath = path.resolve(__dirname, "..", "..", "ffg-store", "dist", "public");
+
+// Serve frontend static assets (CSS, JS, images)
+app.use(express.static(frontendPath));
+
+// Fallback for SPA (Single Page Application) routing: serve index.html for all non-API GET requests
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api")) {
+    return next();
+  }
+  res.sendFile(path.resolve(frontendPath, "index.html"));
+});
+
 export default app;

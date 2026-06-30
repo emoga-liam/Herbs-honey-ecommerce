@@ -28,11 +28,22 @@ export default function ContactPage() {
     );
   };
 
+  // 💡 Hardened Safe Fallbacks
+  const phoneVal = settings?.contactPhone || "";
+  const emailVal = settings?.contactEmail || "";
+  const addressVal = settings?.contactAddress || "Our Address";
+  const whatsappVal = settings?.whatsappNumber || "";
+
   const contactItems = [
-    { icon: Phone, label: "Phone", value: settings.contactPhone, href: `tel:${settings.contactPhone}` },
-    { icon: Mail, label: "Email", value: settings.contactEmail, href: `mailto:${settings.contactEmail}` },
-    { icon: MapPin, label: "Address", value: settings.contactAddress, href: "#" },
-    { icon: MessageCircle, label: "WhatsApp", value: settings.whatsappNumber, href: `https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}` },
+    { icon: Phone, label: "Phone", value: phoneVal || "Not Available", href: phoneVal ? `tel:${phoneVal}` : "#" },
+    { icon: Mail, label: "Email", value: emailVal || "Not Available", href: emailVal ? `mailto:${emailVal}` : "#" },
+    { icon: MapPin, label: "Address", value: addressVal, href: "#" },
+    {
+      icon: MessageCircle,
+      label: "WhatsApp",
+      value: whatsappVal || "Not Available",
+      href: whatsappVal ? `https://wa.me/${whatsappVal.replace(/\D/g, "")}` : "#"
+    },
   ];
 
   return (
@@ -42,7 +53,7 @@ export default function ContactPage() {
         <div className="container max-w-screen-xl mx-auto px-4 text-center">
           <h1 className="font-serif font-bold text-5xl mb-4 text-amber-300">Get In Touch</h1>
           <p className="text-amber-200/70 max-w-xl mx-auto text-lg">
-            {settings.contactHeroSubtitle || "Questions about our products? Want to place a bulk order? We'd love to hear from you."}
+            {settings?.contactHeroSubtitle || "Questions about our products? Want to place a bulk order? We'd love to hear from you."}
           </p>
         </div>
       </div>
@@ -54,7 +65,7 @@ export default function ContactPage() {
             <div>
               <h2 className="font-serif font-bold text-2xl mb-2">Contact Information</h2>
               <p className="text-muted-foreground text-sm">
-                {settings.contactInfoDesc || "Reach us through any of these channels. We respond quickly!"}
+                {settings?.contactInfoDesc || "Reach us through any of these channels. We respond quickly!"}
               </p>
             </div>
 
@@ -82,7 +93,7 @@ export default function ContactPage() {
                 <h3 className="font-semibold text-sm">Business Hours</h3>
               </div>
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                {settings.contactBusinessHours || "Monday – Friday: 8am – 6pm\nSaturday: 9am – 4pm\nSunday: Closed"}
+                {settings?.contactBusinessHours || "Monday – Friday: 8am – 6pm\nSaturday: 9am – 4pm\nSunday: Closed"}
               </p>
             </div>
           </div>

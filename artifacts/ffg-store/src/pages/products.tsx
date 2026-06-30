@@ -29,16 +29,22 @@ export default function ProductsPage() {
   const [type, setType] = useState(params.get("type") ?? "");
   const [search, setSearch] = useState("");
 
-  const { data: allProducts = [], isLoading } = useListProducts(
+  const { data: rawProducts, isLoading } = useListProducts(
     { flavor: flavor || undefined, type: type || undefined },
     { query: { queryKey: ["products", flavor, type] } }
   );
 
+  // 💡 Safeguard: Force evaluation to an array format under any circumstance
+  const allProducts = Array.isArray(rawProducts) ? rawProducts : [];
+
   const products = search.trim()
     ? allProducts.filter((p) => {
-        const q = search.toLowerCase();
-        return p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
-      })
+      const q = search.toLowerCase();
+      return (
+        p?.name?.toLowerCase().includes(q) ||
+        p?.description?.toLowerCase().includes(q)
+      );
+    })
     : allProducts;
 
   return (
@@ -130,7 +136,9 @@ export default function ProductsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => <ProductCard key={product.id} product={product} />)}
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         )}
       </div>
