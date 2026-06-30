@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
-import { useCreateOrder, useListDeliveryFees } from "@workspace/api-client-react";
+import { useCreateOrder, useListDeliveryFees, useGetSiteSettings } from "@workspace/api-client-react";
 import { Layout } from "@/components/layout";
 import { useCart } from "@/components/cart-context";
 import { useAuth } from "@/contexts/auth-context";
@@ -13,32 +13,7 @@ import { Link } from "wouter";
 import { ArrowLeft, ShoppingBag, Lock, CreditCard, Smartphone, Building2, CheckCircle, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-declare global {
-  interface Window {
-    PaystackPop: new () => {
-      newTransaction: (config: {
-        key: string;
-        email: string;
-        amount: number;
-        currency: string;
-        ref: string;
-        onSuccess: (transaction: { reference: string }) => void;
-        onCancel: () => void;
-      }) => void;
-    };
-  }
-}
-
-export const NIGERIAN_STATES = [
-  "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno",
-  "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT (Abuja)", "Gombe",
-  "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos",
-  "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto",
-  "Taraba", "Yobe", "Zamfara",
-];
-
-const PAYSTACK_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
-const isPaystackConfigured = !!PAYSTACK_KEY;
+import { NIGERIAN_STATES } from "@/lib/constants";
 
 export default function CheckoutPage() {
   const [, navigate] = useLocation();
@@ -47,6 +22,9 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const createOrder = useCreateOrder();
   const { data: deliveryFees = [] } = useListDeliveryFees();
+  const { data: settings } = useGetSiteSettings();
+  const paystackLink = (settings as Record<string, string> | undefined)?.paystackLink ?? "";
+  const hasPaystackLink = paystackLink.length > 0;
   const [paying, setPaying] = useState(false);
 
   const [form, setForm] = useState({
@@ -120,26 +98,12 @@ export default function CheckoutPage() {
     );
   };
 
-  const handlePaystack = (e: React.FormEvent) => {
+  const handleOnlinePayment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     setPaying(true);
-
-    const paystack = new window.PaystackPop();
-    paystack.newTransaction({
-      key: PAYSTACK_KEY!,
-      email: form.customerEmail,
-      amount: grandTotalKobo,
-      currency: "NGN",
-      ref: `grich20_${Date.now()}`,
-      onSuccess: (transaction) => {
-        placeOrder(transaction.reference);
-      },
-      onCancel: () => {
-        setPaying(false);
-        toast({ title: "Payment cancelled", description: "Your order was not placed.", variant: "destructive" });
-      },
-    });
+    window.open(paystackLink, "_blank", "noopener,noreferrer");
+    placeOrder(null);
   };
 
   const handleCOD = (e: React.FormEvent) => {
@@ -238,7 +202,7 @@ export default function CheckoutPage() {
                 <h2 className="font-cormorant font-bold text-2xl text-amber-200">Payment</h2>
               </div>
 
-              {isPaystackConfigured ? (
+              {hasPaystackLink ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-3 mb-5">
                     {[
@@ -256,7 +220,7 @@ export default function CheckoutPage() {
                     Secured by Paystack · 256-bit SSL encryption
                   </p>
                   <Button
-                    onClick={handlePaystack}
+                    onClick={handleOnlinePayment}
                     size="lg"
                     className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold text-base rounded-xl shadow-lg shadow-amber-900/30"
                     disabled={paying || createOrder.isPending}

@@ -7,13 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Save, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export const NIGERIAN_STATES = [
-  "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno",
-  "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT (Abuja)", "Gombe",
-  "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos",
-  "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto",
-  "Taraba", "Yobe", "Zamfara",
-];
+import { NIGERIAN_STATES } from "@/lib/constants";
 
 export default function AdminDeliveryFeesPage() {
   const queryClient = useQueryClient();

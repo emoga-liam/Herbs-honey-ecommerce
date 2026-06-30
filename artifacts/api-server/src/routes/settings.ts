@@ -5,6 +5,7 @@ import { adminGuard } from "../middleware/auth";
 const router = Router();
 
 const DEFAULTS: Record<string, string> = {
+  paystackLink: "",
   heroTitle: "Nature's Sweetness, Herb-Infused",
   heroSubtitle:
     "Premium herbs-infused honey sachets in four delicious flavors — Original, Hibiscus, Ginger Lemon, and Cinnamon Lemon. Each 15ml sachet brings nature's goodness to your cup.",

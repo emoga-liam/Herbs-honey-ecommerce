@@ -11,6 +11,18 @@ import { Save, RotateCcw, ImageIcon, AlertCircle, ChevronDown } from "lucide-rea
 
 const SECTIONS = [
   {
+    title: "💳 Payment Settings",
+    desc: "Configure online payment. Paste your Paystack payment link here — once set, customers can pay online at checkout. Leave blank to show a 'coming soon' message instead.",
+    fields: [
+      {
+        key: "paystackLink",
+        label: "Paystack Payment Link",
+        multiline: false,
+        placeholder: "https://paystack.com/pay/your-link-here",
+      },
+    ],
+  },
+  {
     title: "🏠 Homepage Hero",
     desc: "The large banner section at the top of your homepage",
     fields: [
