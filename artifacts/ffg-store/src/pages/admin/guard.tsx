@@ -1,4 +1,4 @@
-import { useGetAdminMe } from "@workspace/api-client-react";
+import { useGetAdminMe, getGetAdminMeQueryKey } from "@workspace/api-client-react";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
@@ -21,6 +21,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
     query: {
       enabled: !isAuthLoading && !!firebaseUser,
       retry: 1,
+      queryKey: getGetAdminMeQueryKey(),
     },
   });
 

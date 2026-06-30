@@ -56,7 +56,7 @@ const frontendPath = path.resolve(__dirname, "..", "..", "ffg-store", "dist", "p
 app.use(express.static(frontendPath));
 
 // Fallback for SPA (Single Page Application) routing: serve index.html for all non-API GET requests
-app.get("*", (req, res, next) => {
+app.get("/{*splat}", (req, res, next) => {
   if (req.path.startsWith("/api")) {
     return next();
   }

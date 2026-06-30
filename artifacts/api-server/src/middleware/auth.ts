@@ -2,16 +2,6 @@ import type { Request, Response, NextFunction } from "express";
 import { db, adminsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 
-declare module "express" {
-  interface Request {
-    admin?: {
-      id: number;
-      email: string;
-      name: string;
-    };
-  }
-}
-
 export async function adminGuard(req: Request, res: Response, next: NextFunction): Promise<void> {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

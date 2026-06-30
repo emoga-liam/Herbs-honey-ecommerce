@@ -32,3 +32,29 @@ All price fields in DB and API (`priceKobo`, `totalKobo`) are integers in kobo (
 ## Session auth pattern
 
 Express-session with `SESSION_SECRET` env var. `useGetAdminMe` hook is used by `AdminGuard` to check auth on protected routes; redirects to `/admin/login` on 401.
+
+## Express module augmentation must be in a global types file
+
+`req.admin` augmentation placed inside `middleware/auth.ts` as `declare module "express"` is NOT visible in other route files. Must live in `src/types/express.d.ts` using `declare global { namespace Express { interface Request { admin?: ... } } }` — this is globally visible without imports.
+
+**Why:** TypeScript module augmentation in a non-ambient file is scoped to that file's import graph. Routes that don't import the middleware won't see the augmented type.
+
+**How to apply:** Always put Express Request/Response augmentations in `src/types/express.d.ts`, never inline in middleware files.
+
+## Express 5 wildcard routes changed syntax
+
+`app.get("*", handler)` throws `PathError: Missing parameter name` in Express 5 (path-to-regexp v8). Must use `app.get("/{*splat}", handler)` instead.
+
+**Why:** path-to-regexp v8 (used by Express 5) requires named parameters for wildcards.
+
+## Supabase DB pool needs SSL
+
+`lib/db/src/index.ts` Pool config must include `ssl: { rejectUnauthorized: false }` when DATABASE_URL contains `supabase.com` to prevent connection errors over TLS.
+
+## mockup-sandbox vite config must allow missing PORT during build
+
+The mockup-sandbox `vite.config.ts` threw if `PORT`/`BASE_PATH` were missing, breaking `pnpm run build`. Fixed by only throwing at runtime (not when `NODE_ENV=production` or `argv` contains `build`).
+
+## Dev servers run on port 5173 (frontend) and 5000 (API)
+
+Workflow: "Start application" → `PORT=5173 pnpm --filter @workspace/ffg-store run dev`, "API Server" → builds then starts on PORT=5000. Both confirmed running via logs even when Replit workflow badge shows "failed" (port detection timing quirk with pnpm workspace commands).
