@@ -8,6 +8,7 @@ import settingsRouter from "./settings";
 import uploadsRouter from "./uploads";
 import categoriesRouter from "./categories";
 import deliveryFeesRouter from "./delivery-fees";
+import paymentRouter from "./payment";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(settingsRouter);
 router.use(uploadsRouter);
 router.use(categoriesRouter);
 router.use(deliveryFeesRouter);
+router.use(paymentRouter);
 
 export default router;

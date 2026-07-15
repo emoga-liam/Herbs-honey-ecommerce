@@ -8,15 +8,59 @@ import { formatNaira } from "@/lib/utils";
 import { X, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"];
+const STATUSES = ["pending", "paid", "processing", "shipped", "delivered", "cancelled"];
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  paid: "bg-green-100 text-green-800 border-green-200",
   processing: "bg-blue-100 text-blue-800 border-blue-200",
   shipped: "bg-indigo-100 text-indigo-800 border-indigo-200",
-  delivered: "bg-green-100 text-green-800 border-green-200",
+  delivered: "bg-emerald-100 text-emerald-800 border-emerald-200",
   cancelled: "bg-red-100 text-red-800 border-red-200",
 };
+
+function VerifyPaymentButton({ reference, orderId }: { reference: string; orderId: number }) {
+  const [checking, setChecking] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const handleVerify = async () => {
+    setChecking(true);
+    setResult(null);
+    try {
+      const res = await fetch("/api/payments/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reference }),
+      });
+      const data = await res.json() as { verified?: boolean; status?: string; error?: string };
+      if (!res.ok) {
+        setResult(`Error: ${data.error ?? res.statusText}`);
+      } else if (data.verified) {
+        setResult("Payment verified — status updated to Paid");
+        queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
+        queryClient.invalidateQueries({ queryKey: ["orders", orderId] });
+        toast({ title: "Payment verified", description: `Order #${orderId} marked as paid.` });
+      } else {
+        setResult(`Paystack returned status: ${data.status ?? "unknown"}`);
+      }
+    } catch (e) {
+      setResult("Failed to contact server.");
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Button size="sm" variant="outline" onClick={handleVerify} disabled={checking}>
+        {checking ? "Checking Paystack..." : "Check Payment on Paystack"}
+      </Button>
+      {result && <p className="text-xs text-muted-foreground">{result}</p>}
+    </div>
+  );
+}
 
 function OrderDetailModal({ orderId, onClose }: { orderId: number; onClose: () => void }) {
   const queryClient = useQueryClient();
@@ -98,6 +142,13 @@ function OrderDetailModal({ orderId, onClose }: { orderId: number; onClose: () =
                 ))}
               </div>
             </div>
+
+            {order.paymentReference && order.status === "pending" && (
+              <div className="border-t border-border pt-4">
+                <h4 className="font-semibold text-sm mb-2">Manual Payment Check</h4>
+                <VerifyPaymentButton reference={order.paymentReference} orderId={order.id} />
+              </div>
+            )}
           </div>
         ) : (
           <div className="p-5 text-center text-muted-foreground">Order not found</div>

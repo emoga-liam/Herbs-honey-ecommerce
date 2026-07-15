@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { handlePaystackWebhook } from "./routes/payment";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -40,6 +41,12 @@ app.use(
     credentials: true,
   }),
 );
+
+// Webhook endpoint: MUST use raw body to preserve signature integrity
+app.post("/api/payments/webhook", express.raw({ type: "application/json" }), (req, res) => {
+  // Re-run pinoHttp manually since we skip it for this route
+  handlePaystackWebhook(req as express.Request, res as express.Response);
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

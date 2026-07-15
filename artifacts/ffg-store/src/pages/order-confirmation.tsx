@@ -3,7 +3,7 @@ import { useGetOrder, getGetOrderQueryKey } from "@workspace/api-client-react";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { formatNaira } from "@/lib/utils";
-import { CheckCircle, Package, Phone } from "lucide-react";
+import { CheckCircle, Package, Phone, CreditCard, Loader2 } from "lucide-react";
 
 export default function OrderConfirmationPage() {
   const search = useSearch();
@@ -14,16 +14,31 @@ export default function OrderConfirmationPage() {
     query: { enabled: !!orderId, queryKey: getGetOrderQueryKey(orderId) },
   });
 
+  const isPaid = order?.status === "paid";
+  const hasRef = !!order?.paymentReference;
+
   return (
     <Layout>
       <div className="container max-w-screen-md mx-auto px-4 py-16 text-center">
         <div className="mb-8">
-          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="h-10 w-10 text-green-600" />
+          <div className={`w-20 h-20 rounded-full ${isPaid ? "bg-green-100" : "bg-amber-100"} flex items-center justify-center mx-auto mb-6`}>
+            {isPaid ? (
+              <CheckCircle className="h-10 w-10 text-green-600" />
+            ) : hasRef ? (
+              <Loader2 className="h-10 w-10 text-amber-600 animate-spin" />
+            ) : (
+              <CheckCircle className="h-10 w-10 text-amber-600" />
+            )}
           </div>
-          <h1 className="font-serif font-bold text-4xl text-foreground mb-3">Order Placed!</h1>
+          <h1 className="font-serif font-bold text-4xl text-foreground mb-3">
+            {isPaid ? "Payment Successful!" : hasRef ? "Order Placed!" : "Order Placed!"}
+          </h1>
           <p className="text-muted-foreground text-lg">
-            Thank you for your order. Our team will contact you shortly to confirm delivery.
+            {isPaid
+              ? "Your payment has been received. We'll process your order right away."
+              : hasRef
+                ? "Thank you for your order. If your payment hasn't been confirmed yet, it'll be verified shortly."
+                : "Thank you for your order. Our team will contact you shortly to confirm delivery and arrange payment."}
           </p>
         </div>
 
@@ -33,7 +48,13 @@ export default function OrderConfirmationPage() {
           <div className="rounded-xl bg-card border border-border p-6 mb-8 text-left">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-serif font-bold text-xl">Order #{order.id}</h2>
-              <span className="text-sm bg-amber-100 text-amber-800 border border-amber-200 rounded-full px-3 py-1 font-medium capitalize">
+              <span className={`text-sm rounded-full px-3 py-1 font-medium capitalize border ${
+                isPaid
+                  ? "bg-green-100 text-green-800 border-green-200"
+                  : order.status === "pending"
+                    ? "bg-amber-100 text-amber-800 border-amber-200"
+                    : "bg-gray-100 text-gray-800 border-gray-200"
+              }`}>
                 {order.status}
               </span>
             </div>
@@ -53,6 +74,12 @@ export default function OrderConfirmationPage() {
               <div className="text-sm text-muted-foreground">
                 <span className="font-medium">Deliver to:</span> {order.deliveryAddress}
               </div>
+              {order.paymentReference && (
+                <div className="text-sm text-muted-foreground flex items-center gap-1">
+                  <CreditCard className="h-3.5 w-3.5" />
+                  <span className="font-medium">Ref:</span> {order.paymentReference}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -61,7 +88,11 @@ export default function OrderConfirmationPage() {
           <div className="rounded-xl bg-muted/50 p-5 text-left">
             <Package className="h-6 w-6 text-primary mb-3" />
             <h3 className="font-semibold mb-1">What happens next?</h3>
-            <p className="text-sm text-muted-foreground">We'll review your order and reach out to confirm your delivery details and arrange payment on delivery.</p>
+            <p className="text-sm text-muted-foreground">
+              {isPaid
+                ? "We'll review and prepare your order for dispatch. You'll get an update once it's on its way."
+                : "We'll review your order and reach out to confirm your delivery details and arrange payment."}
+            </p>
           </div>
           <div className="rounded-xl bg-muted/50 p-5 text-left">
             <Phone className="h-6 w-6 text-primary mb-3" />

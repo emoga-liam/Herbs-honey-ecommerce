@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
-import { useCreateOrder, useListDeliveryFees, useGetSiteSettings } from "@workspace/api-client-react";
+import { useCreateOrder, useListDeliveryFees } from "@workspace/api-client-react";
 import { Layout } from "@/components/layout";
 import { useCart } from "@/components/cart-context";
 import { useAuth } from "@/contexts/auth-context";
@@ -12,8 +12,27 @@ import { formatNaira } from "@/lib/utils";
 import { Link } from "wouter";
 import { ArrowLeft, ShoppingBag, Lock, CreditCard, Smartphone, Building2, CheckCircle, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
 import { NIGERIAN_STATES } from "@/lib/constants";
+
+declare global {
+  interface Window {
+    PaystackPop: new () => {
+      newTransaction: (config: {
+        key: string;
+        email: string;
+        amount: number;
+        currency: string;
+        ref: string;
+        metadata?: Record<string, unknown>;
+        onSuccess: (transaction: { reference: string }) => void;
+        onCancel: () => void;
+      }) => void;
+    };
+  }
+}
+
+const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
+const isPaystackConfigured = !!PAYSTACK_PUBLIC_KEY;
 
 export default function CheckoutPage() {
   const [, navigate] = useLocation();
@@ -22,9 +41,6 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const createOrder = useCreateOrder();
   const { data: deliveryFees = [] } = useListDeliveryFees();
-  const { data: settings } = useGetSiteSettings();
-  const paystackLink = (settings as Record<string, string> | undefined)?.paystackLink ?? "";
-  const hasPaystackLink = paystackLink.length > 0;
   const [paying, setPaying] = useState(false);
 
   const [form, setForm] = useState({
@@ -71,7 +87,14 @@ export default function CheckoutPage() {
     return Object.keys(errs).length === 0;
   };
 
-  const placeOrder = (paymentReference: string | null) => {
+  const handlePaystack = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    setPaying(true);
+
+    const ref = `ffgfoods_${Date.now()}`;
+
+    // 1. Create order with a payment reference so webhook can match it later
     createOrder.mutate(
       {
         data: {
@@ -81,14 +104,40 @@ export default function CheckoutPage() {
           deliveryAddress: form.deliveryAddress,
           deliveryState: form.deliveryState,
           notes: form.notes || null,
-          paymentReference,
+          paymentReference: ref,
           items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
         },
       },
       {
         onSuccess: (order) => {
-          clearCart();
-          navigate(`/order-confirmation?orderId=${order.id}`);
+          // 2. Launch Paystack inline
+          const paystack = new window.PaystackPop();
+          paystack.newTransaction({
+            key: PAYSTACK_PUBLIC_KEY!,
+            email: form.customerEmail,
+            amount: grandTotalKobo,
+            currency: "NGN",
+            ref,
+            metadata: { orderId: order.id, customerName: form.customerName },
+            onSuccess: (transaction) => {
+              // Frontend backup: call verify in case webhook is delayed
+              fetch("/api/payments/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ reference: transaction.reference }),
+              }).catch(() => {});
+              clearCart();
+              navigate(`/order-confirmation?orderId=${order.id}`);
+            },
+            onCancel: () => {
+              setPaying(false);
+              toast({
+                title: "Payment cancelled",
+                description: "Your order is saved but not paid. You can complete payment from your orders page or pay on delivery.",
+                variant: "destructive",
+              });
+            },
+          });
         },
         onError: () => {
           setPaying(false);
@@ -98,18 +147,32 @@ export default function CheckoutPage() {
     );
   };
 
-  const handleOnlinePayment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-    setPaying(true);
-    window.open(paystackLink, "_blank", "noopener,noreferrer");
-    placeOrder(null);
-  };
-
   const handleCOD = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    placeOrder(null);
+    createOrder.mutate(
+      {
+        data: {
+          customerName: form.customerName,
+          customerEmail: form.customerEmail,
+          customerPhone: form.customerPhone,
+          deliveryAddress: form.deliveryAddress,
+          deliveryState: form.deliveryState,
+          notes: form.notes || null,
+          paymentReference: null,
+          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+        },
+      },
+      {
+        onSuccess: (order) => {
+          clearCart();
+          navigate(`/order-confirmation?orderId=${order.id}`);
+        },
+        onError: () => {
+          toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+        },
+      }
+    );
   };
 
   const inputClass = "bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl";
@@ -202,7 +265,7 @@ export default function CheckoutPage() {
                 <h2 className="font-cormorant font-bold text-2xl text-amber-200">Payment</h2>
               </div>
 
-              {hasPaystackLink ? (
+              {isPaystackConfigured ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-3 mb-5">
                     {[
@@ -220,7 +283,7 @@ export default function CheckoutPage() {
                     Secured by Paystack · 256-bit SSL encryption
                   </p>
                   <Button
-                    onClick={handleOnlinePayment}
+                    onClick={handlePaystack}
                     size="lg"
                     className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold text-base rounded-xl shadow-lg shadow-amber-900/30"
                     disabled={paying || createOrder.isPending}

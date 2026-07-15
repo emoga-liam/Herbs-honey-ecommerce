@@ -74,11 +74,11 @@ export function Navbar() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-3 group">
             <img
-              src={grich20Logo} alt="Grich20"
+              src={grich20Logo} alt="FFG Foods"
               className="h-9 w-9 rounded-lg object-cover ring-1 ring-amber-600/30 group-hover:ring-amber-500/60 transition-all"
             />
             <div className="hidden sm:block">
-              <div className="font-cormorant font-bold text-lg text-amber-400 leading-tight tracking-wide">Grich20</div>
+              <div className="font-cormorant font-bold text-lg text-amber-400 leading-tight tracking-wide">FFG Foods</div>
               <div className="text-[9px] text-amber-200/40 leading-none tracking-widest uppercase">Herbs-Infused Honey</div>
             </div>
           </Link>
@@ -213,9 +213,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="space-y-4 md:col-span-2">
             <div className="flex items-center gap-3">
-              <img src={grich20Logo} alt="Grich20" className="h-11 w-11 rounded-xl object-cover ring-1 ring-amber-700/30" />
+              <img src={grich20Logo} alt="FFG Foods" className="h-11 w-11 rounded-xl object-cover ring-1 ring-amber-700/30" />
               <div>
-                <h3 className="font-cormorant font-bold text-xl text-amber-400">Grich20</h3>
+                <h3 className="font-cormorant font-bold text-xl text-amber-400">FFG Foods</h3>
                 <p className="text-[10px] text-amber-200/40 uppercase tracking-widest">International General Services Ltd</p>
               </div>
             </div>

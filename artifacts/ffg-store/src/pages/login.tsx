@@ -24,7 +24,7 @@ export default function LoginPage() {
     return (
       <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
         <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
-          <img src={grich20Logo} alt="Grich20" className="h-16 mx-auto mb-4 rounded-xl" />
+          <img src={grich20Logo} alt="FFG Foods" className="h-16 mx-auto mb-4 rounded-xl" />
           <h2 className="font-cormorant text-2xl text-amber-400 mb-2">Authentication Not Set Up</h2>
           <p className="text-amber-200/60 text-sm mb-4">Firebase authentication hasn't been configured yet.</p>
           <Button asChild variant="outline" className="border-amber-700 text-amber-400">
@@ -67,11 +67,11 @@ export default function LoginPage() {
             <div className="inline-flex flex-col items-center gap-3 cursor-pointer">
               <div className="relative">
                 <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
-                <img src={grich20Logo} alt="Grich20" className="relative h-20 w-20 rounded-2xl object-cover ring-1 ring-amber-600/40 shadow-2xl hover:ring-amber-500/60 transition-all" />
+                <img src={grich20Logo} alt="FFG Foods" className="relative h-20 w-20 rounded-2xl object-cover ring-1 ring-amber-600/40 shadow-2xl hover:ring-amber-500/60 transition-all" />
               </div>
               <div>
                 <h1 className="font-cormorant font-bold text-3xl text-amber-400">Welcome Back</h1>
-                <p className="text-amber-200/40 text-sm mt-0.5">Sign in to shop at Grich20</p>
+                <p className="text-amber-200/40 text-sm mt-0.5">Sign in to shop at FFG Foods</p>
               </div>
             </div>
           </Link>

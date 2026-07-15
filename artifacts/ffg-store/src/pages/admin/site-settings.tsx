@@ -11,18 +11,6 @@ import { Save, RotateCcw, ImageIcon, AlertCircle, ChevronDown } from "lucide-rea
 
 const SECTIONS = [
   {
-    title: "💳 Payment Settings",
-    desc: "Configure online payment. Paste your Paystack payment link here — once set, customers can pay online at checkout. Leave blank to show a 'coming soon' message instead.",
-    fields: [
-      {
-        key: "paystackLink",
-        label: "Paystack Payment Link",
-        multiline: false,
-        placeholder: "https://paystack.com/pay/your-link-here",
-      },
-    ],
-  },
-  {
     title: "🏠 Homepage Hero",
     desc: "The large banner section at the top of your homepage",
     fields: [
@@ -44,9 +32,9 @@ const SECTIONS = [
     title: "🏢 Brand & Company",
     desc: "Branding text shown across the site",
     fields: [
-      { key: "companyTagline", label: "Company Tagline (hero badge)", multiline: false, placeholder: "Grich20 · Abuja, Nigeria" },
-      { key: "aboutText", label: "About Section Text", multiline: true, placeholder: "Tell customers about Grich20..." },
-      { key: "footerText", label: "Footer Text", multiline: false, placeholder: "Grich20 International General Services Limited..." },
+      { key: "companyTagline", label: "Company Tagline (hero badge)", multiline: false, placeholder: "FFG Foods · Abuja, Nigeria" },
+      { key: "aboutText", label: "About Section Text", multiline: true, placeholder: "Tell customers about FFG Foods..." },
+      { key: "footerText", label: "Footer Text", multiline: false, placeholder: "FFG Foods International General Services Limited..." },
     ],
   },
   {
@@ -61,7 +49,7 @@ const SECTIONS = [
     desc: "Contact details shown on the contact page and footer",
     fields: [
       { key: "contactPhone", label: "Phone Number", multiline: false, placeholder: "09061602332" },
-      { key: "contactEmail", label: "Email Address", multiline: false, placeholder: "info@grich20.com" },
+      { key: "contactEmail", label: "Email Address", multiline: false, placeholder: "info@ffgfoods.com" },
       { key: "contactAddress", label: "Physical Address", multiline: false, placeholder: "68 Trade More Avenue, Lugbe, Abuja" },
       { key: "whatsappNumber", label: "WhatsApp Number (with country code)", multiline: false, placeholder: "+2349061602332" },
     ],
