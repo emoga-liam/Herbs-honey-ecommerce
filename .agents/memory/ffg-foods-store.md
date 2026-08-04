@@ -57,6 +57,14 @@ Some Hostinger environments unpack esbuild's native binary without execute permi
 
 **How to apply:** Keep esbuild out of pnpm's automatic `allowBuilds`, use `hostinger:install` to install with scripts ignored, restore execute permission, and invoke esbuild's official installer before `hostinger:build`.
 
+## pnpm build-script allowlist format
+
+With pnpm 10.26.1, `.npmrc` `only-built-dependencies[]` entries are retained for deployment compatibility, but the effective workspace allowlist must use `onlyBuiltDependencies` in `pnpm-workspace.yaml`; otherwise pnpm still reports approved scripts as ignored.
+
+**Why:** The legacy-looking `.npmrc` array syntax is not interpreted as the active build policy by this pnpm version.
+
+**How to apply:** Keep `node-linker=hoisted` and the requested `.npmrc` entries, and mirror the approved package names under workspace-level `onlyBuiltDependencies`.
+
 ## Express 5 wildcard routes changed syntax
 
 `app.get("*", handler)` throws `PathError: Missing parameter name` in Express 5 (path-to-regexp v8). Must use `app.get("/{*splat}", handler)` instead.
