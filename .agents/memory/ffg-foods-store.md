@@ -7,7 +7,7 @@ description: Key quirks, package-manager history, and Hostinger deployment decis
 
 The project is a pnpm monorepo. After detours through npm and Yarn, it is back on pnpm.
 
-**Current version:** pnpm v10.26.1 (system-installed on Replit; `packageManager: "pnpm@10.26.1"` in root `package.json`).
+**Current version:** `packageManager: "pnpm@11.9.0"` in root `package.json` (matches Hostinger's pnpm version). System pnpm on Replit is v10.26.1; `manage-package-manager-versions=false` in `.npmrc` prevents corepack from trying to swap versions during install.
 
 **Why:**
 - Hostinger's `/tmp` is `noexec`, which blocked Yarn's temp script execution.

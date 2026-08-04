@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
-  "packageManager": "pnpm@10.26.1",
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "build": "pnpm run typecheck && pnpm --filter @workspace/ffg-store run build && pnpm --filter @workspace/api-server run build",
     "hostinger:build": "pnpm run build",
