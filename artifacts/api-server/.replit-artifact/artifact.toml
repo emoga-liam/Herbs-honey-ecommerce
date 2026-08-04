@@ -10,18 +10,18 @@ name = "API Server"
 paths = ["/api"]
 
 [services.development]
-run = "npm run dev --workspace @workspace/api-server"
+run = "yarn workspace @workspace/api-server dev"
 
 [services.production]
 
 [services.production.build]
-args = ["npm", "run", "build", "--workspace", "@workspace/api-server"]
+args = ["yarn", "workspace", "@workspace/api-server", "build"]
 
 [services.production.build.env]
 NODE_ENV = "production"
 
 [services.production.run]
-# we don't run through pnpm to make startup faster in production
+# we don't run through Yarn to make startup faster in production
 args = ["node", "--enable-source-maps", "artifacts/api-server/dist/index.mjs"]
 
 [services.production.run.env]

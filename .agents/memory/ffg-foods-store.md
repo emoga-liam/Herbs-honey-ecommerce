@@ -51,11 +51,11 @@ Hostinger deployment uses one combined Node.js app: the Express API serves the b
 
 ## Hostinger dependency manager
 
-Hostinger deployment uses npm workspaces with a committed `package-lock.json` and a flat `node_modules` tree. The previous pnpm virtual-store path caused esbuild execute-permission failures during extraction.
+Hostinger deployment uses Yarn workspaces with a committed `yarn.lock` and a flat `node_modules` tree. The previous pnpm virtual-store path caused esbuild execute-permission failures, and npm's install path was unreliable in this project.
 
-**Why:** npm avoids the symlinked virtual-store layout that triggered Hostinger's `esbuild` `EACCES` postinstall failure.
+**Why:** Yarn Classic avoids both the symlinked virtual-store layout and the npm-specific installation failure.
 
-**How to apply:** Use `npm install`/`npm ci`, `npm run build`, and `npm run hostinger:start`; do not reintroduce pnpm workspace or catalog specifiers without repeating the npm conversion.
+**How to apply:** Use `yarn install --frozen-lockfile`, `yarn build`, and `yarn hostinger:start`; keep workspace commands in Yarn syntax.
 
 ## Express 5 wildcard routes changed syntax
 

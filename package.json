@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
+  "packageManager": "yarn@1.22.22",
   "workspaces": [
     "artifacts/*",
     "lib/*",
@@ -10,17 +11,17 @@
     "scripts"
   ],
   "scripts": {
-    "build": "npm run typecheck && npm run build --workspace @workspace/ffg-store && npm run build --workspace @workspace/api-server",
-    "hostinger:build": "npm run build",
+    "build": "yarn typecheck && yarn workspace @workspace/ffg-store build && yarn workspace @workspace/api-server build",
+    "hostinger:build": "yarn build",
     "hostinger:bundle": "bash ./scripts/create-hostinger-bundle.sh",
     "hostinger:start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "typecheck:libs": "tsc --build",
-    "typecheck": "npm run typecheck:libs && npm run typecheck --workspaces --if-present"
+    "typecheck": "yarn typecheck:libs && yarn workspace @workspace/api-server typecheck && yarn workspace @workspace/ffg-store typecheck && yarn workspace @workspace/mockup-sandbox typecheck && yarn workspace @workspace/scripts typecheck"
   },
   "engines": {
     "node": ">=22 <25",
-    "npm": ">=10"
+    "yarn": ">=1.22.0"
   },
   "devDependencies": {
     "prettier": "^3.8.3",

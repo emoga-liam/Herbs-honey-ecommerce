@@ -15,10 +15,10 @@ paths = [ "/" ]
 localPort = 22825
 
 [services.development]
-run = "npm run dev --workspace @workspace/ffg-store"
+run = "yarn workspace @workspace/ffg-store dev"
 
 [services.production]
-build = [ "npm", "run", "build", "--workspace", "@workspace/ffg-store" ]
+build = [ "yarn", "workspace", "@workspace/ffg-store", "build" ]
 publicDir = "artifacts/ffg-store/dist/public"
 serve = "static"
 

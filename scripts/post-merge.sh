@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
-npm install
-npm run push --workspace @workspace/db
+yarn install --frozen-lockfile
+yarn workspace @workspace/db push
