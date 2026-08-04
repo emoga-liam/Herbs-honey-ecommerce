@@ -59,11 +59,11 @@ Some Hostinger environments unpack esbuild's native binary without execute permi
 
 ## pnpm build-script allowlist format
 
-With pnpm 10.26.1, `.npmrc` `only-built-dependencies[]` entries are retained for deployment compatibility, but the effective workspace allowlist must use `onlyBuiltDependencies` in `pnpm-workspace.yaml`; otherwise pnpm still reports approved scripts as ignored.
+The workspace uses a root `allowBuilds` mapping for pnpm 10/11 deployment installs, explicitly approving native/lifecycle builds for esbuild, Firebase utility code, protobufjs, and the other existing approved packages.
 
-**Why:** The legacy-looking `.npmrc` array syntax is not interpreted as the active build policy by this pnpm version.
+**Why:** Hostinger deployments otherwise report required dependency postinstall scripts as blocked, even when the lockfile is valid.
 
-**How to apply:** Keep `node-linker=hoisted` and the requested `.npmrc` entries, and mirror the approved package names under workspace-level `onlyBuiltDependencies`.
+**How to apply:** Keep the explicit `allowBuilds: package: true` mapping in `pnpm-workspace.yaml`, plus the root wildcard workspace package glob required by the deployment configuration.
 
 ## Express 5 wildcard routes changed syntax
 
