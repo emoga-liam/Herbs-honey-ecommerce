@@ -36,6 +36,7 @@ minimumReleaseAgeExclude:
 
 packages:
   - '*'
+  - 'packages/*'
   - artifacts/*
   - lib/*
   - lib/integrations/*
