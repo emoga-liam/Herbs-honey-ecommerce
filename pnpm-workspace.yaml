@@ -75,8 +75,9 @@ overrides:
   esbuild: "0.27.3"
 
 allowBuilds:
-  '@firebase/util': true
-  '@swc/core': true
-  msw: true
-  protobufjs: true
-  unrs-resolver: true
+  - '@firebase/util'
+  - '@swc/core'
+  - esbuild
+  - msw
+  - protobufjs
+  - unrs-resolver
