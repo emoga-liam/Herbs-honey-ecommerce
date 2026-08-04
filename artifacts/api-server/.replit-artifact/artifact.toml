@@ -10,12 +10,12 @@ name = "API Server"
 paths = ["/api"]
 
 [services.development]
-run = "yarn workspace @workspace/api-server dev"
+run = "npm run dev --workspace @workspace/api-server"
 
 [services.production]
 
 [services.production.build]
-args = ["yarn", "workspace", "@workspace/api-server", "build"]
+args = ["npm", "run", "build", "--workspace", "@workspace/api-server"]
 
 [services.production.build.env]
 NODE_ENV = "production"

@@ -5,7 +5,7 @@ router = "application"
 deploymentTarget = "autoscale"
 
 [deployment.postBuild]
-args = ["yarn", "install", "--frozen-lockfile", "--registry", "https://registry.npmjs.org/"]
+args = ["npm", "install"]
 env = { "CI" = "true" }
 
 [workflows]

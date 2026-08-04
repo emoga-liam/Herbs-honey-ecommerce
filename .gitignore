@@ -55,3 +55,6 @@ Thumbs.db
 
 # Generated deployment handoff
 ffg-foods-hostinger-source.zip
+
+# npm cache redirected away from Hostinger /tmp
+.npm-cache/

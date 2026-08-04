@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
-yarn install --frozen-lockfile --registry https://registry.npmjs.org/
-yarn workspace @workspace/db push
+npm install
+npm run push --workspace @workspace/db

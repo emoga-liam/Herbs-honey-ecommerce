@@ -25,21 +25,21 @@ Recommended settings:
 - Framework: `Other` or `Express.js`
 - Application root: repository root
 - Build command:
-  `yarn build`
+  `npm run build`
 - Start command:
-  `yarn hostinger:start`
+  `npm run hostinger:start`
 - Application port: use the port Hostinger provides through `PORT`
 
-Use Yarn installation in the Hostinger build environment:
+Use npm installation in the Hostinger build environment:
 
 ```bash
-yarn install --frozen-lockfile --registry https://registry.npmjs.org/
-yarn build
+npm install
+npm run build
 ```
 
-The project uses Yarn workspaces and a flat `node_modules` tree. This avoids the
-virtual-store and symlink permission issue that caused the earlier
-`esbuild ... spawnSync ... EACCES` failure.
+The project uses npm workspaces and a flat `node_modules` tree. The root `.npmrc`
+keeps npm's cache and temporary files outside Hostinger's non-executable `/tmp`
+mount.
 
 Do not run the Vite development server in production. The production build
 creates `artifacts/ffg-store/dist/public`, and the API server serves it.
@@ -96,7 +96,7 @@ behind a login page, password gate, or development URL.
 Before the first launch, apply the schema against the production database:
 
 ```bash
-yarn workspace @workspace/db push
+npm run push --workspace @workspace/db
 ```
 
 Then seed or create the initial admin account using the project's existing

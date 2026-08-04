@@ -51,19 +51,11 @@ Hostinger deployment uses one combined Node.js app: the Express API serves the b
 
 ## Hostinger dependency manager
 
-Hostinger deployment uses Yarn workspaces with a committed `yarn.lock` and a flat `node_modules` tree. The previous pnpm virtual-store path caused esbuild execute-permission failures, and npm's install path was unreliable in this project.
+Hostinger deployment uses npm workspaces with a committed `package-lock.json` and a flat `node_modules` tree. npm's project cache and temporary paths are redirected through the root `.npmrc`.
 
-**Why:** Yarn Classic avoids both the symlinked virtual-store layout and the npm-specific installation failure.
+**Why:** Hostinger mounts `/tmp` with `noexec`, so npm must not use it for package-manager cache or temporary script files.
 
-**How to apply:** Use `yarn install --frozen-lockfile`, `yarn build`, and `yarn hostinger:start`; keep workspace commands in Yarn syntax.
-
-## Public Yarn registry configuration
-
-The Replit development environment injects local registry environment variables that can override the project `.yarnrc` and contaminate `yarn.lock` with `package-firewall.replit.local` URLs.
-
-**Why:** Those proxy URLs are not resolvable in external deployment environments.
-
-**How to apply:** Keep `.yarnrc` pointed at `https://registry.npmjs.org/` and pass `--registry https://registry.npmjs.org/` on deployment/install commands; regenerate the lockfile without the injected registry variables when needed.
+**How to apply:** Use `npm install`, `npm run build`, and `npm run hostinger:start`; keep `.npm-cache` ignored and set npm's temp path from `XDG_RUNTIME_DIR`.
 
 ## Express 5 wildcard routes changed syntax
 

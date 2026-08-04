@@ -4,19 +4,19 @@ A full-stack e-commerce site for FFG Foods (Farm Fresh Grocery) — a Nigerian h
 
 ## Run & Operate
 
-- `yarn workspace @workspace/api-server dev` — run the API server (port 8080)
-- `yarn workspace @workspace/ffg-store dev` — run the storefront (port 22825)
-- `yarn typecheck` — full typecheck across all packages
-- `yarn build` — production typecheck + storefront/API build
-- `yarn hostinger:build` — production build for the combined Hostinger app
-- `yarn hostinger:start` — start the combined production app
-- `yarn workspace @workspace/api-spec codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `yarn workspace @workspace/db push` — push DB schema changes (dev only)
+- `npm run dev --workspace @workspace/api-server` — run the API server (port 8080)
+- `npm run dev --workspace @workspace/ffg-store` — run the storefront (port 22825)
+- `npm run typecheck` — full typecheck across all packages
+- `npm run build` — production typecheck + storefront/API build
+- `npm run hostinger:build` — production build for the combined Hostinger app
+- `npm run hostinger:start` — start the combined production app
+- `npm run codegen --workspace @workspace/api-spec` — regenerate API hooks and Zod schemas from the OpenAPI spec
+- `npm run push --workspace @workspace/db` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string, `SESSION_SECRET` — express-session secret
 
 ## Stack
 
-- Yarn workspaces, Node.js 22+, TypeScript 5.9
+- npm workspaces, Node.js 22+, TypeScript 5.9
 - Frontend: React + Vite (Tailwind CSS, shadcn/ui, wouter, TanStack Query)
 - API: Express 5 + express-session
 - DB: PostgreSQL + Drizzle ORM
@@ -56,11 +56,11 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-- Run `yarn workspace @workspace/api-spec codegen` after any OpenAPI spec change before editing frontend files that use the generated hooks.
+- Run `npm run codegen --workspace @workspace/api-spec` after any OpenAPI spec change before editing frontend files that use the generated hooks.
 - Admin route `/admin` (and sub-routes) are protected by `AdminGuard` which redirects to `/admin/login` if not authenticated.
 - Product images use the `@assets` Vite alias pointing to `artifacts/ffg-store/attached_assets/`.
 - `getProductImage(flavor, type, imageUrl)` in `lib/utils.ts` maps flavor+type to the correct image file.
 
 ## Pointers
 
-- See the Yarn workspaces configuration in the root `package.json` for workspace structure and package details
+- See the npm workspaces configuration in the root `package.json` for workspace structure and package details
