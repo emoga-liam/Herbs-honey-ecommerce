@@ -25,7 +25,7 @@ Recommended settings:
 - Framework: `Other` or `Express.js`
 - Application root: repository root
 - Build command:
-  `pnpm run hostinger:install && pnpm run hostinger:build`
+  `pnpm run build`
 - Start command:
   `pnpm run hostinger:start`
 - Application port: use the port Hostinger provides through `PORT`
@@ -34,7 +34,7 @@ If `pnpm` is not available in the Hostinger build shell, use this equivalent
 build command:
 
 ```bash
-npm install -g pnpm@10.26.1 && pnpm run hostinger:install && pnpm run hostinger:build
+npm install -g pnpm@10.26.1 && pnpm run hostinger:install && pnpm run build
 ```
 
 The custom install step uses `--ignore-scripts` during dependency extraction,

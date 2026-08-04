@@ -7,7 +7,7 @@ A full-stack e-commerce site for FFG Foods (Farm Fresh Grocery) — a Nigerian h
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
 - `pnpm --filter @workspace/ffg-store run dev` — run the storefront (port 22825)
 - `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
+- `pnpm run build` — production typecheck + storefront/API build
 - `pnpm run hostinger:build` — production build for the combined Hostinger app
 - `pnpm run hostinger:start` — start the combined production app
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
