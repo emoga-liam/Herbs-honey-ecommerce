@@ -38,6 +38,8 @@ import type {
   Order,
   OrderInput,
   OrderStatusUpdate,
+  PaymentVerification,
+  PaymentVerifyInput,
   Product,
   ProductInput,
   ProductUpdate,
@@ -1263,6 +1265,77 @@ export const useUpdateOrderStatus = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getUpdateOrderStatusMutationOptions(options));
+    }
+
+export const getVerifyPaymentUrl = () => {
+
+
+
+
+  return `/api/payments/verify`
+}
+
+/**
+ * @summary Verify a Paystack transaction and update its order
+ */
+export const verifyPayment = async (paymentVerifyInput: PaymentVerifyInput, options?: RequestInit): Promise<PaymentVerification> => {
+
+  return customFetch<PaymentVerification>(getVerifyPaymentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      paymentVerifyInput,)
+  }
+);}
+
+
+
+
+export const getVerifyPaymentMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyPayment>>, TError,{data: BodyType<PaymentVerifyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof verifyPayment>>, TError,{data: BodyType<PaymentVerifyInput>}, TContext> => {
+
+const mutationKey = ['verifyPayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof verifyPayment>>, {data: BodyType<PaymentVerifyInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  verifyPayment(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VerifyPaymentMutationResult = NonNullable<Awaited<ReturnType<typeof verifyPayment>>>
+    export type VerifyPaymentMutationBody = BodyType<PaymentVerifyInput>
+    export type VerifyPaymentMutationError = ErrorType<void>
+
+    /**
+ * @summary Verify a Paystack transaction and update its order
+ */
+export const useVerifyPayment = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyPayment>>, TError,{data: BodyType<PaymentVerifyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof verifyPayment>>,
+        TError,
+        {data: BodyType<PaymentVerifyInput>},
+        TContext
+      > => {
+      return useMutation(getVerifyPaymentMutationOptions(options));
     }
 
 export const getListDeliveryFeesUrl = () => {

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
-import { useCreateOrder, useListDeliveryFees } from "@workspace/api-client-react";
+import { useCreateOrder, useListDeliveryFees, useVerifyPayment } from "@workspace/api-client-react";
 import { Layout } from "@/components/layout";
 import { useCart } from "@/components/cart-context";
 import { useAuth } from "@/contexts/auth-context";
@@ -40,6 +40,7 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const createOrder = useCreateOrder();
+  const verifyPayment = useVerifyPayment();
   const { data: deliveryFees = [] } = useListDeliveryFees();
   const [paying, setPaying] = useState(false);
 
@@ -115,17 +116,18 @@ export default function CheckoutPage() {
           paystack.newTransaction({
             key: PAYSTACK_PUBLIC_KEY!,
             email: form.customerEmail,
-            amount: grandTotalKobo,
+             // The API calculates the authoritative total from current product
+             // prices and delivery fees. Use that value for the Paystack charge.
+             amount: order.totalKobo,
             currency: "NGN",
             ref,
             metadata: { orderId: order.id, customerName: form.customerName },
             onSuccess: (transaction) => {
               // Frontend backup: call verify in case webhook is delayed
-              fetch("/api/payments/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ reference: transaction.reference }),
-              }).catch(() => {});
+              verifyPayment.mutate(
+                { data: { reference: transaction.reference } },
+                { onError: () => undefined },
+              );
               clearCart();
               navigate(`/order-confirmation?orderId=${order.id}`);
             },

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { useListOrders, useGetOrder, useUpdateOrderStatus, getListOrdersQueryKey } from "@workspace/api-client-react";
+import {
+  useListOrders,
+  useGetOrder,
+  useUpdateOrderStatus,
+  useVerifyPayment,
+  getGetOrderQueryKey,
+  getListOrdersQueryKey,
+} from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "./dashboard";
 import { Button } from "@/components/ui/button";
@@ -24,32 +31,28 @@ function VerifyPaymentButton({ reference, orderId }: { reference: string; orderI
   const [result, setResult] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const verifyPayment = useVerifyPayment();
 
-  const handleVerify = async () => {
+  const handleVerify = () => {
     setChecking(true);
     setResult(null);
-    try {
-      const res = await fetch("/api/payments/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reference }),
-      });
-      const data = await res.json() as { verified?: boolean; status?: string; error?: string };
-      if (!res.ok) {
-        setResult(`Error: ${data.error ?? res.statusText}`);
-      } else if (data.verified) {
-        setResult("Payment verified — status updated to Paid");
-        queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
-        queryClient.invalidateQueries({ queryKey: ["orders", orderId] });
-        toast({ title: "Payment verified", description: `Order #${orderId} marked as paid.` });
-      } else {
-        setResult(`Paystack returned status: ${data.status ?? "unknown"}`);
-      }
-    } catch (e) {
-      setResult("Failed to contact server.");
-    } finally {
-      setChecking(false);
-    }
+    verifyPayment.mutate(
+      { data: { reference } },
+      {
+        onSuccess: (data) => {
+          if (data.verified) {
+            setResult("Payment verified — status updated to Paid");
+            queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
+            queryClient.invalidateQueries({ queryKey: getGetOrderQueryKey(orderId) });
+            toast({ title: "Payment verified", description: `Order #${orderId} marked as paid.` });
+          } else {
+            setResult(`Paystack returned status: ${data.status}`);
+          }
+        },
+        onError: () => setResult("Failed to verify this payment."),
+        onSettled: () => setChecking(false),
+      },
+    );
   };
 
   return (

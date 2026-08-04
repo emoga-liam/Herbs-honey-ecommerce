@@ -142,6 +142,23 @@ export interface OrderStatusUpdate {
   status: string;
 }
 
+export interface PaymentVerifyInput {
+  /** @minLength 1 */
+  reference: string;
+}
+
+export interface PaymentVerification {
+  verified: boolean;
+  status: string;
+  amount: number;
+  expectedAmount: number;
+  amountMatches: boolean;
+  /** @nullable */
+  paidAt: string | null;
+  gatewayResponse: string;
+  orderId: number;
+}
+
 export interface LoginCredentials {
   email: string;
   password: string;

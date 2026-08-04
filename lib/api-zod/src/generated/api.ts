@@ -392,6 +392,28 @@ export const UpdateOrderStatusResponse = zod.object({
 
 
 /**
+ * @summary Verify a Paystack transaction and update its order
+ */
+
+
+
+export const VerifyPaymentBody = zod.object({
+  "reference": zod.string().min(1)
+})
+
+export const VerifyPaymentResponse = zod.object({
+  "verified": zod.boolean(),
+  "status": zod.string(),
+  "amount": zod.number(),
+  "expectedAmount": zod.number(),
+  "amountMatches": zod.boolean(),
+  "paidAt": zod.string().nullable(),
+  "gatewayResponse": zod.string(),
+  "orderId": zod.number()
+})
+
+
+/**
  * @summary List delivery fees for all Nigerian states (public)
  */
 export const ListDeliveryFeesResponseItem = zod.object({

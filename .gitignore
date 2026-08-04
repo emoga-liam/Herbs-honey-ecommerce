@@ -52,3 +52,6 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Generated deployment handoff
+ffg-foods-hostinger-source.zip

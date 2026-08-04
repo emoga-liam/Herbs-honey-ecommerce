@@ -51,13 +51,20 @@ app.post("/api/payments/webhook", express.raw({ type: "application/json" }), (re
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded product images
-app.use("/api/uploads", express.static(path.resolve(__dirname, "..", "uploads")));
+// Serve uploaded product images. FRONTEND_DIR and UPLOADS_DIR make the same
+// server bundle portable to standalone hosts such as Hostinger.
+const uploadsPath = path.resolve(
+  process.env.UPLOADS_DIR ?? path.resolve(__dirname, "..", "uploads"),
+);
+app.use("/api/uploads", express.static(uploadsPath));
 
 app.use("/api", router);
 
 // Resolve built frontend static directory
-const frontendPath = path.resolve(__dirname, "..", "..", "ffg-store", "dist", "public");
+const frontendPath = path.resolve(
+  process.env.FRONTEND_DIR ??
+    path.resolve(__dirname, "..", "..", "ffg-store", "dist", "public"),
+);
 
 // Serve frontend static assets (CSS, JS, images)
 app.use(express.static(frontendPath));

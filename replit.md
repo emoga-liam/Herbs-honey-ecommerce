@@ -4,10 +4,12 @@ A full-stack e-commerce site for FFG Foods (Farm Fresh Grocery) — a Nigerian h
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
 - `pnpm --filter @workspace/ffg-store run dev` — run the storefront (port 22825)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
+- `pnpm run hostinger:build` — production build for the combined Hostinger app
+- `pnpm run hostinger:start` — start the combined production app
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string, `SESSION_SECRET` — express-session secret
@@ -21,7 +23,7 @@ A full-stack e-commerce site for FFG Foods (Farm Fresh Grocery) — a Nigerian h
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
-- Auth: bcryptjs + express-session (admin only)
+- Auth: Firebase Authentication for customers/admin identity, with admin allow-list checks in the API
 
 ## Where things live
 
@@ -36,9 +38,9 @@ A full-stack e-commerce site for FFG Foods (Farm Fresh Grocery) — a Nigerian h
 ## Architecture decisions
 
 - **Prices stored as kobo integers** (÷ 100 for Naira display). All `priceKobo`/`totalKobo` fields in DB and API are integers.
-- **Session-based admin auth** — `POST /api/auth/login` sets a session cookie; `useGetAdminMe` used for frontend auth guard.
-- **No customer auth** — customers place orders with name/email/phone; no account required.
-- **Payment on delivery** — orders confirmed by phone after placement.
+- **Firebase-backed admin auth** — the browser sends a Firebase ID token; the API verifies it with Firebase Identity Toolkit and checks the admin allow-list.
+- **Customer accounts** — customers can sign in with Firebase and view orders by email; checkout still records delivery contact details on every order.
+- **Paystack plus payment on delivery** — Paystack payments are verified server-side and by signed webhook; orders can also be placed for payment on delivery.
 - **Contract-first API** — OpenAPI spec → Orval codegen → typed hooks. Run codegen after any spec change.
 
 ## Product

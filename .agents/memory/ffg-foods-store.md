@@ -41,6 +41,14 @@ Express-session with `SESSION_SECRET` env var. `useGetAdminMe` hook is used by `
 
 **How to apply:** Always put Express Request/Response augmentations in `src/types/express.d.ts`, never inline in middleware files.
 
+## Hostinger and Paystack production boundary
+
+Hostinger deployment uses one combined Node.js app: the Express API serves the built React storefront and reads `PORT`, while the Vite storefront is built ahead of time. Paystack's secret key stays server-side; the browser only receives the public key. Payment completion must be accepted only after server verification or a signed webhook whose amount matches the order total.
+
+**Why:** A separate static frontend and API deployment complicates same-origin routing and makes webhook setup less reliable; trusting only the browser callback would allow forged or mismatched payment confirmations.
+
+**How to apply:** Keep `hostinger:build` and `hostinger:start` as the production contract, publish `/api/payments/webhook` only on a public HTTPS domain, and set both Paystack keys together when switching from test to live.
+
 ## Express 5 wildcard routes changed syntax
 
 `app.get("*", handler)` throws `PathError: Missing parameter name` in Express 5 (path-to-regexp v8). Must use `app.get("/{*splat}", handler)` instead.

@@ -9,13 +9,14 @@ import { Button } from "@/components/ui/button";
 
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string; bg: string; border: string }> = {
   pending: { label: "Order Received", icon: Clock, color: "text-amber-400", bg: "bg-amber-900/20", border: "border-amber-700/40" },
+  paid: { label: "Payment Confirmed", icon: CheckCircle, color: "text-green-400", bg: "bg-green-900/20", border: "border-green-700/40" },
   processing: { label: "Being Processed", icon: Package, color: "text-blue-400", bg: "bg-blue-900/20", border: "border-blue-700/40" },
   shipped: { label: "Out for Delivery", icon: Truck, color: "text-purple-400", bg: "bg-purple-900/20", border: "border-purple-700/40" },
   delivered: { label: "Delivered", icon: CheckCircle, color: "text-green-400", bg: "bg-green-900/20", border: "border-green-700/40" },
   cancelled: { label: "Cancelled", icon: XCircle, color: "text-red-400", bg: "bg-red-900/20", border: "border-red-700/40" },
 };
 
-const PROGRESS_STEPS = ["pending", "processing", "shipped", "delivered"];
+const PROGRESS_STEPS = ["pending", "paid", "processing", "shipped", "delivered"];
 
 function StatusBadge({ status }: { status: string }) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending;

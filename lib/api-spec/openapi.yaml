@@ -24,6 +24,8 @@ tags:
     description: Site settings (CMS)
   - name: delivery-fees
     description: Delivery fees by Nigerian state
+  - name: payments
+    description: Paystack payment verification
 paths:
   /healthz:
     get:
@@ -372,6 +374,31 @@ paths:
           description: Unauthorized
         "404":
           description: Not found
+
+  /payments/verify:
+    post:
+      operationId: verifyPayment
+      tags: [payments]
+      summary: Verify a Paystack transaction and update its order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentVerifyInput"
+      responses:
+        "200":
+          description: Payment verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentVerification"
+        "400":
+          description: Invalid reference
+        "404":
+          description: No order found for the payment reference
+        "503":
+          description: Paystack is not configured
 
   /delivery-fees:
     get:
@@ -858,6 +885,44 @@ components:
           type: string
       required:
         - status
+
+    PaymentVerifyInput:
+      type: object
+      properties:
+        reference:
+          type: string
+          minLength: 1
+      required:
+        - reference
+
+    PaymentVerification:
+      type: object
+      properties:
+        verified:
+          type: boolean
+        status:
+          type: string
+        amount:
+          type: integer
+        expectedAmount:
+          type: integer
+        amountMatches:
+          type: boolean
+        paidAt:
+          type: ["string", "null"]
+        gatewayResponse:
+          type: string
+        orderId:
+          type: integer
+      required:
+        - verified
+        - status
+        - amount
+        - expectedAmount
+        - amountMatches
+        - paidAt
+        - gatewayResponse
+        - orderId
 
     LoginCredentials:
       type: object

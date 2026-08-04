@@ -26,6 +26,8 @@ export * from './orderInput';
 export * from './orderItem';
 export * from './orderItemInput';
 export * from './orderStatusUpdate';
+export * from './paymentVerification';
+export * from './paymentVerifyInput';
 export * from './product';
 export * from './productImage';
 export * from './productImageInput';
