@@ -2,22 +2,25 @@
   "name": "workspace",
   "version": "0.0.0",
   "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "artifacts/*",
+    "lib/*",
+    "lib/integrations/*",
+    "scripts"
+  ],
   "scripts": {
-    "preinstall": "node -e \"if(process.env.npm_config_user_agent&&!process.env.npm_config_user_agent.startsWith('pnpm')){console.error('Use pnpm instead');process.exit(1)}\" && bash ./scripts/repair-native-binaries.sh --allow-missing",
-    "prebuild": "bash ./scripts/repair-native-binaries.sh",
-    "build": "pnpm run typecheck && pnpm --filter @workspace/ffg-store run build && pnpm --filter @workspace/api-server run build",
-    "hostinger:install": "bash ./scripts/hostinger-install.sh",
-    "hostinger:build": "pnpm run build",
+    "build": "npm run typecheck && npm run build --workspace @workspace/ffg-store && npm run build --workspace @workspace/api-server",
+    "hostinger:build": "npm run build",
     "hostinger:bundle": "bash ./scripts/create-hostinger-bundle.sh",
     "hostinger:start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "npm run typecheck:libs && npm run typecheck --workspaces --if-present"
   },
-  "private": true,
   "engines": {
     "node": ">=22 <25",
-    "pnpm": ">=10"
+    "npm": ">=10"
   },
   "devDependencies": {
     "prettier": "^3.8.3",

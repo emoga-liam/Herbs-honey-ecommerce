@@ -25,36 +25,21 @@ Recommended settings:
 - Framework: `Other` or `Express.js`
 - Application root: repository root
 - Build command:
-  `pnpm run build`
+  `npm run build`
 - Start command:
-  `pnpm run hostinger:start`
+  `npm run hostinger:start`
 - Application port: use the port Hostinger provides through `PORT`
 
-If `pnpm` is not available in the Hostinger build shell, use this equivalent
-build command:
+Use standard npm installation in the Hostinger build environment:
 
 ```bash
-npm install -g pnpm@10.26.1 && pnpm run hostinger:install && pnpm run build
+npm install
+npm run build
 ```
 
-The custom install step uses `--ignore-scripts` during dependency extraction,
-repairs the executable bit on esbuild's native binary in both hoisted and
-virtual-store layouts, and then runs esbuild's official installer directly.
-The root `build` command repeats the permission repair immediately before
-building. This avoids an
-`esbuild ... spawnSync ... EACCES`
-failure on Hostinger environments that unpack that binary without execute
-permission. It does not weaken the lockfile check.
-
-If hPanel provides a separate dependency-install command, use:
-
-```bash
-pnpm run hostinger:install
-```
-
-Do not delete `pnpm-lock.yaml` or replace the workspace install with plain
-`npm install`: this repository uses pnpm workspace and catalog references that
-are part of the lockfile contract.
+The project uses npm workspaces and a flat `node_modules` tree. This avoids the
+virtual-store and symlink permission issue that caused the previous
+`esbuild ... spawnSync ... EACCES` failure.
 
 Do not run the Vite development server in production. The production build
 creates `artifacts/ffg-store/dist/public`, and the API server serves it.
@@ -111,7 +96,7 @@ behind a login page, password gate, or development URL.
 Before the first launch, apply the schema against the production database:
 
 ```bash
-pnpm --filter @workspace/db run push
+npm run push --workspace @workspace/db
 ```
 
 Then seed or create the initial admin account using the project's existing

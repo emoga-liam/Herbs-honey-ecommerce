@@ -49,13 +49,13 @@ Hostinger deployment uses one combined Node.js app: the Express API serves the b
 
 **How to apply:** Keep `hostinger:build` and `hostinger:start` as the production contract, publish `/api/payments/webhook` only on a public HTTPS domain, and set both Paystack keys together when switching from test to live.
 
-## Hostinger esbuild permissions
+## Hostinger dependency manager
 
-Some Hostinger environments unpack esbuild's native binary without execute permission, causing its automatic postinstall validation to fail with `spawnSync ... EACCES` even though the frozen lockfile is valid.
+Hostinger deployment uses npm workspaces with a committed `package-lock.json` and a flat `node_modules` tree. The previous pnpm virtual-store path caused esbuild execute-permission failures during extraction.
 
-**Why:** Hostinger's dependency install can preserve file permissions differently from the development environment.
+**Why:** npm avoids the symlinked virtual-store layout that triggered Hostinger's `esbuild` `EACCES` postinstall failure.
 
-**How to apply:** Keep `node-linker=hoisted`, repair all `*/esbuild/bin/esbuild` paths during `preinstall` and `prebuild`, and use `hostinger:install` to install with scripts ignored before invoking esbuild's official installer. Do not replace pnpm with npm without first converting `workspace:*` and `catalog:` dependencies.
+**How to apply:** Use `npm install`/`npm ci`, `npm run build`, and `npm run hostinger:start`; do not reintroduce pnpm workspace or catalog specifiers without repeating the npm conversion.
 
 ## pnpm build-script allowlist format
 

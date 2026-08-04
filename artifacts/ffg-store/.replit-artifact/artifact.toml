@@ -15,10 +15,10 @@ paths = [ "/" ]
 localPort = 22825
 
 [services.development]
-run = "pnpm --filter @workspace/ffg-store run dev"
+run = "npm run dev --workspace @workspace/ffg-store"
 
 [services.production]
-build = [ "pnpm", "--filter", "@workspace/ffg-store", "run", "build" ]
+build = [ "npm", "run", "build", "--workspace", "@workspace/ffg-store" ]
 publicDir = "artifacts/ffg-store/dist/public"
 serve = "static"
 
