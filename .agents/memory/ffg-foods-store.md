@@ -1,92 +1,87 @@
 ---
 name: FFG Foods Store
-description: Quirks and decisions for the FFG Foods e-commerce project (honey sachets, Nigeria).
+description: Key quirks, package-manager history, and Hostinger deployment decisions for the FFG Foods herbs-infused honey e-commerce monorepo.
 ---
 
-## Orval-generated hook query options require `queryKey`
+## Package manager: pnpm (current)
 
-When passing `{ query: { enabled: ... } }` to hooks like `useGetProduct` or `useGetOrder`, TypeScript requires `queryKey` too. Always import and use the corresponding getter (e.g. `getGetProductQueryKey(id)`) and pass it in the options.
+The project is a pnpm monorepo. After detours through npm and Yarn, it is back on pnpm.
 
-**Why:** Orval generates hooks where `UseQueryOptions` mandates `queryKey` at the type level even though TanStack Query makes it optional at runtime.
+**Current version:** pnpm v10.26.1 (system-installed on Replit; `packageManager: "pnpm@10.26.1"` in root `package.json`).
 
-**How to apply:** `useGetProduct(id, { query: { enabled: !!id, queryKey: getGetProductQueryKey(id) } })`
+**Why:**
+- Hostinger's `/tmp` is `noexec`, which blocked Yarn's temp script execution.
+- npm's workspace resolution caused repeated install/exit-handler failures.
+- pnpm with `node-linker=hoisted` (set in `.npmrc`) flattens `node_modules` like npm, avoiding Hostinger's EACCES symlink/binary errors.
 
-## Logout mutation takes `void` not `{}`
+## Critical `.npmrc` settings
 
-`useAdminLogout().mutate` expects `undefined` / no arguments (the mutation variable is typed `void`). Passing `{}` causes a TS2345 error.
+```ini
+node-linker=hoisted
+only-built-dependencies[]=esbuild
+only-built-dependencies[]=@firebase/util
+only-built-dependencies[]=protobufjs
+manage-package-manager-versions=false
+registry=https://registry.npmjs.org/
+```
 
-**How to apply:** Call `logout.mutate(undefined, { onSuccess: ... })` or just `logout.mutate()`.
+**Why `manage-package-manager-versions=false`:** Without it, pnpm 10 tries to self-reinstall via corepack using `@pnpm/exe`, whose build script isn't on the `only-built-dependencies` allowlist, causing a boot loop.
 
-## Prices are stored as kobo integers
+**Why `registry=https://registry.npmjs.org/`:** Replit injects `npm_config_registry=http://package-firewall.replit.local/npm/` as an environment variable. In pnpm, env vars override `.npmrc`, so the explicit registry line is still needed. If pnpm ever stops picking up the env var override, the line is still harmless.
 
-All price fields in DB and API (`priceKobo`, `totalKobo`) are integers in kobo (÷ 100 = Naira). `formatNaira(kobo)` in `lib/utils.ts` handles display.
+## Workspace package protocol: `workspace:*`
 
-## Product images use `@assets` Vite alias
+Internal cross-package references must use `workspace:*` (not `"0.0.0"`). pnpm does not auto-link workspace packages by name — it requires the `workspace:` protocol or it tries to fetch from the registry.
 
-`artifacts/ffg-store/attached_assets/` holds real product photos. `getProductImage(flavor, type, imageUrl)` in `lib/utils.ts` maps flavor+type to the right file. The alias is configured in `vite.config.ts`.
+Packages that reference other workspace packages:
+- `artifacts/api-server`: `@workspace/api-zod`, `@workspace/db` → both `workspace:*`
+- `artifacts/ffg-store`: `@workspace/api-client-react` → `workspace:*`
 
-## Admin credentials (dev seed)
+## `pnpm-workspace.yaml`
 
-`admin@ffgfoods.com` / `admin123` — seeded via `lib/db/src/seed.ts`. Change before production.
+Defines workspace package globs and `onlyBuiltDependencies` (the pnpm v9+ canonical key):
 
-## Session auth pattern
+```yaml
+packages:
+  - 'artifacts/*'
+  - 'lib/*'
+  - 'lib/integrations/*'
+  - 'scripts'
 
-Express-session with `SESSION_SECRET` env var. `useGetAdminMe` hook is used by `AdminGuard` to check auth on protected routes; redirects to `/admin/login` on 401.
+onlyBuiltDependencies:
+  - esbuild
+  - '@firebase/util'
+  - protobufjs
+```
 
-## Express module augmentation must be in a global types file
+Note: root `package.json` must NOT have a `workspaces` field — pnpm warns about it and ignores it in favour of `pnpm-workspace.yaml`.
 
-`req.admin` augmentation placed inside `middleware/auth.ts` as `declare module "express"` is NOT visible in other route files. Must live in `src/types/express.d.ts` using `declare global { namespace Express { interface Request { admin?: ... } } }` — this is globally visible without imports.
+## esbuild pinned to 0.25.8
 
-**Why:** TypeScript module augmentation in a non-ambient file is scoped to that file's import graph. Routes that don't import the middleware won't see the augmented type.
+`esbuild-plugin-pino` does not support esbuild versions newer than 0.25.8. Keep this pin in `artifacts/api-server/package.json`.
 
-**How to apply:** Always put Express Request/Response augmentations in `src/types/express.d.ts`, never inline in middleware files.
+## Hostinger deployment commands
 
-## Hostinger and Paystack production boundary
+```bash
+pnpm install --frozen-lockfile
+pnpm run build
+```
 
-Hostinger deployment uses one combined Node.js app: the Express API serves the built React storefront and reads `PORT`, while the Vite storefront is built ahead of time. Paystack's secret key stays server-side; the browser only receives the public key. Payment completion must be accepted only after server verification or a signed webhook whose amount matches the order total.
+Start command: `pnpm run hostinger:start`
 
-**Why:** A separate static frontend and API deployment complicates same-origin routing and makes webhook setup less reliable; trusting only the browser callback would allow forged or mismatched payment confirmations.
+The combined app: Express API at port `$PORT`, serving the built React storefront from `artifacts/ffg-store/dist/public`.
 
-**How to apply:** Keep `hostinger:build` and `hostinger:start` as the production contract, publish `/api/payments/webhook` only on a public HTTPS domain, and set both Paystack keys together when switching from test to live.
+## Pricing
 
-## Hostinger dependency manager
+All prices are stored as kobo integers (`priceKobo`, `totalKobo`). Divide by 100 for Naira display.
 
-Hostinger deployment uses npm workspaces with a committed `package-lock.json` and a flat `node_modules` tree. npm's project cache and temporary paths are redirected through the root `.npmrc`.
+## Orval codegen
 
-**Why:** Hostinger mounts `/tmp` with `noexec`, so npm must not use it for package-manager cache or temporary script files.
+Run after any OpenAPI spec change:
+```bash
+pnpm --filter @workspace/api-spec run codegen
+```
 
-**How to apply:** Use `npm install`, `npm run build`, and `npm run hostinger:start`; keep `.npm-cache` ignored and set npm's temp path from `XDG_RUNTIME_DIR`.
+## Paystack + payment on delivery
 
-## Express 5 wildcard routes changed syntax
-
-`app.get("*", handler)` throws `PathError: Missing parameter name` in Express 5 (path-to-regexp v8). Must use `app.get("/{*splat}", handler)` instead.
-
-**Why:** path-to-regexp v8 (used by Express 5) requires named parameters for wildcards.
-
-## Supabase DB pool needs SSL
-
-`lib/db/src/index.ts` Pool config must include `ssl: { rejectUnauthorized: false }` when DATABASE_URL contains `supabase.com` to prevent connection errors over TLS.
-
-## mockup-sandbox vite config must allow missing PORT during build
-
-The mockup-sandbox `vite.config.ts` threw if `PORT`/`BASE_PATH` were missing, breaking the root build. Fixed by only throwing at runtime (not when `NODE_ENV=production` or `argv` contains `build`).
-
-## Dev server ports — 22825 (frontend) and 8080 (API)
-
-The artifact.toml files are the source of truth for port allocation:
-- `artifacts/ffg-store/.replit-artifact/artifact.toml` → `localPort = 22825`, dev command `npm run dev --workspace @workspace/ffg-store`
-- `artifacts/api-server/.replit-artifact/artifact.toml` → `localPort = 8080`
-
-**Why:** Replit's proxy routes `/` → port 22825 and `/api` → port 8080 based on these artifact.toml entries. The `.replit` [[ports]] section maps `localPort=22825` → `externalPort=3000`.
-
-**How to apply:** "Start application" workflow = `PORT=22825 npm run dev --workspace @workspace/ffg-store`, waitForPort=22825; "API Server" = `PORT=8080 npm run dev --workspace @workspace/api-server`, waitForPort=8080.
-
-## Vite dev server must proxy /api to API server
-
-`vite.config.ts` needs `server.proxy: { "/api": { target: "http://localhost:8080", changeOrigin: true } }` so the frontend dev server (port 22825) forwards API calls to the API server (port 8080).
-
-**Why:** Without the proxy, the browser makes `/api/...` requests to port 22825 which has no API handlers, returning 404.
-
-## createArtifact() fails for existing slug directories
-
-`createArtifact({ slug: "ffg-store", ... })` fails if `artifacts/ffg-store/` already exists. The artifact.toml files already exist at `artifacts/<slug>/.replit-artifact/artifact.toml` — Replit's proxy reads them directly without requiring `listArtifacts()` to return them.
+Both Paystack (server-side verified + signed webhook) and payment-on-delivery are supported checkout methods.

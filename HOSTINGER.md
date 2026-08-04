@@ -25,21 +25,24 @@ Recommended settings:
 - Framework: `Other` or `Express.js`
 - Application root: repository root
 - Build command:
-  `npm run build`
+  `pnpm run build`
 - Start command:
-  `npm run hostinger:start`
+  `pnpm run hostinger:start`
 - Application port: use the port Hostinger provides through `PORT`
 
-Use npm installation in the Hostinger build environment:
+Use pnpm for installation in the Hostinger build environment:
 
 ```bash
-npm install
-npm run build
+pnpm install --frozen-lockfile
+pnpm run build
 ```
 
-The project uses npm workspaces and a flat `node_modules` tree. The root `.npmrc`
-keeps npm's cache and temporary files outside Hostinger's non-executable `/tmp`
-mount.
+The project uses pnpm workspaces with a hoisted `node_modules` layout
+(`node-linker=hoisted` in `.npmrc`). This flattens the dependency tree like
+standard npm, which resolves the `EACCES` binary-execution errors that
+arise when Hostinger's filesystem cannot follow pnpm's default symlinks. Only
+the build scripts for `esbuild`, `@firebase/util`, and `protobufjs` are
+permitted to run during install (`only-built-dependencies` in `.npmrc`).
 
 Do not run the Vite development server in production. The production build
 creates `artifacts/ffg-store/dist/public`, and the API server serves it.
@@ -96,7 +99,7 @@ behind a login page, password gate, or development URL.
 Before the first launch, apply the schema against the production database:
 
 ```bash
-npm run push --workspace @workspace/db
+pnpm --filter @workspace/db run push
 ```
 
 Then seed or create the initial admin account using the project's existing

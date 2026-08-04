@@ -1,0 +1,10 @@
+packages:
+  - 'artifacts/*'
+  - 'lib/*'
+  - 'lib/integrations/*'
+  - 'scripts'
+
+onlyBuiltDependencies:
+  - esbuild
+  - '@firebase/util'
+  - protobufjs

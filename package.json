@@ -3,25 +3,19 @@
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
-  "packageManager": "npm@11.6.2",
-  "workspaces": [
-    "artifacts/*",
-    "lib/*",
-    "lib/integrations/*",
-    "scripts"
-  ],
+  "packageManager": "pnpm@10.26.1",
   "scripts": {
-    "build": "npm run typecheck && npm run build --workspace @workspace/ffg-store && npm run build --workspace @workspace/api-server",
-    "hostinger:build": "npm run build",
+    "build": "pnpm run typecheck && pnpm --filter @workspace/ffg-store run build && pnpm --filter @workspace/api-server run build",
+    "hostinger:build": "pnpm run build",
     "hostinger:bundle": "bash ./scripts/create-hostinger-bundle.sh",
     "hostinger:start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "typecheck:libs": "tsc --build",
-    "typecheck": "npm run typecheck:libs && npm run typecheck --workspaces --if-present"
+    "typecheck": "pnpm run typecheck:libs && pnpm run -r typecheck"
   },
   "engines": {
     "node": ">=22 <25",
-    "npm": ">=10"
+    "pnpm": ">=9"
   },
   "devDependencies": {
     "prettier": "^3.8.3",
