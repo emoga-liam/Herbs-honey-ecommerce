@@ -57,14 +57,6 @@ Hostinger deployment uses npm workspaces with a committed `package-lock.json` an
 
 **How to apply:** Use `npm install`/`npm ci`, `npm run build`, and `npm run hostinger:start`; do not reintroduce pnpm workspace or catalog specifiers without repeating the npm conversion.
 
-## pnpm build-script allowlist format
-
-The workspace uses a root `allowBuilds` mapping for pnpm 10/11 deployment installs, explicitly approving native/lifecycle builds for esbuild, Firebase utility code, protobufjs, and the other existing approved packages.
-
-**Why:** Hostinger deployments otherwise report required dependency postinstall scripts as blocked, even when the lockfile is valid.
-
-**How to apply:** Keep the explicit `allowBuilds: package: true` mapping in `pnpm-workspace.yaml`, plus the root wildcard workspace package glob required by the deployment configuration.
-
 ## Express 5 wildcard routes changed syntax
 
 `app.get("*", handler)` throws `PathError: Missing parameter name` in Express 5 (path-to-regexp v8). Must use `app.get("/{*splat}", handler)` instead.
@@ -77,17 +69,17 @@ The workspace uses a root `allowBuilds` mapping for pnpm 10/11 deployment instal
 
 ## mockup-sandbox vite config must allow missing PORT during build
 
-The mockup-sandbox `vite.config.ts` threw if `PORT`/`BASE_PATH` were missing, breaking `pnpm run build`. Fixed by only throwing at runtime (not when `NODE_ENV=production` or `argv` contains `build`).
+The mockup-sandbox `vite.config.ts` threw if `PORT`/`BASE_PATH` were missing, breaking the root build. Fixed by only throwing at runtime (not when `NODE_ENV=production` or `argv` contains `build`).
 
 ## Dev server ports — 22825 (frontend) and 8080 (API)
 
 The artifact.toml files are the source of truth for port allocation:
-- `artifacts/ffg-store/.replit-artifact/artifact.toml` → `localPort = 22825`, dev command `pnpm --filter @workspace/ffg-store run dev`
+- `artifacts/ffg-store/.replit-artifact/artifact.toml` → `localPort = 22825`, dev command `npm run dev --workspace @workspace/ffg-store`
 - `artifacts/api-server/.replit-artifact/artifact.toml` → `localPort = 8080`
 
 **Why:** Replit's proxy routes `/` → port 22825 and `/api` → port 8080 based on these artifact.toml entries. The `.replit` [[ports]] section maps `localPort=22825` → `externalPort=3000`.
 
-**How to apply:** "Start application" workflow = `PORT=22825 pnpm --filter @workspace/ffg-store run dev`, waitForPort=22825; "API Server" = `PORT=8080 pnpm --filter @workspace/api-server run dev`, waitForPort=8080.
+**How to apply:** "Start application" workflow = `PORT=22825 npm run dev --workspace @workspace/ffg-store`, waitForPort=22825; "API Server" = `PORT=8080 npm run dev --workspace @workspace/api-server`, waitForPort=8080.
 
 ## Vite dev server must proxy /api to API server
 
