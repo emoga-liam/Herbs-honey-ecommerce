@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "preinstall": "node -e \"if(process.env.npm_config_user_agent&&!process.env.npm_config_user_agent.startsWith('pnpm')){console.error('Use pnpm instead');process.exit(1)}\"",
+    "preinstall": "node -e \"if(process.env.npm_config_user_agent&&!process.env.npm_config_user_agent.startsWith('pnpm')){console.error('Use pnpm instead');process.exit(1)}\" && bash ./scripts/repair-native-binaries.sh --allow-missing",
+    "prebuild": "bash ./scripts/repair-native-binaries.sh",
     "build": "pnpm run typecheck && pnpm --filter @workspace/ffg-store run build && pnpm --filter @workspace/api-server run build",
     "hostinger:install": "bash ./scripts/hostinger-install.sh",
     "hostinger:build": "pnpm run build",

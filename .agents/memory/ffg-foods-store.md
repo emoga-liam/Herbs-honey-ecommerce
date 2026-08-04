@@ -55,7 +55,7 @@ Some Hostinger environments unpack esbuild's native binary without execute permi
 
 **Why:** Hostinger's dependency install can preserve file permissions differently from the development environment.
 
-**How to apply:** Keep esbuild out of pnpm's automatic `allowBuilds`, use `hostinger:install` to install with scripts ignored, restore execute permission, and invoke esbuild's official installer before `hostinger:build`.
+**How to apply:** Keep `node-linker=hoisted`, repair all `*/esbuild/bin/esbuild` paths during `preinstall` and `prebuild`, and use `hostinger:install` to install with scripts ignored before invoking esbuild's official installer. Do not replace pnpm with npm without first converting `workspace:*` and `catalog:` dependencies.
 
 ## pnpm build-script allowlist format
 

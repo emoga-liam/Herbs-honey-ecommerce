@@ -38,11 +38,23 @@ npm install -g pnpm@10.26.1 && pnpm run hostinger:install && pnpm run build
 ```
 
 The custom install step uses `--ignore-scripts` during dependency extraction,
-repairs the executable bit on esbuild's native binary, and then runs
-esbuild's official installer directly. This avoids an
+repairs the executable bit on esbuild's native binary in both hoisted and
+virtual-store layouts, and then runs esbuild's official installer directly.
+The root `build` command repeats the permission repair immediately before
+building. This avoids an
 `esbuild ... spawnSync ... EACCES`
 failure on Hostinger environments that unpack that binary without execute
 permission. It does not weaken the lockfile check.
+
+If hPanel provides a separate dependency-install command, use:
+
+```bash
+pnpm run hostinger:install
+```
+
+Do not delete `pnpm-lock.yaml` or replace the workspace install with plain
+`npm install`: this repository uses pnpm workspace and catalog references that
+are part of the lockfile contract.
 
 Do not run the Vite development server in production. The production build
 creates `artifacts/ffg-store/dist/public`, and the API server serves it.
