@@ -33,7 +33,7 @@ Recommended settings:
 Use Yarn installation in the Hostinger build environment:
 
 ```bash
-yarn install --frozen-lockfile
+yarn install --frozen-lockfile --registry https://registry.npmjs.org/
 yarn build
 ```
 

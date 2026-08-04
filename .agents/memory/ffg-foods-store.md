@@ -57,6 +57,14 @@ Hostinger deployment uses Yarn workspaces with a committed `yarn.lock` and a fla
 
 **How to apply:** Use `yarn install --frozen-lockfile`, `yarn build`, and `yarn hostinger:start`; keep workspace commands in Yarn syntax.
 
+## Public Yarn registry configuration
+
+The Replit development environment injects local registry environment variables that can override the project `.yarnrc` and contaminate `yarn.lock` with `package-firewall.replit.local` URLs.
+
+**Why:** Those proxy URLs are not resolvable in external deployment environments.
+
+**How to apply:** Keep `.yarnrc` pointed at `https://registry.npmjs.org/` and pass `--registry https://registry.npmjs.org/` on deployment/install commands; regenerate the lockfile without the injected registry variables when needed.
+
 ## Express 5 wildcard routes changed syntax
 
 `app.get("*", handler)` throws `PathError: Missing parameter name` in Express 5 (path-to-regexp v8). Must use `app.get("/{*splat}", handler)` instead.
