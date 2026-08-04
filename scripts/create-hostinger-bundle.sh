@@ -20,6 +20,7 @@ zip -qr "${OUTPUT}" . \
   -x "*/.env.local" \
   -x ".env.production" \
   -x "*/.env.production" \
+  -x "attached_assets/Pasted-*" \
   -x "node_modules/*" \
   -x "*/node_modules/*" \
   -x "*/dist/*" \

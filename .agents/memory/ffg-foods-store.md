@@ -49,6 +49,14 @@ Hostinger deployment uses one combined Node.js app: the Express API serves the b
 
 **How to apply:** Keep `hostinger:build` and `hostinger:start` as the production contract, publish `/api/payments/webhook` only on a public HTTPS domain, and set both Paystack keys together when switching from test to live.
 
+## Hostinger esbuild permissions
+
+Some Hostinger environments unpack esbuild's native binary without execute permission, causing its automatic postinstall validation to fail with `spawnSync ... EACCES` even though the frozen lockfile is valid.
+
+**Why:** Hostinger's dependency install can preserve file permissions differently from the development environment.
+
+**How to apply:** Keep esbuild out of pnpm's automatic `allowBuilds`, use `hostinger:install` to install with scripts ignored, restore execute permission, and invoke esbuild's official installer before `hostinger:build`.
+
 ## Express 5 wildcard routes changed syntax
 
 `app.get("*", handler)` throws `PathError: Missing parameter name` in Express 5 (path-to-regexp v8). Must use `app.get("/{*splat}", handler)` instead.

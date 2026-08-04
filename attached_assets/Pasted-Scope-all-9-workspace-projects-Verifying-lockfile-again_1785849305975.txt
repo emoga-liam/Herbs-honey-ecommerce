@@ -1,0 +1,47 @@
+Scope: all 9 workspace projects
+? Verifying lockfile against supply-chain policies (655 entries)...
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +584
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 584, reused 519, downloaded 65, added 296
+
+   ╭───────────────────────────────────────────────╮
+   │                                               │
+   │      Update available! 11.9.0 → 11.20.0.      │
+   │     Changelog: https://pnpm.io/v/11.20.0      │
+   │   To update, run: corepack use pnpm@11.20.0   │
+   │                                               │
+   ╰───────────────────────────────────────────────╯
+
+Progress: resolved 584, reused 519, downloaded 65, added 584, done
+✓ Lockfile passes supply-chain policies (655 entries in 5.2s)
+.../node_modules/protobufjs postinstall$ node scripts/postinstall
+.../esbuild@0.27.3/node_modules/esbuild postinstall$ node install.js
+.../node_modules/protobufjs postinstall: Done
+.../esbuild@0.27.3/node_modules/esbuild postinstall: node:internal/child_process:1120
+.../esbuild@0.27.3/node_modules/esbuild postinstall:     result.error = new ErrnoException(result.error, 'spawnSync ' + options.file);
+.../esbuild@0.27.3/node_modules/esbuild postinstall:                    ^
+.../esbuild@0.27.3/node_modules/esbuild postinstall: <ref *1> Error: spawnSync /home/u267614591/domains/grich20.online/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild EACCES
+.../esbuild@0.27.3/node_modules/esbuild postinstall:     at Object.spawnSync (node:internal/child_process:1120:20)
+.../esbuild@0.27.3/node_modules/esbuild postinstall:     at spawnSync (node:child_process:901:24)
+.../esbuild@0.27.3/node_modules/esbuild postinstall:     at Object.execFileSync (node:child_process:944:15)
+.../esbuild@0.27.3/node_modules/esbuild postinstall:     at validateBinaryVersion (/home/u267614591/domains/grich20.online/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/install.js:102:28)
+.../esbuild@0.27.3/node_modules/esbuild postinstall:     at /home/u267614591/domains/grich20.online/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/install.js:287:5 {
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   errno: -13,
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   code: 'EACCES',
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   syscall: 'spawnSync /home/u267614591/domains/grich20.online/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild',
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   path: '/home/u267614591/domains/grich20.online/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild',
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   spawnargs: [ '--version' ],
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   error: [Circular *1],
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   status: null,
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   signal: null,
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   output: null,
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   pid: 0,
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   stdout: undefined,
+.../esbuild@0.27.3/node_modules/esbuild postinstall:   stderr: undefined
+.../esbuild@0.27.3/node_modules/esbuild postinstall: }
+.../esbuild@0.27.3/node_modules/esbuild postinstall: Node.js v22.18.0
+.../esbuild@0.27.3/node_modules/esbuild postinstall: Failed
+[ELIFECYCLE] Command failed with exit code 1.
+[31mERROR: Failed to install dependencies[0m

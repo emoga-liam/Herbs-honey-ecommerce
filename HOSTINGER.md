@@ -25,7 +25,7 @@ Recommended settings:
 - Framework: `Other` or `Express.js`
 - Application root: repository root
 - Build command:
-  `pnpm install --frozen-lockfile && pnpm run hostinger:build`
+  `pnpm run hostinger:install && pnpm run hostinger:build`
 - Start command:
   `pnpm run hostinger:start`
 - Application port: use the port Hostinger provides through `PORT`
@@ -34,8 +34,15 @@ If `pnpm` is not available in the Hostinger build shell, use this equivalent
 build command:
 
 ```bash
-npm install -g pnpm@10.26.1 && pnpm install --frozen-lockfile && pnpm run hostinger:build
+npm install -g pnpm@10.26.1 && pnpm run hostinger:install && pnpm run hostinger:build
 ```
+
+The custom install step uses `--ignore-scripts` during dependency extraction,
+repairs the executable bit on esbuild's native binary, and then runs
+esbuild's official installer directly. This avoids an
+`esbuild ... spawnSync ... EACCES`
+failure on Hostinger environments that unpack that binary without execute
+permission. It does not weaken the lockfile check.
 
 Do not run the Vite development server in production. The production build
 creates `artifacts/ffg-store/dist/public`, and the API server serves it.

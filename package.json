@@ -5,6 +5,7 @@
   "scripts": {
     "preinstall": "node -e \"if(process.env.npm_config_user_agent&&!process.env.npm_config_user_agent.startsWith('pnpm')){console.error('Use pnpm instead');process.exit(1)}\"",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "hostinger:install": "bash ./scripts/hostinger-install.sh",
     "hostinger:build": "pnpm run typecheck && pnpm --filter @workspace/ffg-store run build && pnpm --filter @workspace/api-server run build",
     "hostinger:bundle": "bash ./scripts/create-hostinger-bundle.sh",
     "hostinger:start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",

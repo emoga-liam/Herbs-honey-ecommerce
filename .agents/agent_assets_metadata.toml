@@ -5,5 +5,5 @@ generated = []
 id = "2noQ2Am1jzKK7dFDpotHO"
 uri = "file://ffg-foods-hostinger-source.zip"
 type = "unspecified"
-title = "FFG Foods Hostinger source bundle"
-description = "Hostinger-ready source package for the combined React storefront and Express API. Includes HOSTINGER.md with setup, environment variables, database, Paystack webhook, and go-live instructions; excludes secrets, dependencies, caches, and Replit-only files."
+title = "FFG Foods Hostinger source bundle — esbuild fix"
+description = "Updated Hostinger-ready source package. Includes the frozen-lockfile-safe install workaround for Hostinger esbuild EACCES errors, production build scripts, and HOSTINGER.md. Excludes secrets, dependencies, caches, build output, and Replit-only files."
