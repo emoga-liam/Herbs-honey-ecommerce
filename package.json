@@ -17,6 +17,13 @@
     "node": ">=22 <25",
     "pnpm": ">=9"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "protobufjs",
+      "@firebase/util"
+    ]
+  },
   "devDependencies": {
     "prettier": "^3.8.3",
     "typescript": "~5.9.3"
