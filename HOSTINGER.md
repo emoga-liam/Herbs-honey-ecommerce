@@ -39,11 +39,18 @@ pnpm run build
 
 The project uses pnpm 11 workspaces with a hoisted `node_modules` layout
 (`nodeLinker: hoisted` in `pnpm-workspace.yaml`). This flattens the dependency
-tree like standard npm, which resolves the `EACCES` binary-execution errors that
-arise when Hostinger's filesystem cannot follow pnpm's default symlinks. Only
-the build scripts for `esbuild`, `@firebase/util`, and `protobufjs` are
-permitted to run during install (`allowBuilds` in `pnpm-workspace.yaml`).
-Without `allowBuilds`, pnpm 11 fails install with `ERR_PNPM_IGNORED_BUILDS`.
+tree like standard npm, which resolves symlink-related `EACCES` errors on
+Hostinger.
+
+Build scripts are controlled by `allowBuilds` in `pnpm-workspace.yaml`:
+
+- `@firebase/util` and `protobufjs` are allowed (required postinstalls).
+- `esbuild` is **disallowed** on purpose. Hostinger strips execute bits from
+  native binaries, so esbuild’s own postinstall (`spawnSync bin/esbuild`) fails
+  with `EACCES`. Platform packages still install; `scripts/fix-esbuild-bins.mjs`
+  restores `+x` via root `postinstall` and again at the start of `pnpm run build`.
+
+Without the `allowBuilds` map, pnpm 11 fails install with `ERR_PNPM_IGNORED_BUILDS`.
 
 Do not run the Vite development server in production. The production build
 creates `artifacts/ffg-store/dist/public`, and the API server serves it.

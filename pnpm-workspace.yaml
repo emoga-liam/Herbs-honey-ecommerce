@@ -6,8 +6,12 @@ packages:
 
 # pnpm 11: allowBuilds replaces onlyBuiltDependencies.
 # Without this, Hostinger install fails with ERR_PNPM_IGNORED_BUILDS.
+#
+# esbuild is explicitly false: its postinstall spawnSync(bin/esbuild) hits
+# EACCES on Hostinger. Platform optional packages still install; we chmod
+# binaries in scripts/fix-esbuild-bins.mjs (postinstall + build).
 allowBuilds:
-  esbuild: true
+  esbuild: false
   '@firebase/util': true
   protobufjs: true
 
