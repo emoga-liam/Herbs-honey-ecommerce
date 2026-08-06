@@ -37,12 +37,13 @@ pnpm install --frozen-lockfile
 pnpm run build
 ```
 
-The project uses pnpm workspaces with a hoisted `node_modules` layout
-(`node-linker=hoisted` in `.npmrc`). This flattens the dependency tree like
-standard npm, which resolves the `EACCES` binary-execution errors that
+The project uses pnpm 11 workspaces with a hoisted `node_modules` layout
+(`nodeLinker: hoisted` in `pnpm-workspace.yaml`). This flattens the dependency
+tree like standard npm, which resolves the `EACCES` binary-execution errors that
 arise when Hostinger's filesystem cannot follow pnpm's default symlinks. Only
 the build scripts for `esbuild`, `@firebase/util`, and `protobufjs` are
-permitted to run during install (`only-built-dependencies` in `.npmrc`).
+permitted to run during install (`allowBuilds` in `pnpm-workspace.yaml`).
+Without `allowBuilds`, pnpm 11 fails install with `ERR_PNPM_IGNORED_BUILDS`.
 
 Do not run the Vite development server in production. The production build
 creates `artifacts/ffg-store/dist/public`, and the API server serves it.

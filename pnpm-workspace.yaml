@@ -4,10 +4,15 @@ packages:
   - 'lib/integrations/*'
   - 'scripts'
 
-onlyBuiltDependencies:
-  - esbuild
-  - '@firebase/util'
-  - protobufjs
+# pnpm 11: allowBuilds replaces onlyBuiltDependencies.
+# Without this, Hostinger install fails with ERR_PNPM_IGNORED_BUILDS.
+allowBuilds:
+  esbuild: true
+  '@firebase/util': true
+  protobufjs: true
 
-pnpm:
-  minimumReleaseAge: '0'
+# Hostinger-critical: hoisted layout avoids EACCES on symlink binaries.
+# pnpm 11 reads these from pnpm-workspace.yaml (not .npmrc).
+nodeLinker: hoisted
+managePackageManagerVersions: false
+minimumReleaseAge: 0
