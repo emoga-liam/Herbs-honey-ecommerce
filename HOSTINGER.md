@@ -30,7 +30,8 @@ Recommended settings:
   `node --enable-source-maps artifacts/api-server/dist/index.mjs`
   (do **not** use `pnpm run hostinger:start` — Hostinger’s start shell often
   lacks `pnpm` on PATH)
-- Application port: use the port Hostinger provides through `PORT`
+- Application port: Hostinger usually injects `PORT`. If it does not, the app
+  defaults to `3000`. You may also set `PORT` manually in Environment variables.
 
 Use pnpm for installation in the Hostinger build environment:
 
