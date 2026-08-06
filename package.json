@@ -6,13 +6,13 @@
   "packageManager": "pnpm@11.9.0",
   "scripts": {
     "postinstall": "node ./scripts/fix-esbuild-bins.mjs",
-    "build": "node ./scripts/fix-esbuild-bins.mjs && pnpm run typecheck && pnpm --filter @workspace/ffg-store run build && pnpm --filter @workspace/api-server run build",
-    "hostinger:build": "pnpm run build",
+    "build": "node ./scripts/prod-build.mjs",
+    "hostinger:build": "node ./scripts/prod-build.mjs",
     "hostinger:bundle": "bash ./scripts/create-hostinger-bundle.sh",
     "hostinger:start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "start": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm run -r typecheck"
+    "typecheck": "node ./scripts/prod-typecheck.mjs"
   },
   "engines": {
     "node": ">=22 <25",

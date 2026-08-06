@@ -25,9 +25,11 @@ Recommended settings:
 - Framework: `Other` or `Express.js`
 - Application root: repository root
 - Build command:
-  `pnpm run build`
+  `pnpm run build` (script uses Node only — no nested `pnpm` on PATH)
 - Start command:
-  `pnpm run hostinger:start`
+  `node --enable-source-maps artifacts/api-server/dist/index.mjs`
+  (do **not** use `pnpm run hostinger:start` — Hostinger’s start shell often
+  lacks `pnpm` on PATH)
 - Application port: use the port Hostinger provides through `PORT`
 
 Use pnpm for installation in the Hostinger build environment:
@@ -49,6 +51,11 @@ Build scripts are controlled by `allowBuilds` in `pnpm-workspace.yaml`:
   native binaries, so esbuild’s own postinstall (`spawnSync bin/esbuild`) fails
   with `EACCES`. Platform packages still install; `scripts/fix-esbuild-bins.mjs`
   restores `+x` via root `postinstall` and again at the start of `pnpm run build`.
+
+The production `build` script runs `node ./scripts/prod-build.mjs`, which invokes
+`tsc`, Vite, and the API esbuild bundle through `node` and `node_modules` paths.
+Nested `pnpm` calls are avoided because Hostinger’s build/start shells often do
+not have `pnpm` on `PATH` (`pnpm: command not found`).
 
 Without the `allowBuilds` map, pnpm 11 fails install with `ERR_PNPM_IGNORED_BUILDS`.
 
