@@ -1,11 +1,31 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { auth, signInWithEmailAndPassword } from "@/lib/firebase";
+import { auth, signInWithEmailAndPassword, onAuthStateChanged } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
+
+/** Wait until Firebase Auth has a current user (and AuthContext can catch up). */
+function waitForSignedInUser(): Promise<void> {
+  const firebaseAuth = auth;
+  if (!firebaseAuth) return Promise.reject(new Error("Firebase not configured"));
+  if (firebaseAuth.currentUser) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => {
+      unsub();
+      reject(new Error("Timed out waiting for auth state"));
+    }, 8000);
+    const unsub = onAuthStateChanged(firebaseAuth, (user) => {
+      if (user) {
+        window.clearTimeout(timeout);
+        unsub();
+        resolve();
+      }
+    });
+  });
+}
 
 export default function AdminLoginPage() {
   const [, navigate] = useLocation();
@@ -25,6 +45,7 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      await waitForSignedInUser();
       navigate("/admin");
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;

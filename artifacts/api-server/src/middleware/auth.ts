@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { db, adminsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 export async function adminGuard(req: Request, res: Response, next: NextFunction): Promise<void> {
   const authHeader = req.headers.authorization;
@@ -41,8 +41,11 @@ export async function adminGuard(req: Request, res: Response, next: NextFunction
       return;
     }
 
-    // Lookup email in adminsTable
-    const [admin] = await db.select().from(adminsTable).where(eq(adminsTable.email, email));
+    // Lookup email in adminsTable (case-insensitive)
+    const [admin] = await db
+      .select()
+      .from(adminsTable)
+      .where(sql`lower(${adminsTable.email}) = ${email.toLowerCase()}`);
     if (!admin) {
       res.status(403).json({ error: "Forbidden: You are not registered as an admin" });
       return;
