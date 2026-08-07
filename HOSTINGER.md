@@ -1,4 +1,4 @@
-# FFG Foods — Hostinger deployment
+# GRICH20 — Hostinger deployment
 
 This project is prepared as one Node.js web application: the Express API serves
 the built React storefront, and the same public domain handles both the shop
@@ -128,8 +128,13 @@ Before the first launch, apply the schema against the production database:
 pnpm --filter @workspace/db run push
 ```
 
-Then seed or create the initial admin account using the project's existing
-database setup. Change the development admin password before going live.
+Then ensure an admin allow-list row exists in Supabase `admins` (email must match
+a Firebase Auth user). Admin login uses **Firebase Authentication**, not the
+`password_hash` column:
+
+1. Firebase Console → Authentication → Users → add/reset `info@grich20.online`
+2. Confirm `admins.email` is `info@grich20.online`
+3. Sign in at `/admin/login` with that Firebase email and password
 
 ## Uploads
 

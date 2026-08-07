@@ -32,9 +32,9 @@ const SECTIONS = [
     title: "🏢 Brand & Company",
     desc: "Branding text shown across the site",
     fields: [
-      { key: "companyTagline", label: "Company Tagline (hero badge)", multiline: false, placeholder: "FFG Foods · Abuja, Nigeria" },
-      { key: "aboutText", label: "About Section Text", multiline: true, placeholder: "Tell customers about FFG Foods..." },
-      { key: "footerText", label: "Footer Text", multiline: false, placeholder: "FFG Foods International General Services Limited..." },
+      { key: "companyTagline", label: "Company Tagline (hero badge)", multiline: false, placeholder: "GRICH20 · Abuja, Nigeria" },
+      { key: "aboutText", label: "About Section Text", multiline: true, placeholder: "Tell customers about GRICH20..." },
+      { key: "footerText", label: "Footer Text", multiline: false, placeholder: "GRICH20..." },
     ],
   },
   {
@@ -49,7 +49,7 @@ const SECTIONS = [
     desc: "Contact details shown on the contact page and footer",
     fields: [
       { key: "contactPhone", label: "Phone Number", multiline: false, placeholder: "09061602332" },
-      { key: "contactEmail", label: "Email Address", multiline: false, placeholder: "info@ffgfoods.com" },
+      { key: "contactEmail", label: "Email Address", multiline: false, placeholder: "info@grich20.online" },
       { key: "contactAddress", label: "Physical Address", multiline: false, placeholder: "68 Trade More Avenue, Lugbe, Abuja" },
       { key: "whatsappNumber", label: "WhatsApp Number (with country code)", multiline: false, placeholder: "+2349061602332" },
     ],

@@ -93,7 +93,7 @@ export default function CheckoutPage() {
     if (!validate()) return;
     setPaying(true);
 
-    const ref = `ffgfoods_${Date.now()}`;
+    const ref = `grich20_${Date.now()}`;
 
     // 1. Create order with a payment reference so webhook can match it later
     createOrder.mutate(

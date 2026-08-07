@@ -51,10 +51,10 @@ export default function AdminLoginPage() {
           <div className="inline-flex flex-col items-center gap-3">
             <div className="relative">
               <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
-              <img src={grich20Logo} alt="FFG Foods" className="relative h-20 w-20 rounded-2xl object-cover ring-1 ring-amber-600/40 shadow-2xl" />
+              <img src={grich20Logo} alt="GRICH20" className="relative h-20 w-20 rounded-2xl object-cover ring-1 ring-amber-600/40 shadow-2xl" />
             </div>
             <div>
-              <h1 className="font-cormorant font-bold text-3xl text-amber-400 leading-tight">FFG Foods</h1>
+              <h1 className="font-cormorant font-bold text-3xl text-amber-400 leading-tight">GRICH20</h1>
               <p className="text-amber-200/40 text-xs uppercase tracking-widest mt-0.5">Admin Dashboard</p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function AdminLoginPage() {
               <Input
                 id="admin-email"
                 type="email"
-                placeholder="admin@ffgfoods.com"
+                placeholder="info@grich20.online"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -101,7 +101,7 @@ export default function AdminLoginPage() {
         </div>
 
         <p className="text-center text-xs text-amber-200/25 mt-6">
-          FFG Foods International General Services Limited
+          GRICH20
         </p>
       </div>
     </div>

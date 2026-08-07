@@ -36,9 +36,9 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
     <>
       <div className="p-5 border-b border-sidebar-border flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <img src={grich20Logo} alt="FFG Foods" className="h-8 w-8 rounded-lg object-cover ring-1 ring-amber-700/30" />
+          <img src={grich20Logo} alt="GRICH20" className="h-8 w-8 rounded-lg object-cover ring-1 ring-amber-700/30" />
           <div>
-            <h1 className="font-cormorant font-bold text-base text-amber-400 leading-tight">FFG Foods</h1>
+            <h1 className="font-cormorant font-bold text-base text-amber-400 leading-tight">GRICH20</h1>
             <p className="text-[9px] text-sidebar-foreground/40 uppercase tracking-widest">Admin Panel</p>
           </div>
         </div>

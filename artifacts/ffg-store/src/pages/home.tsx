@@ -180,7 +180,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 rounded-full border border-amber-700/40 bg-amber-900/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-amber-400">
-                <img src={grich20Logo} alt="FFG Foods" className="h-4 w-4 rounded-sm object-cover" />
+                <img src={grich20Logo} alt="GRICH20" className="h-4 w-4 rounded-sm object-cover" />
                 {settings?.companyTagline || "Pure Nature"}
               </div>
 
@@ -217,7 +217,7 @@ export default function HomePage() {
               <div className="relative">
                 <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-amber-600/20 to-amber-900/10 blur-2xl" />
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl max-w-sm w-full animate-float ring-1 ring-amber-700/30">
-                  <img src={heroImage} alt="FFG Foods Herbs-Infused Honey" className="w-full h-auto object-cover" />
+                  <img src={heroImage} alt="GRICH20 Herbs-Infused Honey" className="w-full h-auto object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a1500]/40 to-transparent" />
                 </div>
                 <div className="absolute -bottom-6 -left-8 rounded-xl overflow-hidden shadow-xl w-36 hidden md:block ring-1 ring-amber-700/30 animate-float-subtle">
@@ -292,7 +292,7 @@ export default function HomePage() {
         <div className="container max-w-screen-2xl mx-auto px-4 text-center">
           <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold mb-3">Versatile & Delicious</p>
           <h2 className="font-cormorant font-bold text-4xl md:text-5xl text-amber-50 mb-4">Many Ways to Enjoy</h2>
-          <p className="text-amber-200/50 mb-10 max-w-xl mx-auto">FFG Foods honey sachets fit perfectly into your daily routine — wherever you need natural sweetness.</p>
+          <p className="text-amber-200/50 mb-10 max-w-xl mx-auto">GRICH20 honey sachets fit perfectly into your daily routine — wherever you need natural sweetness.</p>
           <div className="flex flex-wrap justify-center gap-3 mb-14">
             {USES.map((use) => (
               <span key={use} className="rounded-full border border-amber-700/40 bg-amber-900/20 px-5 py-2 text-sm font-medium text-amber-300 hover:border-amber-500/60 hover:text-amber-200 transition-colors">
@@ -314,12 +314,12 @@ export default function HomePage() {
               <div className="flex-shrink-0">
                 <div className="relative">
                   <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
-                  <img src={grich20Logo} alt="FFG Foods" className="relative w-36 h-36 rounded-2xl object-contain shadow-2xl ring-1 ring-amber-600/30" />
+                  <img src={grich20Logo} alt="GRICH20" className="relative w-36 h-36 rounded-2xl object-contain shadow-2xl ring-1 ring-amber-600/30" />
                 </div>
               </div>
               <div className="text-center md:text-left space-y-4">
                 <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold">About Us</p>
-                <h2 className="font-cormorant font-bold text-4xl text-amber-50">FFG Foods International</h2>
+                <h2 className="font-cormorant font-bold text-4xl text-amber-50">GRICH20</h2>
                 <p className="text-amber-200/60 leading-relaxed">{settings?.aboutText || "Loading about details..."}</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start pt-2">
                   <Button asChild className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-full">
