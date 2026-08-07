@@ -79,6 +79,16 @@ the values to GitHub.
 - `VITE_FIREBASE_STORAGE_BUCKET`
 - `VITE_FIREBASE_MESSAGING_SENDER_ID`
 - `VITE_FIREBASE_APP_ID`
+- `VITE_SUPABASE_URL` — e.g. `https://YOUR-PROJECT.supabase.co` (baked in at build)
+- `VITE_SUPABASE_PUBLISHABLE_KEY` — Supabase publishable/anon key (baked in at build)
+
+The storefront loads public catalog data (`products`, `product_images`,
+`categories`) via the Supabase JS client. After adding the `VITE_SUPABASE_*`
+vars, redeploy so Vite rebuilds with them.
+
+Also run [`scripts/supabase-public-catalog-rls.sql`](scripts/supabase-public-catalog-rls.sql)
+once in the Supabase SQL Editor so anon/publishable keys can `SELECT` those
+tables (RLS). Admin/checkout still use Express + `DATABASE_URL`.
 
 ### Paystack
 

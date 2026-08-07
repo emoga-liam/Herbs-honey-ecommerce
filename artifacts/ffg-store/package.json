@@ -75,6 +75,7 @@
     "zod": "^3.25.76"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.2",
     "firebase": "^12.14.0"
   }
 }

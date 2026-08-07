@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, Link } from "wouter";
-import { useGetProduct, getGetProductQueryKey } from "@workspace/api-client-react";
+import { useGetProduct } from "@/hooks/use-supabase-products";
 import { Layout } from "@/components/layout";
 import { useCart } from "@/components/cart-context";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const numId = Number(id);
   const { data: product, isLoading, isError } = useGetProduct(numId, {
-    query: { enabled: !!numId, queryKey: getGetProductQueryKey(numId) },
+    enabled: !!numId,
   });
   const { addToCart, items } = useCart();
   const minQty = product?.minOrderQty ?? 1;
@@ -74,7 +74,7 @@ export default function ProductDetailPage() {
   }
 
   const fallbackImage = getProductImage(product.flavor, product.type, product.imageUrl);
-  const galleryImages = product.images.length > 0
+  const galleryImages = (product.images?.length ?? 0) > 0
     ? product.images.map((i) => i.imageUrl)
     : [fallbackImage];
 

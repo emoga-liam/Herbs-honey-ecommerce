@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { useGetFeaturedProducts } from "@workspace/api-client-react";
+import { useGetFeaturedProducts } from "@/hooks/use-supabase-products";
 import type { Product } from "@workspace/api-client-react";
 import { useSettings } from "@/contexts/settings-context";
 import { Layout } from "@/components/layout";

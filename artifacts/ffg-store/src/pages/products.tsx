@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearch } from "wouter";
-import { useListProducts } from "@workspace/api-client-react";
+import { useListProducts } from "@/hooks/use-supabase-products";
 import { Layout } from "@/components/layout";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
@@ -29,10 +29,10 @@ export default function ProductsPage() {
   const [type, setType] = useState(params.get("type") ?? "");
   const [search, setSearch] = useState("");
 
-  const { data: rawProducts, isLoading } = useListProducts(
-    { flavor: flavor || undefined, type: type || undefined },
-    { query: { queryKey: ["products", flavor, type] } }
-  );
+  const { data: rawProducts, isLoading } = useListProducts({
+    flavor: flavor || undefined,
+    type: type || undefined,
+  });
 
   // 💡 Safeguard: Force evaluation to an array format under any circumstance
   const allProducts = Array.isArray(rawProducts) ? rawProducts : [];
