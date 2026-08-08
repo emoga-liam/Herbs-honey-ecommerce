@@ -70,9 +70,19 @@ the values to GitHub.
 
 ### Required
 
-- `DATABASE_URL` — production PostgreSQL connection string
+- `DATABASE_URL` — production PostgreSQL connection string from **Supabase →
+  Project Settings → Database → Connect**. On Hostinger, prefer the **Session
+  pooler** URI (host like `*.pooler.supabase.com`, port `5432` session or
+  `6543` transaction), **not** the Direct connection to `db.<project>.supabase.co`.
+  Supabase direct hosts are often **IPv6-only**; Hostinger Node apps are commonly
+  **IPv4-only**, so a “correct” direct URL still fails and every Express DB route
+  (admin login `/api/auth/me`, `/api/products`, checkout) returns 500 while the
+  public catalog (Supabase JS client) still works.
+  After changing `DATABASE_URL`, restart/redeploy and open
+  `https://YOUR-DOMAIN/api/healthz/db` — it must return `"database":"connected"`.
 - `SESSION_SECRET` — long random value used for server sessions
 - `GOOGLE_API_KEY` — Firebase Identity Toolkit API key used by admin auth
+  (same value as `VITE_FIREBASE_API_KEY` is fine)
 - `VITE_FIREBASE_API_KEY`
 - `VITE_FIREBASE_AUTH_DOMAIN`
 - `VITE_FIREBASE_PROJECT_ID`

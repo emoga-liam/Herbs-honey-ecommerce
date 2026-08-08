@@ -60,6 +60,16 @@ export async function adminGuard(req: Request, res: Response, next: NextFunction
     next();
   } catch (err) {
     req.log.error(err);
-    res.status(500).json({ error: "Internal server error during authentication" });
+    const message = err instanceof Error ? err.message : String(err);
+    const looksLikeDb =
+      /connect|ECONNREFUSED|ENOTFOUND|ETIMEDOUT|SSL|password authentication|database|pg_/i.test(
+        message,
+      );
+    res.status(500).json({
+      error: looksLikeDb
+        ? "Database unreachable from the server. Check DATABASE_URL (use Supabase Session pooler / IPv4)."
+        : "Internal server error during authentication",
+      detail: message.split("\n")[0]?.slice(0, 200),
+    });
   }
 }
