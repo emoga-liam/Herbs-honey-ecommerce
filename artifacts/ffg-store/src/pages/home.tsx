@@ -71,7 +71,7 @@ function FeaturedSoloHero({ product }: { product: Product }) {
     <div className="glass-card rounded-3xl overflow-hidden ring-1 ring-amber-700/30">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
         {/* Image */}
-        <div className="relative bg-gradient-to-br from-amber-950/60 to-[#060d07] flex items-center justify-center p-10 md:p-14 min-h-72">
+        <div className="relative bg-gradient-to-br from-amber-100 to-background dark:from-amber-950/60 dark:to-background flex items-center justify-center p-10 md:p-14 min-h-72">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(180,83,9,0.12),transparent_70%)]" />
           <div className="relative">
             <div className="absolute -inset-8 rounded-full bg-amber-600/10 blur-2xl" />
@@ -126,7 +126,7 @@ function FeaturedSoloHero({ product }: { product: Product }) {
             {product.inStock ? (
               <Button
                 size="lg"
-                className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-full gap-2 shadow-lg shadow-amber-900/40"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full gap-2 shadow-lg shadow-amber-900/20 dark:shadow-amber-900/40"
                 onClick={handleAdd}
                 disabled={added}
               >
@@ -194,7 +194,7 @@ export default function HomePage() {
 
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Button asChild size="lg"
-                  className="bg-amber-500 hover:bg-amber-400 text-[#0a1500] font-bold text-base px-8 rounded-full shadow-lg shadow-amber-900/40 animate-glow-pulse">
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base px-8 rounded-full shadow-lg shadow-amber-900/40 animate-glow-pulse">
                   <Link href="/products">{settings?.heroCtaText || "Shop Now"}</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg"
@@ -223,7 +223,7 @@ export default function HomePage() {
                 <div className="absolute -bottom-6 -left-8 rounded-xl overflow-hidden shadow-xl w-36 hidden md:block ring-1 ring-amber-700/30 animate-float-subtle">
                   <img src={heroSecondaryImage} alt="Honey Product" className="w-full h-auto object-cover" />
                 </div>
-                <div className="absolute -top-4 -right-4 bg-amber-500 text-[#0a1500] rounded-full w-16 h-16 flex flex-col items-center justify-center shadow-lg">
+                <div className="absolute -top-4 -right-4 bg-primary text-primary-foreground rounded-full w-16 h-16 flex flex-col items-center justify-center shadow-lg">
                   <span className="font-cormorant font-bold text-lg leading-none">100%</span>
                   <span className="text-[9px] font-bold uppercase tracking-tight">Natural</span>
                 </div>
@@ -288,7 +288,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Ways to Use ───────────────────────────────────────── */}
-      <section className="py-20 bg-[#060d07] border-y border-amber-900/20">
+      <section className="py-20 bg-muted/50 border-y border-border">
         <div className="container max-w-screen-2xl mx-auto px-4 text-center">
           <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold mb-3">Versatile & Delicious</p>
           <h2 className="font-cormorant font-bold text-4xl md:text-5xl text-amber-50 mb-4">Many Ways to Enjoy</h2>
@@ -300,7 +300,7 @@ export default function HomePage() {
               </span>
             ))}
           </div>
-          <Button asChild size="lg" className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold px-10 rounded-full shadow-lg shadow-amber-900/40">
+          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-10 rounded-full shadow-lg shadow-amber-900/20 dark:shadow-amber-900/40">
             <Link href="/products">Order Now</Link>
           </Button>
         </div>
@@ -322,7 +322,7 @@ export default function HomePage() {
                 <h2 className="font-cormorant font-bold text-4xl text-amber-50">GRICH20</h2>
                 <p className="text-amber-200/60 leading-relaxed">{settings?.aboutText || "Loading about details..."}</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start pt-2">
-                  <Button asChild className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-full">
+                  <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full">
                     <Link href="/products">Shop Now</Link>
                   </Button>
                   <Button asChild variant="outline" className="border-amber-700/60 text-amber-400 hover:bg-amber-900/20 rounded-full">

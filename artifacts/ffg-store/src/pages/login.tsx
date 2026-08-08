@@ -22,8 +22,8 @@ export default function LoginPage() {
 
   if (!isConfigured) {
     return (
-      <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
-        <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-card border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
           <img src={grich20Logo} alt="GRICH20" className="h-16 mx-auto mb-4 rounded-xl" />
           <h2 className="font-cormorant text-2xl text-amber-400 mb-2">Authentication Not Set Up</h2>
           <p className="text-amber-200/60 text-sm mb-4">Firebase authentication hasn't been configured yet.</p>
@@ -59,7 +59,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.12),transparent_70%)]" />
       <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
@@ -77,7 +77,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-card border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
           <Button onClick={handleGoogle} variant="outline"
             className="w-full border-amber-700/50 text-amber-200 bg-transparent hover:bg-amber-900/20 mb-6 gap-3 rounded-xl">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -91,32 +91,32 @@ export default function LoginPage() {
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-amber-900/30" /></div>
-            <div className="relative flex justify-center text-xs text-amber-200/30"><span className="bg-[#0f1e12] px-3">or continue with email</span></div>
+            <div className="relative flex justify-center text-xs text-amber-200/30"><span className="bg-card px-3">or continue with email</span></div>
           </div>
 
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-amber-200/60 text-sm">Email</Label>
+              <Label className="text-muted-foreground text-sm">Email</Label>
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" required
-                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary rounded-xl" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-amber-200/60 text-sm">Password</Label>
+              <Label className="text-muted-foreground text-sm">Password</Label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required
-                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl" />
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary rounded-xl" />
             </div>
-            <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl" disabled={submitting || isLoading}>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl" disabled={submitting || isLoading}>
               {submitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
           <div className="text-center mt-6 space-y-2">
-            <Link href="/forgot-password" className="block text-sm text-amber-200/40 hover:text-amber-300 transition-colors">
+            <Link href="/forgot-password" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
               Forgot your password?
             </Link>
-            <p className="text-sm text-amber-200/40">
+            <p className="text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Link href={`/register${search}`} className="text-amber-400 hover:text-amber-300 font-semibold">Create one</Link>
+              <Link href={`/register${search}`} className="text-primary hover:text-primary/80 font-semibold">Create one</Link>
             </p>
           </div>
         </div>

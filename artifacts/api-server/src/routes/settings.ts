@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { db, siteSettings } from "@workspace/db";
+import { SubmitContactFormBody } from "@workspace/api-zod";
 import { adminGuard } from "../middleware/auth";
+import { sendContactEmail } from "../lib/mail";
 
 const router = Router();
 
@@ -95,9 +97,24 @@ router.patch("/settings", adminGuard, async (req, res) => {
 });
 
 router.post("/contact", async (req, res) => {
-  const { name, email, phone, subject, message } = req.body;
+  const parsed = SubmitContactFormBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid contact form data", details: parsed.error.flatten() });
+    return;
+  }
+
+  const { name, email, phone, subject, message } = parsed.data;
   req.log.info({ name, email, phone, subject }, "Contact form submission received");
-  res.json({ message: "Thank you for your message. We will get back to you shortly!" });
+
+  try {
+    await sendContactEmail({ name, email, phone, subject, message });
+    res.json({ message: "Thank you for your message. We will get back to you shortly!" });
+  } catch (err) {
+    req.log.error(err);
+    res.status(500).json({
+      error: "Failed to send your message. Please try again or email us directly.",
+    });
+  }
 });
 
 export default router;

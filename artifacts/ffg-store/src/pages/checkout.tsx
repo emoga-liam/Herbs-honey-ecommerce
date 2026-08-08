@@ -69,7 +69,7 @@ export default function CheckoutPage() {
         <div className="container max-w-screen-xl mx-auto px-4 py-20 text-center">
           <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-6 opacity-30" />
           <h2 className="font-cormorant font-bold text-3xl mb-3">Your cart is empty</h2>
-          <Button asChild className="bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-full">
+          <Button asChild className="bg-amber-500 hover:bg-amber-400 text-primary-foreground font-bold rounded-full">
             <Link href="/products">Browse Products</Link>
           </Button>
         </div>
@@ -177,7 +177,7 @@ export default function CheckoutPage() {
     );
   };
 
-  const inputClass = "bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl";
+  const inputClass = "bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary rounded-xl";
 
   const field = (id: keyof typeof form, label: string, type = "text", placeholder = "") => (
     <div className="space-y-1.5">
@@ -228,7 +228,7 @@ export default function CheckoutPage() {
                   id="deliveryState"
                   value={form.deliveryState}
                   onChange={(e) => setForm((f) => ({ ...f, deliveryState: e.target.value }))}
-                  className={`w-full rounded-xl px-3 py-2.5 text-sm bg-[#060d07] border text-amber-100 focus:outline-none focus:border-amber-600 ${
+                  className={`w-full rounded-xl px-3 py-2.5 text-sm bg-background border text-amber-100 focus:outline-none focus:border-amber-600 ${
                     errors.deliveryState ? "border-red-500" : "border-amber-900/40"
                   }`}
                 >
@@ -287,7 +287,7 @@ export default function CheckoutPage() {
                   <Button
                     onClick={handlePaystack}
                     size="lg"
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold text-base rounded-xl shadow-lg shadow-amber-900/30"
+                    className="w-full bg-amber-500 hover:bg-amber-400 text-primary-foreground font-bold text-base rounded-xl shadow-lg shadow-amber-900/30"
                     disabled={paying || createOrder.isPending}
                   >
                     {paying || createOrder.isPending
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                   <Button
                     onClick={handleCOD}
                     size="lg"
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold text-base rounded-xl"
+                    className="w-full bg-amber-500 hover:bg-amber-400 text-primary-foreground font-bold text-base rounded-xl"
                     disabled={createOrder.isPending}
                   >
                     {createOrder.isPending ? "Placing Order..." : `Place Order — ${formatNaira(grandTotalKobo)}`}

@@ -22,8 +22,8 @@ export default function RegisterPage() {
 
   if (!isConfigured) {
     return (
-      <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
-        <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-card border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
           <img src={grich20Logo} alt="GRICH20" className="h-16 mx-auto mb-4 rounded-xl" />
           <h2 className="font-cormorant text-2xl text-amber-400 mb-2">Authentication Not Set Up</h2>
           <p className="text-amber-200/60 text-sm mb-4">Firebase authentication needs to be configured first.</p>
@@ -37,9 +37,9 @@ export default function RegisterPage() {
 
   if (registered) {
     return (
-      <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.12),transparent_70%)]" />
-        <div className="relative bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-10 max-w-md w-full text-center shadow-2xl">
+        <div className="relative bg-card border border-amber-900/30 rounded-2xl p-10 max-w-md w-full text-center shadow-2xl">
           <div className="flex justify-center mb-5">
             <div className="rounded-full bg-amber-900/30 border border-amber-700/40 p-4">
               <Mail className="h-10 w-10 text-amber-400" />
@@ -61,7 +61,7 @@ export default function RegisterPage() {
 
           <Button
             onClick={() => navigate(redirect)}
-            className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl"
+            className="w-full bg-amber-500 hover:bg-amber-400 text-primary-foreground font-bold rounded-xl"
           >
             Continue to Shop
           </Button>
@@ -103,10 +103,10 @@ export default function RegisterPage() {
     }
   };
 
-  const inputClass = "bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl";
+  const inputClass = "bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary rounded-xl";
 
   return (
-    <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.12),transparent_70%)]" />
       <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
@@ -124,7 +124,7 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-card border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
           <Button onClick={handleGoogle} variant="outline"
             className="w-full border-amber-700/50 text-amber-200 bg-transparent hover:bg-amber-900/20 mb-6 gap-3 rounded-xl">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -138,7 +138,7 @@ export default function RegisterPage() {
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-amber-900/30" /></div>
-            <div className="relative flex justify-center text-xs text-amber-200/30"><span className="bg-[#0f1e12] px-3">or register with email</span></div>
+            <div className="relative flex justify-center text-xs text-amber-200/30"><span className="bg-card px-3">or register with email</span></div>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-4">
@@ -160,7 +160,7 @@ export default function RegisterPage() {
               and{" "}
               <Link href="/privacy" className="text-amber-500 hover:text-amber-400">Privacy Policy</Link>.
             </p>
-            <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl" disabled={submitting}>
+            <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-primary-foreground font-bold rounded-xl" disabled={submitting}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
           </form>

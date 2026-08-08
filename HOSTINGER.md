@@ -100,6 +100,20 @@ Also run [`scripts/supabase-public-catalog-rls.sql`](scripts/supabase-public-cat
 once in the Supabase SQL Editor so anon/publishable keys can `SELECT` those
 tables (RLS). Admin/checkout still use Express + `DATABASE_URL`.
 
+### Contact form email (Hostinger SMTP)
+
+Required for `/api/contact` to deliver messages to your inbox:
+
+- `SMTP_USER` — mailbox address, e.g. `info@grich20.online`
+- `SMTP_PASS` — that mailbox password (Email → Email Accounts in hPanel)
+- `SMTP_HOST` — default `smtp.hostinger.com` if unset
+- `SMTP_PORT` — default `465`
+- `SMTP_SECURE` — default `true` for port 465
+- `CONTACT_TO_EMAIL` — optional; defaults to `SMTP_USER`
+
+Create the mailbox in Hostinger first, then set these env vars and **restart**
+the Node app (SMTP is read at runtime; no rebuild required for these alone).
+
 ### Paystack
 
 - `PAYSTACK_SECRET_KEY` — Paystack secret key, server-side only

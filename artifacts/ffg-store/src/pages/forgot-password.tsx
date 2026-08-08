@@ -17,8 +17,8 @@ export default function ForgotPasswordPage() {
 
   if (!isConfigured) {
     return (
-      <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
-        <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-card border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
           <img src={grich20Logo} alt="GRICH20" className="h-16 mx-auto mb-4 rounded-xl" />
           <p className="text-amber-200/60 text-sm">Authentication is not configured.</p>
           <Button asChild variant="outline" className="mt-4 border-amber-700 text-amber-400">
@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.12),transparent_70%)]" />
       <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
           </Link>
         </div>
 
-        <div className="bg-[#0f1e12] border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-card border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
           {sent ? (
             <div className="text-center space-y-4">
               <div className="flex justify-center">
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
                 Try a different email
               </Button>
               <Link href="/login">
-                <Button className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl mt-2">
+                <Button className="w-full bg-amber-500 hover:bg-amber-400 text-primary-foreground font-bold rounded-xl mt-2">
                   Back to Sign In
                 </Button>
               </Link>
@@ -112,10 +112,10 @@ export default function ForgotPasswordPage() {
                   <Input
                     type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com" required autoFocus
-                    className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600 rounded-xl"
+                    className="bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary rounded-xl"
                   />
                 </div>
-                <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold rounded-xl" disabled={submitting}>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl" disabled={submitting}>
                   {submitting ? "Sending..." : "Send Reset Link"}
                 </Button>
               </form>
