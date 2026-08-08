@@ -106,30 +106,121 @@ export function Navbar() {
     { href: "/contact", label: "Contact" },
   ];
 
+  const logo = (
+    <Link href="/" className="flex items-center gap-3 group min-w-0">
+      <BrandLogo
+        frameClassName="h-9 w-9 rounded-lg group-hover:ring-primary/60 transition-all"
+        scaleClassName="scale-[1.55]"
+        loading="eager"
+        width={36}
+        height={36}
+      />
+      <div className="hidden sm:block">
+        <div className="font-cormorant font-bold text-lg text-primary leading-tight tracking-wide">GRICH20</div>
+        <div className="text-[9px] text-muted-foreground leading-none tracking-widest uppercase">
+          Herbs-Infused Honey
+        </div>
+      </div>
+    </Link>
+  );
+
+  const actions = (
+    <div className="flex items-center justify-end gap-1 sm:gap-2 shrink-0">
+      <ThemeToggle />
+
+      <Link href="/cart">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative text-foreground/70 hover:text-primary hover:bg-accent"
+        >
+          <ShoppingBag className="h-5 w-5" />
+          {totalItems > 0 && (
+            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center animate-float-subtle">
+              {totalItems}
+            </span>
+          )}
+        </Button>
+      </Link>
+
+      {isConfigured ? (
+        user ? (
+          <div className="relative hidden md:block">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2 text-foreground/80 hover:text-primary hover:bg-accent"
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+            >
+              {user.photoURL ? (
+                <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full" />
+              ) : (
+                <User className="h-4 w-4" />
+              )}
+              <span className="max-w-[100px] truncate text-sm">{user.displayName ?? user.email}</span>
+              <ChevronDown className="h-3 w-3" />
+            </Button>
+            {userMenuOpen && (
+              <div className="absolute right-0 top-10 bg-popover border border-border rounded-xl shadow-2xl w-48 py-1 z-50">
+                <Link href="/account" onClick={() => setUserMenuOpen(false)}>
+                  <div className="px-4 py-2.5 text-sm text-popover-foreground hover:bg-accent cursor-pointer flex items-center gap-2">
+                    <User className="h-3.5 w-3.5" /> My Account
+                  </div>
+                </Link>
+                <Link href="/my-orders" onClick={() => setUserMenuOpen(false)}>
+                  <div className="px-4 py-2.5 text-sm text-popover-foreground hover:bg-accent cursor-pointer flex items-center gap-2">
+                    <Package className="h-3.5 w-3.5" /> My Orders
+                  </div>
+                </Link>
+                <div className="border-t border-border my-1" />
+                <button
+                  onClick={() => {
+                    logout();
+                    setUserMenuOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="hidden md:flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
+              <Link href="/login">Sign In</Link>
+            </Button>
+            <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold" asChild>
+              <Link href="/register">Register</Link>
+            </Button>
+          </div>
+        )
+      ) : null}
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden text-foreground/70 hover:text-primary"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+      >
+        {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </Button>
+    </div>
+  );
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container relative grid h-16 max-w-screen-2xl grid-cols-[1fr_auto_1fr] items-center mx-auto px-4">
-        {/* Left: logo */}
-        <div className="flex items-center justify-start min-w-0">
-          <Link href="/" className="flex items-center gap-3 group">
-            <BrandLogo
-              frameClassName="h-9 w-9 rounded-lg group-hover:ring-primary/60 transition-all"
-              scaleClassName="scale-[1.55]"
-              loading="eager"
-              width={36}
-              height={36}
-            />
-            <div className="hidden sm:block">
-              <div className="font-cormorant font-bold text-lg text-primary leading-tight tracking-wide">GRICH20</div>
-              <div className="text-[9px] text-muted-foreground leading-none tracking-widest uppercase">
-                Herbs-Infused Honey
-              </div>
-            </div>
-          </Link>
-        </div>
+      {/* Mobile: logo left, actions right */}
+      <div className="container flex h-16 max-w-screen-2xl items-center justify-between mx-auto px-4 md:hidden">
+        {logo}
+        {actions}
+      </div>
 
-        {/* Center: nav links (true center on md+) */}
-        <nav className="hidden md:flex items-center justify-center gap-8 text-sm font-medium">
+      {/* Desktop: 3-zone grid with centered links */}
+      <div className="container relative hidden md:grid h-16 max-w-screen-2xl grid-cols-[1fr_auto_1fr] items-center mx-auto px-4">
+        <div className="flex items-center justify-start min-w-0">{logo}</div>
+        <nav className="flex items-center justify-center gap-8 text-sm font-medium">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -144,89 +235,7 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
-
-        {/* Right: theme, cart, auth */}
-        <div className="flex items-center justify-end gap-1 sm:gap-2">
-          <ThemeToggle className="hidden sm:inline-flex" />
-
-          <Link href="/cart">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-foreground/70 hover:text-primary hover:bg-accent"
-            >
-              <ShoppingBag className="h-5 w-5" />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center animate-float-subtle">
-                  {totalItems}
-                </span>
-              )}
-            </Button>
-          </Link>
-
-          {isConfigured ? (
-            user ? (
-              <div className="relative hidden md:block">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 text-foreground/80 hover:text-primary hover:bg-accent"
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                >
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full" />
-                  ) : (
-                    <User className="h-4 w-4" />
-                  )}
-                  <span className="max-w-[100px] truncate text-sm">{user.displayName ?? user.email}</span>
-                  <ChevronDown className="h-3 w-3" />
-                </Button>
-                {userMenuOpen && (
-                  <div className="absolute right-0 top-10 bg-popover border border-border rounded-xl shadow-2xl w-48 py-1 z-50">
-                    <Link href="/account" onClick={() => setUserMenuOpen(false)}>
-                      <div className="px-4 py-2.5 text-sm text-popover-foreground hover:bg-accent cursor-pointer flex items-center gap-2">
-                        <User className="h-3.5 w-3.5" /> My Account
-                      </div>
-                    </Link>
-                    <Link href="/my-orders" onClick={() => setUserMenuOpen(false)}>
-                      <div className="px-4 py-2.5 text-sm text-popover-foreground hover:bg-accent cursor-pointer flex items-center gap-2">
-                        <Package className="h-3.5 w-3.5" /> My Orders
-                      </div>
-                    </Link>
-                    <div className="border-t border-border my-1" />
-                    <button
-                      onClick={() => {
-                        logout();
-                        setUserMenuOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="hidden md:flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
-                  <Link href="/login">Sign In</Link>
-                </Button>
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold" asChild>
-                  <Link href="/register">Register</Link>
-                </Button>
-              </div>
-            )
-          ) : null}
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden text-foreground/70 hover:text-primary"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </div>
+        {actions}
       </div>
 
       {/* Mobile menu */}
@@ -246,10 +255,6 @@ export function Navbar() {
               </Link>
             ))}
           </nav>
-          <div className="pt-2 flex items-center justify-between border-t border-border">
-            <span className="text-xs text-muted-foreground uppercase tracking-wide">Theme</span>
-            <ThemeToggle />
-          </div>
           {isConfigured && (
             <div className="pt-3 border-t border-border flex flex-col gap-2">
               {user ? (
