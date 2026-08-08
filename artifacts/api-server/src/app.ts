@@ -1,4 +1,5 @@
 import express, { type Express } from "express";
+import compression from "compression";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import path from "path";
@@ -14,6 +15,8 @@ const app: Express = express();
 // Trust the reverse proxy (Replit's shared proxy sets X-Forwarded-For)
 // so rate limiters and session cookies see the real client IP/host.
 app.set("trust proxy", 1);
+
+app.use(compression());
 
 app.use(
   pinoHttp({
@@ -56,7 +59,12 @@ app.use(express.urlencoded({ extended: true }));
 const uploadsPath = path.resolve(
   process.env.UPLOADS_DIR ?? path.resolve(__dirname, "..", "uploads"),
 );
-app.use("/api/uploads", express.static(uploadsPath));
+app.use(
+  "/api/uploads",
+  express.static(uploadsPath, {
+    maxAge: "7d",
+  }),
+);
 
 app.use("/api", router);
 
@@ -66,14 +74,33 @@ const frontendPath = path.resolve(
     path.resolve(__dirname, "..", "..", "ffg-store", "dist", "public"),
 );
 
-// Serve frontend static assets (CSS, JS, images)
-app.use(express.static(frontendPath));
+// Hashed Vite assets: cache hard
+app.use(
+  "/assets",
+  express.static(path.join(frontendPath, "assets"), {
+    maxAge: "1y",
+    immutable: true,
+  }),
+);
+
+// Remaining frontend files (favicon, robots, etc.); HTML must not be cached long
+app.use(
+  express.static(frontendPath, {
+    maxAge: 0,
+    setHeaders(res, filePath) {
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-cache");
+      }
+    },
+  }),
+);
 
 // Fallback for SPA (Single Page Application) routing: serve index.html for all non-API GET requests
 app.get("/{*splat}", (req, res, next) => {
   if (req.path.startsWith("/api")) {
     return next();
   }
+  res.setHeader("Cache-Control", "no-cache");
   res.sendFile(path.resolve(frontendPath, "index.html"));
 });
 

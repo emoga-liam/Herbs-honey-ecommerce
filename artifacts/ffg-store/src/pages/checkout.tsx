@@ -33,6 +33,41 @@ declare global {
 
 const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
 const isPaystackConfigured = !!PAYSTACK_PUBLIC_KEY;
+const PAYSTACK_SCRIPT_SRC = "https://js.paystack.co/v2/inline.js";
+
+let paystackScriptPromise: Promise<void> | null = null;
+
+function loadPaystackScript(): Promise<void> {
+  if (typeof window !== "undefined" && window.PaystackPop) {
+    return Promise.resolve();
+  }
+  if (paystackScriptPromise) return paystackScriptPromise;
+
+  paystackScriptPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src="${PAYSTACK_SCRIPT_SRC}"]`,
+    );
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Paystack script failed to load")), {
+        once: true,
+      });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = PAYSTACK_SCRIPT_SRC;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => {
+      paystackScriptPromise = null;
+      reject(new Error("Paystack script failed to load"));
+    };
+    document.head.appendChild(script);
+  });
+
+  return paystackScriptPromise;
+}
 
 export default function CheckoutPage() {
   const [, navigate] = useLocation();
@@ -111,35 +146,47 @@ export default function CheckoutPage() {
       },
       {
         onSuccess: (order) => {
-          // 2. Launch Paystack inline
-          const paystack = new window.PaystackPop();
-          paystack.newTransaction({
-            key: PAYSTACK_PUBLIC_KEY!,
-            email: form.customerEmail,
-             // The API calculates the authoritative total from current product
-             // prices and delivery fees. Use that value for the Paystack charge.
-             amount: order.totalKobo,
-            currency: "NGN",
-            ref,
-            metadata: { orderId: order.id, customerName: form.customerName },
-            onSuccess: (transaction) => {
-              // Frontend backup: call verify in case webhook is delayed
-              verifyPayment.mutate(
-                { data: { reference: transaction.reference } },
-                { onError: () => undefined },
-              );
-              clearCart();
-              navigate(`/order-confirmation?orderId=${order.id}`);
-            },
-            onCancel: () => {
+          // 2. Load Paystack (deferred) then launch inline checkout
+          void loadPaystackScript()
+            .then(() => {
+              const paystack = new window.PaystackPop();
+              paystack.newTransaction({
+                key: PAYSTACK_PUBLIC_KEY!,
+                email: form.customerEmail,
+                // The API calculates the authoritative total from current product
+                // prices and delivery fees. Use that value for the Paystack charge.
+                amount: order.totalKobo,
+                currency: "NGN",
+                ref,
+                metadata: { orderId: order.id, customerName: form.customerName },
+                onSuccess: (transaction) => {
+                  // Frontend backup: call verify in case webhook is delayed
+                  verifyPayment.mutate(
+                    { data: { reference: transaction.reference } },
+                    { onError: () => undefined },
+                  );
+                  clearCart();
+                  navigate(`/order-confirmation?orderId=${order.id}`);
+                },
+                onCancel: () => {
+                  setPaying(false);
+                  toast({
+                    title: "Payment cancelled",
+                    description:
+                      "Your order is saved but not paid. You can complete payment from your orders page or pay on delivery.",
+                    variant: "destructive",
+                  });
+                },
+              });
+            })
+            .catch(() => {
               setPaying(false);
               toast({
-                title: "Payment cancelled",
-                description: "Your order is saved but not paid. You can complete payment from your orders page or pay on delivery.",
+                title: "Payment unavailable",
+                description: "Could not load Paystack. Please try again.",
                 variant: "destructive",
               });
-            },
-          });
+            });
         },
         onError: () => {
           setPaying(false);
