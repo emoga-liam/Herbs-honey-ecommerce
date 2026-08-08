@@ -3,6 +3,7 @@ import { useCart } from "./cart-context";
 import { useAuth } from "@/contexts/auth-context";
 import { useSettings } from "@/contexts/settings-context";
 import { Button } from "./ui/button";
+import { BrandLogo } from "./brand-logo";
 import {
   ShoppingBag,
   Menu,
@@ -17,7 +18,6 @@ import {
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { useToast } from "@/hooks/use-toast";
-import grich20Logo from "@assets/IMG_1201_JPG_1780421888804.jpg";
 
 export function AnnouncementBar() {
   const settings = useSettings();
@@ -112,14 +112,12 @@ export function Navbar() {
         {/* Left: logo */}
         <div className="flex items-center justify-start min-w-0">
           <Link href="/" className="flex items-center gap-3 group">
-            <img
-              src={grich20Logo}
-              alt="GRICH20"
+            <BrandLogo
+              frameClassName="h-9 w-9 rounded-lg group-hover:ring-primary/60 transition-all"
+              scaleClassName="scale-[1.55]"
+              loading="eager"
               width={36}
               height={36}
-              loading="eager"
-              decoding="async"
-              className="h-9 w-9 rounded-lg object-cover ring-1 ring-primary/30 group-hover:ring-primary/60 transition-all"
             />
             <div className="hidden sm:block">
               <div className="font-cormorant font-bold text-lg text-primary leading-tight tracking-wide">GRICH20</div>
@@ -308,14 +306,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="space-y-4 md:col-span-2">
             <div className="flex items-center gap-3">
-              <img
-                src={grich20Logo}
-                alt="GRICH20"
+              <BrandLogo
+                frameClassName="h-11 w-11 rounded-xl"
+                scaleClassName="scale-[1.5]"
                 width={44}
                 height={44}
-                loading="lazy"
-                decoding="async"
-                className="h-11 w-11 rounded-xl object-cover ring-1 ring-primary/30"
               />
               <div>
                 <h3 className="font-cormorant font-bold text-xl text-primary">GRICH20</h3>

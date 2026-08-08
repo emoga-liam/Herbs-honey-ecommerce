@@ -5,6 +5,7 @@ import type { Product } from "@workspace/api-client-react";
 import { useSettings } from "@/contexts/settings-context";
 import { Layout } from "@/components/layout";
 import { ProductCard } from "@/components/product-card";
+import { BrandLogo } from "@/components/brand-logo";
 import { useCart } from "@/components/cart-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,6 @@ import { formatNaira, getProductImage } from "@/lib/utils";
 import { CheckCircle, ShoppingBag } from "lucide-react";
 import defaultBannerImg from "@assets/a19fa264-b1a2-4592-a852-d2e2934d4852_1780225496305.jpeg";
 import defaultBoxImg from "@assets/1bb59fff-c60a-495a-a645-92b6f7c19b0c_1780225496305.jpeg";
-import grich20Logo from "@assets/669d7800-ae3f-4716-a7df-e3960f397008_1780226804105.jpeg";
 
 const BENEFITS = [
   { icon: "🍯", flavor: "Original Honey", tag: "Natural Sweetener", desc: "A healthier alternative to processed sugar — pure, rich and golden.", border: "border-amber-300 dark:border-amber-700/40", glow: "hover:border-amber-500/60" },
@@ -183,12 +183,11 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 rounded-full border border-amber-700/40 bg-amber-900/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-amber-400">
-                <img
-                  src={grich20Logo}
-                  alt="GRICH20"
+                <BrandLogo
+                  frameClassName="h-4 w-4 rounded-sm ring-0"
+                  scaleClassName="scale-[1.7]"
                   width={16}
                   height={16}
-                  className="h-4 w-4 rounded-sm object-cover"
                 />
                 {settings?.companyTagline || "Pure Nature"}
               </div>
@@ -343,14 +342,11 @@ export default function HomePage() {
               <div className="flex-shrink-0">
                 <div className="relative">
                   <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
-                  <img
-                    src={grich20Logo}
-                    alt="GRICH20"
+                  <BrandLogo
+                    frameClassName="relative w-36 h-36 rounded-2xl shadow-2xl"
+                    scaleClassName="scale-[1.45]"
                     width={144}
                     height={144}
-                    loading="lazy"
-                    decoding="async"
-                    className="relative w-36 h-36 rounded-2xl object-contain shadow-2xl ring-1 ring-primary/30"
                   />
                 </div>
               </div>

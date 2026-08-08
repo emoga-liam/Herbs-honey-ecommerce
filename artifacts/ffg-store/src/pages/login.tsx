@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import grich20Logo from "@assets/IMG_1201_JPG_1780421888804.jpg";
+import { BrandLogo } from "@/components/brand-logo";
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
@@ -24,7 +24,7 @@ export default function LoginPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="bg-card border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
-          <img src={grich20Logo} alt="GRICH20" className="h-16 mx-auto mb-4 rounded-xl" />
+          <BrandLogo frameClassName="h-16 w-16 mx-auto mb-4 rounded-xl" scaleClassName="scale-[1.5]" width={64} height={64} />
           <h2 className="font-cormorant text-2xl text-amber-400 mb-2">Authentication Not Set Up</h2>
           <p className="text-amber-200/60 text-sm mb-4">Firebase authentication hasn't been configured yet.</p>
           <Button asChild variant="outline" className="border-amber-700 text-amber-400">
@@ -67,7 +67,12 @@ export default function LoginPage() {
             <div className="inline-flex flex-col items-center gap-3 cursor-pointer">
               <div className="relative">
                 <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
-                <img src={grich20Logo} alt="GRICH20" className="relative h-20 w-20 rounded-2xl object-cover ring-1 ring-amber-600/40 shadow-2xl hover:ring-amber-500/60 transition-all" />
+                <BrandLogo
+                  frameClassName="relative h-20 w-20 rounded-2xl shadow-2xl hover:ring-primary/60 transition-all"
+                  scaleClassName="scale-[1.5]"
+                  width={80}
+                  height={80}
+                />
               </div>
               <div>
                 <h1 className="font-cormorant font-bold text-3xl text-amber-400">Welcome Back</h1>

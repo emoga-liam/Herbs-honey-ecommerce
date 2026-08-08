@@ -30,23 +30,23 @@ export default function TermsPage() {
     <Layout>
       <div className="container max-w-3xl mx-auto px-4 py-16">
         <div className="mb-10">
-          <p className="text-amber-500 text-xs uppercase tracking-widest font-semibold mb-2">Legal</p>
-          <h1 className="font-cormorant font-bold text-5xl text-amber-100 mb-3">Terms & Conditions</h1>
-          <p className="text-amber-200/40 text-sm">Last updated: {s.termsLastUpdated || "1 June 2025"}</p>
+          <p className="text-primary text-xs uppercase tracking-widest font-semibold mb-2">Legal</p>
+          <h1 className="font-cormorant font-bold text-5xl text-foreground mb-3">Terms & Conditions</h1>
+          <p className="text-muted-foreground text-sm">Last updated: {s.termsLastUpdated || "1 June 2025"}</p>
         </div>
 
-        <div className="space-y-8 text-amber-200/70 leading-relaxed">
+        <div className="space-y-8 text-muted-foreground leading-relaxed">
           {SECTION_TITLES.map((title, i) => (
             <div key={title}>
-              <h2 className="font-cormorant font-bold text-xl text-amber-300 mb-3">{title}</h2>
-              <p className="text-amber-200/60 leading-relaxed whitespace-pre-wrap">{sectionBodies[i] || ""}</p>
+              <h2 className="font-cormorant font-bold text-xl text-foreground mb-3">{title}</h2>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{sectionBodies[i] || ""}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-amber-900/20 flex gap-4 text-sm">
-          <Link href="/privacy" className="text-amber-500 hover:text-amber-400">Privacy Policy</Link>
-          <Link href="/" className="text-amber-200/40 hover:text-amber-300">← Back to Store</Link>
+        <div className="mt-12 pt-8 border-t border-border flex gap-4 text-sm">
+          <Link href="/privacy" className="text-primary hover:text-primary/80">Privacy Policy</Link>
+          <Link href="/" className="text-muted-foreground hover:text-foreground">← Back to Store</Link>
         </div>
       </div>
     </Layout>
