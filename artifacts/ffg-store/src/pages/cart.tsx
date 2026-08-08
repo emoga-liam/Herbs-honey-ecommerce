@@ -43,7 +43,15 @@ export default function CartPage() {
               return (
                 <div key={item.productId} className="flex gap-4 p-4 rounded-xl bg-card border border-border/60 hover:border-primary/20 transition-all">
                   <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-amber-50 flex items-center justify-center p-2">
-                    <img src={image} alt={item.productName} className="object-contain w-full h-full" />
+                    <img
+                      src={image}
+                      alt={item.productName}
+                      width={80}
+                      height={80}
+                      loading="lazy"
+                      decoding="async"
+                      className="object-contain w-full h-full"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start gap-2">

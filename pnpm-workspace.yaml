@@ -4,6 +4,11 @@ packages:
   - 'lib/integrations/*'
   - 'scripts'
 
+# Force Hostinger-safe versions (vuln scanner)
+overrides:
+  esbuild: 0.28.1
+  js-yaml: '>=4.3.1'
+
 # pnpm 11: allowBuilds replaces onlyBuiltDependencies.
 # Without this, Hostinger install fails with ERR_PNPM_IGNORED_BUILDS.
 #

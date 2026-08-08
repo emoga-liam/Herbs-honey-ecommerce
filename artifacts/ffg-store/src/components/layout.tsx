@@ -115,6 +115,10 @@ export function Navbar() {
             <img
               src={grich20Logo}
               alt="GRICH20"
+              width={36}
+              height={36}
+              loading="eager"
+              decoding="async"
               className="h-9 w-9 rounded-lg object-cover ring-1 ring-primary/30 group-hover:ring-primary/60 transition-all"
             />
             <div className="hidden sm:block">
@@ -307,6 +311,10 @@ export function Footer() {
               <img
                 src={grich20Logo}
                 alt="GRICH20"
+                width={44}
+                height={44}
+                loading="lazy"
+                decoding="async"
                 className="h-11 w-11 rounded-xl object-cover ring-1 ring-primary/30"
               />
               <div>

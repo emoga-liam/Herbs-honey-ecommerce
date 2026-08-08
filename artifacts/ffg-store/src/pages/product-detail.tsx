@@ -123,6 +123,10 @@ export default function ProductDetailPage() {
                 key={activeImg}
                 src={galleryImages[activeImg]}
                 alt={product.name}
+                width={600}
+                height={600}
+                loading="eager"
+                decoding="async"
                 className="max-h-full max-w-full object-contain drop-shadow-2xl transition-opacity duration-200"
               />
               {!product.inStock && (
@@ -167,7 +171,15 @@ export default function ProductDetailPage() {
                     onClick={() => setActiveImg(i)}
                     className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden bg-amber-50 flex items-center justify-center p-1 transition-colors ${i === activeImg ? "border-primary" : "border-border hover:border-primary/50"}`}
                   >
-                    <img src={src} alt={`View ${i + 1}`} className="max-w-full max-h-full object-contain" />
+                    <img
+                      src={src}
+                      alt={`View ${i + 1}`}
+                      width={64}
+                      height={64}
+                      loading="lazy"
+                      decoding="async"
+                      className="max-w-full max-h-full object-contain"
+                    />
                   </button>
                 ))}
               </div>

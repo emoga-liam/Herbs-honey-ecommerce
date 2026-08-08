@@ -38,7 +38,11 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
         <img 
           src={image} 
-          alt={product.name} 
+          alt={product.name}
+          width={400}
+          height={400}
+          loading="lazy"
+          decoding="async"
           className="object-contain max-h-full w-full drop-shadow-xl transition-transform duration-500 group-hover:scale-110"
         />
       </Link>
