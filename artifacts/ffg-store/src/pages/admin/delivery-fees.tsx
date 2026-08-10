@@ -65,7 +65,7 @@ export default function AdminDeliveryFeesPage() {
         <Button
           onClick={handleSave}
           disabled={!dirty || upsertFees.isPending}
-          className="gap-2 bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold shrink-0"
+          className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shrink-0"
         >
           <Save className="h-4 w-4" />
           {upsertFees.isPending ? "Saving..." : dirty ? "Save All Fees" : "Saved"}
@@ -104,7 +104,7 @@ export default function AdminDeliveryFeesPage() {
           <Button
             onClick={handleSave}
             disabled={upsertFees.isPending}
-            className="gap-2 bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold"
+            className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
           >
             <Save className="h-4 w-4" />
             {upsertFees.isPending ? "Saving..." : "Save All Fees"}

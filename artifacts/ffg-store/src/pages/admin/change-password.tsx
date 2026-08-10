@@ -57,29 +57,29 @@ export default function AdminChangePasswordPage() {
     <AdminLayout title="Change Password">
       <div className="max-w-md">
         {success && (
-          <div className="mb-6 rounded-xl bg-green-900/20 border border-green-700/40 p-5 flex items-start gap-3">
-            <ShieldCheck className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 rounded-xl bg-green-100 dark:bg-green-900/20 border border-green-200 dark:border-green-700/40 p-5 flex items-start gap-3">
+            <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-green-300 font-semibold text-sm">Password updated</p>
-              <p className="text-green-400/70 text-xs mt-0.5">Your new password is now active. Use it the next time you log in.</p>
+              <p className="text-green-800 dark:text-green-300 font-semibold text-sm">Password updated</p>
+              <p className="text-green-700/80 dark:text-green-400/70 text-xs mt-0.5">Your new password is now active. Use it the next time you log in.</p>
             </div>
           </div>
         )}
 
         <div className="rounded-xl bg-card border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
-            <div className="w-10 h-10 rounded-xl bg-amber-900/30 border border-amber-800/40 flex items-center justify-center">
-              <KeyRound className="h-5 w-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-border flex items-center justify-center">
+              <KeyRound className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-cormorant font-bold text-lg text-amber-300">Update Password</h3>
+              <h3 className="font-cormorant font-bold text-lg text-foreground">Update Password</h3>
               <p className="text-xs text-muted-foreground">Minimum 8 characters required</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label className="text-amber-200/70">Current Password</Label>
+              <Label className="text-muted-foreground">Current Password</Label>
               <div className="relative">
                 <Input
                   type={show.current ? "text" : "password"}
@@ -100,7 +100,7 @@ export default function AdminChangePasswordPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-amber-200/70">New Password</Label>
+              <Label className="text-muted-foreground">New Password</Label>
               <div className="relative">
                 <Input
                   type={show.newPw ? "text" : "password"}
@@ -125,7 +125,7 @@ export default function AdminChangePasswordPage() {
                       key={i}
                       className={`h-1 flex-1 rounded-full transition-colors ${
                         form.newPassword.length >= [8, 12, 16, 20][i]
-                          ? i < 2 ? "bg-amber-500" : "bg-green-500"
+                          ? i < 2 ? "bg-primary" : "bg-green-500"
                           : "bg-border"
                       }`}
                     />
@@ -135,7 +135,7 @@ export default function AdminChangePasswordPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-amber-200/70">Confirm New Password</Label>
+              <Label className="text-muted-foreground">Confirm New Password</Label>
               <div className="relative">
                 <Input
                   type={show.confirm ? "text" : "password"}
@@ -166,7 +166,7 @@ export default function AdminChangePasswordPage() {
 
             <Button
               type="submit"
-              className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold gap-2"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold gap-2"
               disabled={changePassword.isPending}
             >
               <KeyRound className="h-4 w-4" />

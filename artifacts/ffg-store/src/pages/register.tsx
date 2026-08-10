@@ -23,11 +23,11 @@ export default function RegisterPage() {
   if (!isConfigured) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-card border border-amber-900/30 rounded-2xl p-8 max-w-md w-full text-center">
+        <div className="bg-card border border-border rounded-2xl p-8 max-w-md w-full text-center">
           <BrandLogo frameClassName="h-16 w-16 mx-auto mb-4 rounded-xl" scaleClassName="scale-[1.5]" width={64} height={64} />
-          <h2 className="font-cormorant text-2xl text-amber-400 mb-2">Authentication Not Set Up</h2>
-          <p className="text-amber-200/60 text-sm mb-4">Firebase authentication needs to be configured first.</p>
-          <Button asChild variant="outline" className="border-amber-700 text-amber-400">
+          <h2 className="font-cormorant text-2xl text-foreground mb-2">Authentication Not Set Up</h2>
+          <p className="text-muted-foreground text-sm mb-4">Firebase authentication needs to be configured first.</p>
+          <Button asChild variant="outline" className="border-border text-foreground">
             <Link href="/">Back to Store</Link>
           </Button>
         </div>
@@ -38,34 +38,33 @@ export default function RegisterPage() {
   if (registered) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.12),transparent_70%)]" />
-        <div className="relative bg-card border border-amber-900/30 rounded-2xl p-10 max-w-md w-full text-center shadow-2xl">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)_/_0.08),transparent_70%)]" />
+        <div className="relative bg-card border border-border rounded-2xl p-10 max-w-md w-full text-center shadow-2xl">
           <div className="flex justify-center mb-5">
-            <div className="rounded-full bg-amber-900/30 border border-amber-700/40 p-4">
-              <Mail className="h-10 w-10 text-amber-400" />
+            <div className="rounded-full bg-primary/10 border border-border p-4">
+              <Mail className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <h2 className="font-cormorant font-bold text-3xl text-amber-200 mb-3">Check Your Email</h2>
-          <p className="text-amber-200/60 text-sm leading-relaxed mb-3">
-            We've sent a verification link to <span className="text-amber-300 font-medium">{email}</span>.
+          <h2 className="font-cormorant font-bold text-3xl text-foreground mb-3">Check Your Email</h2>
+          <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+            We've sent a verification link to <span className="text-foreground font-medium">{email}</span>.
           </p>
 
-          {/* Spam warning box */}
-          <div className="bg-amber-900/30 border border-amber-700/40 rounded-xl px-4 py-3 mb-6 text-left space-y-1">
-            <p className="text-amber-300 text-xs font-bold uppercase tracking-wide">📬 Can't find the email?</p>
-            <p className="text-amber-200/60 text-xs leading-relaxed">
-              The email may have landed in your <span className="text-amber-200 font-semibold">Spam or Junk folder</span>.
-              Look for a message from <span className="text-amber-200 font-semibold">noreply@herbs-honey.firebaseapp.com</span> and mark it as "Not Spam".
+          <div className="bg-muted border border-border rounded-xl px-4 py-3 mb-6 text-left space-y-1">
+            <p className="text-foreground text-xs font-bold uppercase tracking-wide">Can't find the email?</p>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              The email may have landed in your <span className="text-foreground font-semibold">Spam or Junk folder</span>.
+              Look for a message from <span className="text-foreground font-semibold">noreply@herbs-honey.firebaseapp.com</span> and mark it as "Not Spam".
             </p>
           </div>
 
           <Button
             onClick={() => navigate(redirect)}
-            className="w-full bg-amber-500 hover:bg-amber-400 text-primary-foreground font-bold rounded-xl"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl"
           >
             Continue to Shop
           </Button>
-          <p className="text-center text-xs text-amber-200/30 mt-4">Didn't receive it? Sign in to resend the verification link.</p>
+          <p className="text-center text-xs text-muted-foreground mt-4">Didn't receive it? Sign in to resend the verification link.</p>
         </div>
       </div>
     );
@@ -107,26 +106,26 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.12),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)_/_0.08),transparent_70%)]" />
       <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/">
             <div className="inline-flex flex-col items-center gap-3 cursor-pointer">
               <div className="relative">
-                <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
+                <div className="absolute -inset-3 rounded-2xl bg-primary/15 blur-xl" />
                 <BrandLogo frameClassName="relative h-20 w-20 rounded-2xl shadow-2xl" scaleClassName="scale-[1.5]" width={80} height={80} />
               </div>
               <div>
-                <h1 className="font-cormorant font-bold text-3xl text-amber-400">Create Account</h1>
-                <p className="text-amber-200/40 text-sm mt-0.5">Join GRICH20 for a sweeter experience</p>
+                <h1 className="font-cormorant font-bold text-3xl text-primary">Create Account</h1>
+                <p className="text-muted-foreground text-sm mt-0.5">Join GRICH20 for a sweeter experience</p>
               </div>
             </div>
           </Link>
         </div>
 
-        <div className="bg-card border border-amber-900/30 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-card border border-border rounded-2xl p-8 shadow-2xl">
           <Button onClick={handleGoogle} variant="outline"
-            className="w-full border-amber-700/50 text-amber-200 bg-transparent hover:bg-amber-900/20 mb-6 gap-3 rounded-xl">
+            className="w-full border-border text-foreground bg-transparent hover:bg-muted mb-6 gap-3 rounded-xl">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -137,37 +136,37 @@ export default function RegisterPage() {
           </Button>
 
           <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-amber-900/30" /></div>
-            <div className="relative flex justify-center text-xs text-amber-200/30"><span className="bg-card px-3">or register with email</span></div>
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+            <div className="relative flex justify-center text-xs text-muted-foreground"><span className="bg-card px-3">or register with email</span></div>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-amber-200/60 text-sm">Full Name</Label>
+              <Label className="text-muted-foreground text-sm">Full Name</Label>
               <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Amaka Johnson" required className={inputClass} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-amber-200/60 text-sm">Email</Label>
+              <Label className="text-muted-foreground text-sm">Email</Label>
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" required className={inputClass} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-amber-200/60 text-sm">Password</Label>
+              <Label className="text-muted-foreground text-sm">Password</Label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 6 characters" required className={inputClass} />
             </div>
-            <p className="text-xs text-amber-200/30">
+            <p className="text-xs text-muted-foreground">
               By creating an account you agree to our{" "}
-              <Link href="/terms" className="text-amber-500 hover:text-amber-400">Terms & Conditions</Link>{" "}
+              <Link href="/terms" className="text-primary hover:text-primary/80">Terms & Conditions</Link>{" "}
               and{" "}
-              <Link href="/privacy" className="text-amber-500 hover:text-amber-400">Privacy Policy</Link>.
+              <Link href="/privacy" className="text-primary hover:text-primary/80">Privacy Policy</Link>.
             </p>
-            <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-primary-foreground font-bold rounded-xl" disabled={submitting}>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl" disabled={submitting}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
           </form>
 
-          <p className="text-center text-sm text-amber-200/40 mt-6">
+          <p className="text-center text-sm text-muted-foreground mt-6">
             Already have an account?{" "}
-            <Link href={`/login${search}`} className="text-amber-400 hover:text-amber-300 font-semibold">Sign in</Link>
+            <Link href={`/login${search}`} className="text-primary hover:text-primary/80 font-semibold">Sign in</Link>
           </p>
         </div>
       </div>

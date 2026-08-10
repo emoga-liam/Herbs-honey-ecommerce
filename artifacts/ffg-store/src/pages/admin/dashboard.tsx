@@ -36,9 +36,9 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
     <>
       <div className="p-5 border-b border-sidebar-border flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <img src={grich20Logo} alt="GRICH20" className="h-8 w-8 rounded-lg object-cover ring-1 ring-amber-700/30" />
+          <img src={grich20Logo} alt="GRICH20" className="h-8 w-8 rounded-lg object-cover ring-1 ring-sidebar-border" />
           <div>
-            <h1 className="font-cormorant font-bold text-base text-amber-400 leading-tight">GRICH20</h1>
+            <h1 className="font-cormorant font-bold text-base text-primary leading-tight">GRICH20</h1>
             <p className="text-[9px] text-sidebar-foreground/40 uppercase tracking-widest">Admin Panel</p>
           </div>
         </div>
@@ -57,7 +57,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 location === href
-                  ? "bg-amber-900/30 text-amber-400"
+                  ? "bg-primary/10 text-primary"
                   : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               }`}
             >
@@ -132,7 +132,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <h2 className="font-cormorant font-bold text-xl text-amber-300 truncate">{title}</h2>
+          <h2 className="font-cormorant font-bold text-xl text-foreground truncate">{title}</h2>
         </header>
 
         {/* Page content */}
@@ -143,11 +143,11 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-yellow-900/40 text-yellow-300 border-yellow-700/40",
-  processing: "bg-blue-900/40 text-blue-300 border-blue-700/40",
-  shipped: "bg-indigo-900/40 text-indigo-300 border-indigo-700/40",
-  delivered: "bg-green-900/40 text-green-300 border-green-700/40",
-  cancelled: "bg-red-900/40 text-red-300 border-red-700/40",
+  pending: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-300 dark:border-yellow-700/40",
+  processing: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-700/40",
+  shipped: "bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-300 dark:border-indigo-700/40",
+  delivered: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-700/40",
+  cancelled: "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-700/40",
 };
 
 export default function AdminDashboardPage() {
@@ -164,10 +164,10 @@ export default function AdminDashboardPage() {
   }
 
   const statCards = [
-    { label: "Total Orders", value: stats?.totalOrders ?? 0, icon: ShoppingCart, color: "text-blue-400", bg: "bg-blue-900/30 border-blue-800/40" },
-    { label: "Total Revenue", value: formatNaira(stats?.totalRevenueKobo ?? 0), icon: TrendingUp, color: "text-amber-400", bg: "bg-amber-900/30 border-amber-800/40" },
-    { label: "Pending Orders", value: stats?.pendingOrders ?? 0, icon: Clock, color: "text-yellow-400", bg: "bg-yellow-900/30 border-yellow-800/40" },
-    { label: "Products", value: stats?.totalProducts ?? 0, icon: Archive, color: "text-purple-400", bg: "bg-purple-900/30 border-purple-800/40" },
+    { label: "Total Orders", value: stats?.totalOrders ?? 0, icon: ShoppingCart, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-100/60 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800/40" },
+    { label: "Total Revenue", value: formatNaira(stats?.totalRevenueKobo ?? 0), icon: TrendingUp, color: "text-primary", bg: "bg-primary/10 border-border" },
+    { label: "Pending Orders", value: stats?.pendingOrders ?? 0, icon: Clock, color: "text-yellow-700 dark:text-yellow-400", bg: "bg-yellow-100/60 border-yellow-200 dark:bg-yellow-900/30 dark:border-yellow-800/40" },
+    { label: "Products", value: stats?.totalProducts ?? 0, icon: Archive, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-100/60 border-purple-200 dark:bg-purple-900/30 dark:border-purple-800/40" },
   ];
 
   return (
@@ -192,8 +192,8 @@ export default function AdminDashboardPage() {
           { href: "/admin/site-settings", label: "Edit Site Content", icon: Settings2, desc: "Customize homepage, contact & more" },
         ].map(({ href, label, icon: Icon, desc }) => (
           <Link key={href} href={href}>
-            <div className="rounded-xl bg-card border border-border hover:border-amber-700/50 hover:shadow-md hover:shadow-amber-900/20 transition-all p-5 cursor-pointer">
-              <Icon className="h-5 w-5 text-amber-500 mb-3" />
+            <div className="rounded-xl bg-card border border-border hover:border-primary/40 hover:shadow-md transition-all p-5 cursor-pointer">
+              <Icon className="h-5 w-5 text-primary mb-3" />
               <h3 className="font-semibold text-sm mb-1 text-foreground">{label}</h3>
               <p className="text-xs text-muted-foreground">{desc}</p>
             </div>
@@ -203,7 +203,7 @@ export default function AdminDashboardPage() {
 
       {stats?.ordersByStatus && stats.ordersByStatus.length > 0 && (
         <div className="rounded-xl bg-card border border-border p-5 mb-6">
-          <h3 className="font-cormorant font-bold text-lg text-amber-300 mb-4">Orders by Status</h3>
+          <h3 className="font-cormorant font-bold text-lg text-foreground mb-4">Orders by Status</h3>
           <div className="flex flex-wrap gap-3">
             {stats.ordersByStatus.map(({ status, count }) => (
               <div key={status} className={`rounded-full border px-4 py-2 text-sm font-medium ${STATUS_COLORS[status] ?? "bg-muted text-foreground"}`}>
@@ -216,8 +216,8 @@ export default function AdminDashboardPage() {
 
       <div className="rounded-xl bg-card border border-border p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-cormorant font-bold text-lg text-amber-300">Recent Orders</h3>
-          <Button asChild variant="outline" size="sm" className="border-amber-800/60 text-amber-400">
+          <h3 className="font-cormorant font-bold text-lg text-foreground">Recent Orders</h3>
+          <Button asChild variant="outline" size="sm" className="border-border text-foreground">
             <Link href="/admin/orders">View All</Link>
           </Button>
         </div>
@@ -231,7 +231,7 @@ export default function AdminDashboardPage() {
                   <div className="font-medium text-sm text-foreground">{order.customerName}</div>
                   <div className="text-xs text-muted-foreground">{new Date(order.createdAt).toLocaleDateString("en-NG")}</div>
                 </div>
-                <div className="text-sm font-bold text-amber-400">{formatNaira(order.totalKobo)}</div>
+                <div className="text-sm font-bold text-primary">{formatNaira(order.totalKobo)}</div>
                 <Badge variant="outline" className={`text-xs ${STATUS_COLORS[order.status] ?? ""}`}>{order.status}</Badge>
               </div>
             ))}

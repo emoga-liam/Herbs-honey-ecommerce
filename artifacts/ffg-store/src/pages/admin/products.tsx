@@ -332,7 +332,7 @@ function ProductFormModal({
               <Label className="flex items-center gap-1.5">
                 Category
                 {categories.length === 0 && (
-                  <span className="text-xs text-amber-500">(create one in the Categories page first)</span>
+                  <span className="text-xs text-primary">(create one in the Categories page first)</span>
                 )}
               </Label>
               <select
@@ -593,7 +593,7 @@ export default function AdminProductsPage() {
                     <Badge variant="destructive" className="absolute top-2 left-2 text-xs">Out of stock</Badge>
                   )}
                   {product.featured && (
-                    <Badge className="absolute top-2 right-2 text-xs bg-amber-500 hover:bg-amber-500">Featured</Badge>
+                    <Badge className="absolute top-2 right-2 text-xs bg-primary hover:bg-primary text-primary-foreground">Featured</Badge>
                   )}
                 </div>
                 {/* Info */}

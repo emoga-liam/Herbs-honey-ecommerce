@@ -62,31 +62,28 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060d07] flex items-center justify-center p-4">
-      {/* Background glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,53,15,0.15),transparent_70%)]" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)_/_0.08),transparent_70%)]" />
 
       <div className="relative w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex flex-col items-center gap-3">
             <div className="relative">
-              <div className="absolute -inset-3 rounded-2xl bg-amber-600/20 blur-xl" />
-              <img src={grich20Logo} alt="GRICH20" className="relative h-20 w-20 rounded-2xl object-cover ring-1 ring-amber-600/40 shadow-2xl" />
+              <div className="absolute -inset-3 rounded-2xl bg-primary/15 blur-xl" />
+              <img src={grich20Logo} alt="GRICH20" className="relative h-20 w-20 rounded-2xl object-cover ring-1 ring-border shadow-2xl" />
             </div>
             <div>
-              <h1 className="font-cormorant font-bold text-3xl text-amber-400 leading-tight">GRICH20</h1>
-              <p className="text-amber-200/40 text-xs uppercase tracking-widest mt-0.5">Admin Dashboard</p>
+              <h1 className="font-cormorant font-bold text-3xl text-primary leading-tight">GRICH20</h1>
+              <p className="text-muted-foreground text-xs uppercase tracking-widest mt-0.5">Admin Dashboard</p>
             </div>
           </div>
         </div>
 
-        {/* Card */}
-        <div className="rounded-2xl bg-[#0f1e12] border border-amber-900/30 p-8 shadow-2xl">
-          <h2 className="font-cormorant font-bold text-2xl text-amber-100 mb-6">Sign In to Dashboard</h2>
+        <div className="rounded-2xl bg-card border border-border p-8 shadow-2xl">
+          <h2 className="font-cormorant font-bold text-2xl text-foreground mb-6">Sign In to Dashboard</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-amber-200/70 text-sm">Email Address</Label>
+              <Label className="text-muted-foreground text-sm">Email Address</Label>
               <Input
                 id="admin-email"
                 type="email"
@@ -94,11 +91,11 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600"
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-amber-200/70 text-sm">Password</Label>
+              <Label className="text-muted-foreground text-sm">Password</Label>
               <Input
                 id="admin-password"
                 type="password"
@@ -106,14 +103,14 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-[#060d07] border-amber-900/40 text-amber-100 placeholder:text-amber-200/20 focus:border-amber-600"
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
               />
             </div>
             <Button
               type="submit"
               size="lg"
               id="admin-login-btn"
-              className="w-full bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold mt-2 rounded-xl"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold mt-2 rounded-xl"
               disabled={loading}
             >
               {loading ? "Signing in…" : "Sign In"}
@@ -121,7 +118,7 @@ export default function AdminLoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-amber-200/25 mt-6">
+        <p className="text-center text-xs text-muted-foreground mt-6">
           GRICH20
         </p>
       </div>

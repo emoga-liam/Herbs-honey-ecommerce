@@ -107,7 +107,7 @@ function OrderDetailModal({ orderId, onClose }: { orderId: number; onClose: () =
                 <p className="font-semibold">
                   {order.paymentReference
                     ? <span className="text-green-600">Online · Ref: {order.paymentReference}</span>
-                    : <span className="text-amber-600">Cash on Delivery</span>}
+                    : <span className="text-primary">Cash on Delivery</span>}
                 </p>
               </div>
               <div className="col-span-2"><span className="text-muted-foreground">Address</span><p className="font-semibold">{order.deliveryAddress}{order.deliveryState ? `, ${order.deliveryState}` : ""}</p></div>

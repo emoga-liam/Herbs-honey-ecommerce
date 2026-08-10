@@ -116,7 +116,7 @@ function ImagePreview({ url }: { url: string }) {
 
   if (!url) {
     return (
-      <div className="rounded-xl border border-dashed border-amber-900/40 bg-amber-900/10 h-40 flex flex-col items-center justify-center gap-2 text-amber-200/30">
+      <div className="rounded-xl border border-dashed border-border bg-muted h-40 flex flex-col items-center justify-center gap-2 text-muted-foreground">
         <ImageIcon className="h-8 w-8" />
         <p className="text-xs">Paste an image URL above to preview</p>
       </div>
@@ -124,24 +124,24 @@ function ImagePreview({ url }: { url: string }) {
   }
 
   return (
-    <div className="rounded-xl overflow-hidden border border-amber-900/30 relative">
+    <div className="rounded-xl overflow-hidden border border-border relative">
       {!loaded && !error && (
-        <div className="h-40 bg-amber-900/10 animate-pulse flex items-center justify-center">
-          <p className="text-xs text-amber-200/30">Loading preview...</p>
+        <div className="h-40 bg-muted animate-pulse flex items-center justify-center">
+          <p className="text-xs text-muted-foreground">Loading preview...</p>
         </div>
       )}
       {error ? (
-        <div className="h-40 rounded-xl border border-red-900/40 bg-red-900/10 flex flex-col items-center justify-center gap-2">
-          <AlertCircle className="h-6 w-6 text-red-400" />
-          <p className="text-xs text-red-400">Could not load image — check the URL</p>
+        <div className="h-40 rounded-xl border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-900/10 flex flex-col items-center justify-center gap-2">
+          <AlertCircle className="h-6 w-6 text-red-500 dark:text-red-400" />
+          <p className="text-xs text-red-600 dark:text-red-400">Could not load image — check the URL</p>
         </div>
       ) : (
         <img src={url} alt="Hero preview" className={`w-full h-48 object-cover transition-opacity ${loaded ? "opacity-100" : "opacity-0"}`}
           onLoad={() => setLoaded(true)} onError={() => setError(true)} />
       )}
       {loaded && (
-        <div className="absolute bottom-2 right-2 bg-green-900/80 text-green-300 text-xs px-2 py-1 rounded-full border border-green-700/40">
-          ✓ Live on homepage
+        <div className="absolute bottom-2 right-2 bg-green-100 dark:bg-green-900/80 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded-full border border-green-200 dark:border-green-700/40">
+          Live on homepage
         </div>
       )}
     </div>
@@ -201,11 +201,11 @@ export default function AdminSiteSettingsPage() {
         <p className="text-muted-foreground text-sm">Customize all text and images on your website. Changes go live immediately when saved.</p>
         <div className="flex gap-2 flex-shrink-0">
           {dirty && (
-            <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5 border-amber-800/60 text-amber-400">
+            <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5 border-border text-foreground">
               <RotateCcw className="h-3.5 w-3.5" /> Reset
             </Button>
           )}
-          <Button onClick={handleSave} disabled={!dirty || updateSettings.isPending} className="gap-2 bg-amber-500 hover:bg-amber-400 text-[#060d07] font-bold">
+          <Button onClick={handleSave} disabled={!dirty || updateSettings.isPending} className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
             <Save className="h-4 w-4" />
             {updateSettings.isPending ? "Saving..." : dirty ? "Save Changes" : "Saved"}
           </Button>
@@ -216,13 +216,13 @@ export default function AdminSiteSettingsPage() {
         {SECTIONS.map((section) => (
           <div key={section.title} className="rounded-xl bg-card border border-border p-6">
             <div className="mb-5 pb-4 border-b border-border">
-              <h3 className="font-cormorant font-bold text-lg text-amber-300">{section.title}</h3>
+              <h3 className="font-cormorant font-bold text-lg text-foreground">{section.title}</h3>
               <p className="text-sm text-muted-foreground">{section.desc}</p>
             </div>
             <div className="space-y-4">
               {section.fields.map((fieldDef) => (
                 <div key={fieldDef.key} className="space-y-2">
-                  <Label className="font-medium text-amber-200/70">{fieldDef.label}</Label>
+                  <Label className="font-medium text-muted-foreground">{fieldDef.label}</Label>
                   {fieldDef.multiline ? (
                     <Textarea value={form[fieldDef.key] ?? ""} onChange={(e) => set(fieldDef.key, e.target.value)}
                       placeholder={fieldDef.placeholder} rows={4} className="resize-y" />
@@ -241,7 +241,7 @@ export default function AdminSiteSettingsPage() {
       {/* Page Content Sections — collapsible */}
       <div className="mt-4 space-y-3">
         <div className="mb-2">
-          <h3 className="font-cormorant font-bold text-xl text-amber-200">Page Content</h3>
+          <h3 className="font-cormorant font-bold text-xl text-foreground">Page Content</h3>
           <p className="text-sm text-muted-foreground">Click a page to expand and edit its content.</p>
         </div>
         {PAGE_SECTIONS.map((section) => {
@@ -258,14 +258,14 @@ export default function AdminSiteSettingsPage() {
               <button
                 type="button"
                 onClick={toggle}
-                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-amber-900/10 transition-colors"
+                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-muted transition-colors"
               >
                 <div>
-                  <span className="font-cormorant font-bold text-lg text-amber-300">{section.title}</span>
+                  <span className="font-cormorant font-bold text-lg text-foreground">{section.title}</span>
                   <p className="text-sm text-muted-foreground mt-0.5">{section.desc}</p>
                 </div>
                 <ChevronDown
-                  className={`h-5 w-5 text-amber-400 flex-shrink-0 ml-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                  className={`h-5 w-5 text-muted-foreground flex-shrink-0 ml-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -273,7 +273,7 @@ export default function AdminSiteSettingsPage() {
                 <div className="px-6 pb-6 border-t border-border pt-5 space-y-4">
                   {section.fields.map((fieldDef) => (
                     <div key={fieldDef.key} className="space-y-2">
-                      <Label className="font-medium text-amber-200/70">{fieldDef.label}</Label>
+                      <Label className="font-medium text-muted-foreground">{fieldDef.label}</Label>
                       {fieldDef.multiline ? (
                         <Textarea
                           value={form[fieldDef.key] ?? ""}
@@ -305,7 +305,7 @@ export default function AdminSiteSettingsPage() {
       {dirty && (
         <div className="fixed bottom-6 right-6 z-50">
           <Button onClick={handleSave} disabled={updateSettings.isPending} size="lg"
-            className="gap-2 font-bold shadow-xl bg-amber-500 hover:bg-amber-400 text-[#060d07] rounded-full px-6">
+            className="gap-2 font-bold shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
             <Save className="h-4 w-4" />
             {updateSettings.isPending ? "Saving..." : "Save Changes"}
           </Button>
