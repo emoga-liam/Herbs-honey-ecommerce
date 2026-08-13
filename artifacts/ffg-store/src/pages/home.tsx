@@ -84,7 +84,7 @@ function FeaturedSoloHero({ product }: { product: Product }) {
               height={480}
               loading="lazy"
               decoding="async"
-              className="relative max-h-72 md:max-h-96 w-auto object-contain drop-shadow-2xl animate-float"
+              className="relative max-h-72 md:max-h-96 w-auto object-contain drop-shadow-2xl"
             />
           </div>
           {!product.inStock && (
@@ -224,7 +224,7 @@ export default function HomePage() {
             <div className="relative flex justify-center">
               <div className="relative">
                 <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-amber-600/20 to-amber-900/10 blur-2xl" />
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl max-w-sm w-full animate-float ring-1 ring-amber-700/30">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl max-w-sm w-full aspect-[4/5] ring-1 ring-amber-700/30">
                   <img
                     src={heroImage}
                     alt="GRICH20 Herbs-Infused Honey"
@@ -233,11 +233,11 @@ export default function HomePage() {
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
-                    className="w-full h-auto object-cover"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a1500]/40 to-transparent" />
                 </div>
-                <div className="absolute -bottom-6 -left-8 rounded-xl overflow-hidden shadow-xl w-36 hidden md:block ring-1 ring-amber-700/30 animate-float-subtle">
+                <div className="absolute -bottom-6 -left-8 rounded-xl overflow-hidden shadow-xl w-36 h-36 hidden md:block ring-1 ring-amber-700/30">
                   <img
                     src={heroSecondaryImage}
                     alt="Honey Product"
@@ -245,7 +245,7 @@ export default function HomePage() {
                     height={144}
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-auto object-cover"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="absolute -top-4 -right-4 bg-primary text-primary-foreground rounded-full w-16 h-16 flex flex-col items-center justify-center shadow-lg">

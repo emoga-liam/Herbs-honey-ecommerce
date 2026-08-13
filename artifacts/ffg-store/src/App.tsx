@@ -7,7 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/components/cart-context";
 import { AuthProvider } from "@/contexts/auth-context";
 import { SettingsProvider } from "@/contexts/settings-context";
-import { AdminGuard } from "@/pages/admin/guard";
 import { StoreAuthGuard } from "@/components/auth-guard";
 import { Spinner } from "@/components/ui/spinner";
 import NotFound from "@/pages/not-found";
@@ -35,6 +34,9 @@ const AdminChangePasswordPage = lazy(() => import("@/pages/admin/change-password
 const AdminCategoriesPage = lazy(() => import("@/pages/admin/categories"));
 const AdminDeliveryFeesPage = lazy(() => import("@/pages/admin/delivery-fees"));
 const AdminCategoryDetailPage = lazy(() => import("@/pages/admin/category-detail"));
+const AdminGuard = lazy(() =>
+  import("@/pages/admin/guard").then((m) => ({ default: m.AdminGuard })),
+);
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },

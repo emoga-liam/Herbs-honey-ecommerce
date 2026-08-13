@@ -136,7 +136,7 @@ export function Navbar() {
         >
           <ShoppingBag className="h-5 w-5" />
           {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center animate-float-subtle">
+            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
               {totalItems}
             </span>
           )}

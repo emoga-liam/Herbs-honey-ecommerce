@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
@@ -13,9 +13,43 @@ if (Number.isNaN(port) || port <= 0) {
 
 const basePath = process.env.BASE_PATH || "/";
 
+const DEFAULT_HERO_BASENAME =
+  "a19fa264-b1a2-4592-a852-d2e2934d4852_1780225496305";
+
+/** Inject a static LCP image preload into built index.html (hashed asset URL). */
+function lcpHeroPreloadPlugin(): Plugin {
+  return {
+    name: "lcp-hero-preload",
+    enforce: "post",
+    transformIndexHtml: {
+      order: "post",
+      handler(html, ctx) {
+        if (!ctx.bundle) return html;
+
+        const asset = Object.values(ctx.bundle).find((item) => {
+          if (item.type !== "asset" || typeof item.fileName !== "string") return false;
+          return (
+            item.fileName.includes(DEFAULT_HERO_BASENAME) &&
+            item.fileName.endsWith(".webp")
+          );
+        });
+
+        if (!asset || asset.type !== "asset") return html;
+
+        const href = `${basePath.replace(/\/$/, "")}/${asset.fileName}`.replace(
+          /\/{2,}/g,
+          "/",
+        );
+        const tag = `<link rel="preload" as="image" type="image/webp" href="${href}" fetchpriority="high">`;
+        return html.replace("</head>", `    ${tag}\n  </head>`);
+      },
+    },
+  };
+}
+
 export default defineConfig({
   base: basePath,
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), lcpHeroPreloadPlugin()],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),

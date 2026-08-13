@@ -1,4 +1,4 @@
-import grich20Logo from "@assets/IMG_1201_JPG_1780421888804.jpg";
+import grich20Logo from "@assets/IMG_1201_JPG_1780421888804.webp";
 import { cn } from "@/lib/utils";
 
 type BrandLogoProps = {
