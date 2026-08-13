@@ -180,3 +180,8 @@ directory during redeploys.
 9. Add the final domain to Firebase Authentication's authorized domains.
 10. Replace any default admin credentials and verify backups for the database
     and uploaded product media.
+11. In hPanel Domains, pick **one** preferred hostname (`grich20.online` **or**
+    `www.grich20.online`) and redirect the other with a single 301 — avoid
+    multi-hop redirect chains (hurts Lighthouse “Avoid multiple page redirects”).
+12. After deploy, re-run Hostinger/Lighthouse performance; confirm `/assets/*`
+    responses include long `Cache-Control` and HTML is `no-cache`.

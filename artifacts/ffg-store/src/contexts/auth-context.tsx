@@ -1,20 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import {
-  auth,
-  googleProvider,
-  isFirebaseConfigured,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-  sendPasswordResetEmail,
-  sendEmailVerification,
-  type User,
-} from "@/lib/firebase";
+import type { User } from "firebase/auth";
+import { setAuthTokenGetter } from "@workspace/api-client-react";
 
 interface AuthContextType {
   user: User | null;
@@ -30,42 +16,69 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const isConfigured =
+  !!import.meta.env.VITE_FIREBASE_API_KEY && !!import.meta.env.VITE_FIREBASE_PROJECT_ID;
+
+async function getFirebase() {
+  return import("@/lib/firebase");
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(isFirebaseConfigured);
+  const [isLoading, setIsLoading] = useState(isConfigured);
 
   useEffect(() => {
-    if (!isFirebaseConfigured || !auth) {
+    if (!isConfigured) {
       setIsLoading(false);
       return;
     }
-    // Handle redirect result (Google sign-in via redirect flow)
-    getRedirectResult(auth).catch(() => null);
 
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setIsLoading(false);
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    void getFirebase().then((fb) => {
+      if (cancelled || !fb.auth) {
+        setIsLoading(false);
+        return;
+      }
+
+      setAuthTokenGetter(() => fb.auth?.currentUser?.getIdToken() ?? null);
+
+      // Handle redirect result (Google sign-in via redirect flow)
+      fb.getRedirectResult(fb.auth).catch(() => null);
+
+      unsubscribe = fb.onAuthStateChanged(fb.auth, (u) => {
+        setUser(u);
+        setIsLoading(false);
+      });
     });
-    return unsubscribe;
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   const signUpWithEmail = async (email: string, password: string, name: string) => {
-    if (!auth) throw new Error("Firebase not configured");
-    const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(newUser, { displayName: name });
-    await sendEmailVerification(newUser).catch(() => null);
+    const fb = await getFirebase();
+    if (!fb.auth) throw new Error("Firebase not configured");
+    const { user: newUser } = await fb.createUserWithEmailAndPassword(fb.auth, email, password);
+    await fb.updateProfile(newUser, { displayName: name });
+    await fb.sendEmailVerification(newUser).catch(() => null);
     setUser({ ...newUser, displayName: name });
   };
 
   const signInWithEmail = async (email: string, password: string) => {
-    if (!auth) throw new Error("Firebase not configured");
-    await signInWithEmailAndPassword(auth, email, password);
+    const fb = await getFirebase();
+    if (!fb.auth) throw new Error("Firebase not configured");
+    await fb.signInWithEmailAndPassword(fb.auth, email, password);
   };
 
   const signInWithGoogle = async () => {
-    if (!auth || !googleProvider) throw new Error("Firebase not configured");
+    const fb = await getFirebase();
+    if (!fb.auth || !fb.googleProvider) throw new Error("Firebase not configured");
     try {
-      await signInWithPopup(auth, googleProvider);
+      await fb.signInWithPopup(fb.auth, fb.googleProvider);
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;
       if (code === "auth/unauthorized-domain") {
@@ -79,8 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         code === "auth/cancelled-popup-request" ||
         code === "auth/operation-not-supported-in-this-environment"
       ) {
-        // Mobile browsers often block popups — fall back to redirect
-        await signInWithRedirect(auth, googleProvider);
+        await fb.signInWithRedirect(fb.auth, fb.googleProvider);
       } else {
         throw err;
       }
@@ -88,18 +100,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    if (!auth) throw new Error("Firebase not configured");
-    await sendPasswordResetEmail(auth, email);
+    const fb = await getFirebase();
+    if (!fb.auth) throw new Error("Firebase not configured");
+    await fb.sendPasswordResetEmail(fb.auth, email);
   };
 
   const resendVerification = async () => {
-    if (!auth?.currentUser) throw new Error("Not logged in");
-    await sendEmailVerification(auth.currentUser);
+    const fb = await getFirebase();
+    if (!fb.auth?.currentUser) throw new Error("Not logged in");
+    await fb.sendEmailVerification(fb.auth.currentUser);
   };
 
   const logout = async () => {
-    if (!auth) return;
-    await signOut(auth);
+    const fb = await getFirebase();
+    if (!fb.auth) return;
+    await fb.signOut(fb.auth);
     setUser(null);
   };
 
@@ -108,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         isLoading,
-        isConfigured: isFirebaseConfigured,
+        isConfigured,
         signUpWithEmail,
         signInWithEmail,
         signInWithGoogle,

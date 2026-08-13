@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatNaira, getProductImage } from "@/lib/utils";
 import { CheckCircle, ShoppingBag } from "lucide-react";
-import defaultBannerImg from "@assets/a19fa264-b1a2-4592-a852-d2e2934d4852_1780225496305.jpeg";
-import defaultBoxImg from "@assets/1bb59fff-c60a-495a-a645-92b6f7c19b0c_1780225496305.jpeg";
+import defaultBannerImg from "@assets/a19fa264-b1a2-4592-a852-d2e2934d4852_1780225496305.webp";
+import defaultBoxImg from "@assets/1bb59fff-c60a-495a-a645-92b6f7c19b0c_1780225496305.webp";
 
 const BENEFITS = [
   { icon: "🍯", flavor: "Original Honey", tag: "Natural Sweetener", desc: "A healthier alternative to processed sugar — pure, rich and golden.", border: "border-amber-300 dark:border-amber-700/40", glow: "hover:border-amber-500/60" },

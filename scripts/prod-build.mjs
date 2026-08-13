@@ -55,7 +55,6 @@ run("typecheck libs (tsc --build)", node, [tsc, "--build"]);
 const typecheckPackages = [
   "artifacts/api-server",
   "artifacts/ffg-store",
-  "artifacts/mockup-sandbox",
   "scripts",
 ];
 

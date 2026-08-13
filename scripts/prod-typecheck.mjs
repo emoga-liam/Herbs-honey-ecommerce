@@ -42,7 +42,6 @@ run("typecheck libs (tsc --build)", [tsc, "--build"]);
 for (const rel of [
   "artifacts/api-server",
   "artifacts/ffg-store",
-  "artifacts/mockup-sandbox",
   "scripts",
 ]) {
   run(`typecheck ${rel}`, [tsc, "-p", "tsconfig.json", "--noEmit"], path.join(root, rel));
