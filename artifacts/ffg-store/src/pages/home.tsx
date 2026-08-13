@@ -224,7 +224,7 @@ export default function HomePage() {
             <div className="relative flex justify-center">
               <div className="relative">
                 <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-amber-600/20 to-amber-900/10 blur-2xl" />
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl max-w-sm w-full aspect-[4/5] ring-1 ring-amber-700/30">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl max-w-sm w-full ring-1 ring-amber-700/30">
                   <img
                     src={heroImage}
                     alt="GRICH20 Herbs-Infused Honey"
@@ -233,9 +233,9 @@ export default function HomePage() {
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="block w-full h-auto aspect-[4/5] object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a1500]/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a1500]/40 to-transparent pointer-events-none" />
                 </div>
                 <div className="absolute -bottom-6 -left-8 rounded-xl overflow-hidden shadow-xl w-36 h-36 hidden md:block ring-1 ring-amber-700/30">
                   <img
